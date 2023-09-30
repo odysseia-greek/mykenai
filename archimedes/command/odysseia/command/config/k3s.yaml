@@ -1,0 +1,7 @@
+elastic:
+  volumeClaimTemplate:
+    accessModes: [ "ReadWriteOnce" ]
+    storageClassName: "local-path"
+    resources:
+      requests:
+        storage: 100M

@@ -1,0 +1,38 @@
+config:
+    environment: minikube
+    externalRepo: true
+    harborPullPolicy: Always
+    initialDelayLiveness: 20
+    initialDelayReadiness: 1
+    periodSeconds: 20
+    privateImagesInRepo: false
+    pullPolicy: Always
+    replicas:
+        high: 4
+        low: 1
+        medium: 2
+envVariables:
+    alexandrosService: http://alexandros:5000
+    dionysiosService: http://dionysios:5000
+    herodotosService: http://herodotos:5000
+    homerosService: http://homeros:8080
+    sokratesService: http://sokrates:5000
+    solonService: http://nottherealurl:5000
+images:
+    imageRepo: ghcr.io/odysseia-greek/
+    pullSecret: harbor-images
+    system:
+        repo: hippokrates
+        tag: v0.2.1
+services:
+    system:
+        limits:
+            cpu: 1000m
+            memory: 128Mi
+        name: hippokrates
+        requests:
+            cpu: 500m
+            memory: 64Mi
+    tests:
+        labels:
+            domain: testing

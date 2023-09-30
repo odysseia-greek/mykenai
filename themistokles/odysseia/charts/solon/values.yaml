@@ -1,0 +1,67 @@
+config:
+    environment: minikube
+    externalRepo: true
+    harborPullPolicy: Always
+    initialDelayLiveness: 20
+    initialDelayReadiness: 1
+    periodSeconds: 20
+    privateImagesInRepo: false
+    pullPolicy: Always
+    replicas:
+        high: 4
+        low: 1
+        medium: 2
+    sidecarOverwrite: true
+    tls: true
+envVariables:
+    elasticService: https://aristoteles-es-http:9200
+    elasticUser: elastic
+    solon:
+        port: 5443
+        vaultAuthMethod: kubernetes
+        vaultRole: solon
+    solonService: https://solon:5443
+    vaultService: https://vault:8200
+images:
+    imageRepo: ghcr.io/odysseia-greek/
+    pullSecret: harbor-images
+    init:
+        repo: drakon
+        tag: v0.4.0
+    odysseiaapi:
+        repo: solon
+        tag: v0.4.0
+namespaceOverride: odysseia
+role:
+    name: api-access
+serviceAccount:
+    name: solon-access-sa
+services:
+    backend:
+        labels:
+            domain: backend
+    drakon:
+        name: drakon
+    solon:
+        limits:
+            cpu: 500m
+            memory: 128Mi
+        name: solon
+        requests:
+            cpu: 200m
+            memory: 64Mi
+tlsConfig:
+    elastic:
+        name: elastic-internal-tls
+        path: /app/config/elastic
+        secretName: aristoteles-es-http-certs-public
+    mounts:
+        - name: solon-certs
+          path: /etc/certs/solon
+          secretName: solon-tls-certs
+    rootPath: /etc/certs
+    vault:
+        enabled: true
+        name: vault-server-tls
+        path: /etc/certs/vault
+        secretName: vault-server-tls

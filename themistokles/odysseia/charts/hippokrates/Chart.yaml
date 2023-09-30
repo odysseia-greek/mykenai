@@ -1,0 +1,5 @@
+apiVersion: v2
+appVersion: 0.0.1
+description: Helm chart for running godog system tests for Odysseia-Greek
+name: hippokrates
+version: 0.1.1

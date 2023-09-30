@@ -1,0 +1,46 @@
+# Default values for Odysseia.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+config:
+  environment: minikube
+  kibana: true
+  elasticVersion: 8.8.0
+  replicas: 1
+
+
+nameOverride: aristoteles
+
+nodes:
+  master:
+    limits:
+      cpu: 2000m
+      memory: 3Gi
+    requests:
+      cpu: 1000m
+      memory: 2Gi
+
+  storage:
+    low: 5Gi
+    medium: 10Gi
+    high: 20Gi
+
+  memory:
+    requests:
+      low: 500Mi
+      medium: 1Gi
+      high: 2Gi
+    limits:
+      low: 1Gi
+      medium: 2Gi
+      high: 3Gi
+
+  cpu:
+    requests:
+      low: 500m
+      medium: 1000m
+      high: 2000m
+    limits:
+      low: 1000m
+      medium: 2000m
+      high: 3000m

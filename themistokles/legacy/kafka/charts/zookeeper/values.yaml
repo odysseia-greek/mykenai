@@ -1,0 +1,35 @@
+# Default values for Odysseia.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+config:
+  environment: minikube
+  externalRepo: true
+  privateImagesInRepo: false
+  tls: true
+  pullPolicy: Always
+  replicas:
+    low: 1
+    medium: 2
+    high: 4
+  initialDelayLiveness: 20
+  initialDelayReadiness: 1
+  periodSeconds: 20
+
+services:
+  backend:
+    labels: {
+      domain: queue
+    }
+
+
+images:
+  tag: latest
+  imageRepo: digitalwonderland/zookeeper
+  pullSecret: harbor-images
+
+envVariables:
+  port: 2181
+
+namespaceOverride: odysseia
+

@@ -1,0 +1,35 @@
+---
+- name: Install and configure k3s on Raspberry Pi nodes
+  hosts: raspberries
+  become: yes
+
+  vars:
+    ansible_ssh_private_key_file: ~/.ssh/id_raspberry
+    k3s_version: "v1.27.3+k3s1"  # Replace with the desired version of k3s
+    k3s_token: ""  # Variable to store the generated token
+    k3s_server_url: ""  # Variable to store the server URL
+
+  tasks:
+    - name: Install k3s on the first server and initialize the cluster
+      shell: curl -sfL https://get.k3s.io | sh -s - server --cluster-init
+      when: inventory_hostname == groups['servers'][0]
+      register: k3s_init_result
+      changed_when: k3s_init_result.stdout is defined
+
+    - name: Set k3s_token variable with the generated token
+      set_fact:
+        k3s_token: "{{ k3s_init_result.stdout_lines[-1].split(': ')[1] }}"
+      when: inventory_hostname == groups['servers'][0] and k3s_init_result.stdout is defined
+
+    - name: Set k3s_server_url variable with the server URL
+      set_fact:
+        k3s_server_url: "https://{{ hostvars[groups['servers'][0]]['ansible_host'] }}:6443"
+      when: inventory_hostname == groups['servers'][0] and k3s_init_result.stdout is defined
+
+    - name: Install k3s on servers (except the first server)
+      shell: curl -sfL https://get.k3s.io | K3S_TOKEN={{ k3s_token }} sh -s - server --server {{ k3s_server_url }}
+      when: inventory_hostname in groups['servers'][1:]
+
+    - name: Install k3s on workers
+      shell: curl -sfL https://get.k3s.io | K3S_URL={{ k3s_server_url }} K3S_TOKEN={{ k3s_token }} sh -
+      when: inventory_hostname in groups['workers']

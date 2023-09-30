@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "eupalinos.fullname" . }}
+spec:
+  replicas: {{ .Values.config.replicas.low }}
+  serviceName: {{ include "eupalinos.fullname" . }}
+  selector:
+    matchLabels:
+      app: {{ include "eupalinos.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "eupalinos.fullname" . }}
+        release: {{ .Release.Name }}
+        version: {{ .Values.images.stateful.tag }}
+      annotations:
+        perikles/hostname: "eupalinos"
+        perikles/validity: "365"
+    spec:
+      terminationGracePeriodSeconds: 3
+      {{- if .Values.config.privateImagesInRepo | quote }}
+      imagePullSecrets:
+        - name: {{ .Values.images.pullSecret}}
+      {{- end}}
+      containers:
+        - name: {{ include "eupalinos.fullname" . }}
+          {{- if .Values.config.externalRepo | quote }}
+          image: {{ .Values.images.imageRepo}}{{ .Values.images.stateful.repo }}:{{ .Values.images.stateful.tag }}
+          {{ else }}
+          image: {{ .Values.images.stateful.repo }}:{{ .Values.images.stateful.tag }}
+          {{- end}}
+          imagePullPolicy: {{ .Values.config.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.envVariables.queue.port }}
+          env:
+            - name: ENV
+              value: {{ .Values.config.environment }}
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: TOTAL_REPLICAS
+              value: {{ .Values.config.replicas.low | quote }}
+            - name: CERT_ROOT
+              value: ""

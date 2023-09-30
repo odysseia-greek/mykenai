@@ -1,0 +1,55 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: "{{ template "system.uname" . }}"
+  namespace: {{ template "namespace" . }}
+  labels:
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: "{{ .Chart.Name }}"
+    env: {{ .Values.config.environment }}
+    app: "{{ template "system.uname" . }}"
+    {{- range $key, $value := .Values.services.tests.labels }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+  schedule: "*/10 * * * *"
+  jobTemplate:
+    metadata:
+      labels:
+        app: {{ template "system.uname" . }}
+        release: {{ .Release.Name }}
+        version: {{ .Values.images.system.tag }}
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          {{- if .Values.config.externalRepo | quote }}
+          imagePullSecrets:
+            - name: {{ .Values.images.pullSecret}}
+          {{- end}}
+          containers:
+            - name: {{ template "system.uname" . }}
+            {{- if .Values.config.externalRepo | quote }}
+              image: {{ .Values.images.imageRepo}}{{ .Values.images.system.repo }}:{{ .Values.images.system.tag }}
+              imagePullPolicy: {{ .Values.config.pullPolicy }}
+            {{ else }}
+              image: {{ .Values.images.system.repo }}:{{ .Values.images.system.tag }}
+              imagePullPolicy: {{ .Values.config.pullPolicy }}
+            {{- end}}
+              env:
+                - name: ALEXANDROS_SERVICE
+                  value: {{ .Values.envVariables.alexandrosService }}
+                - name: DIONYSIOS_SERVICE
+                  value: {{ .Values.envVariables.dionysiosService }}
+                - name: HERODOTOS_SERVICE
+                  value: {{ .Values.envVariables.herodotosService }}
+                - name: SOKRATES_SERVICE
+                  value: {{ .Values.envVariables.sokratesService }}
+                - name: SOLON_SERVICE
+                  value: {{ .Values.envVariables.solonService }}
+                - name: HOMEROS_SERVICE
+                  value: {{ .Values.envVariables.homerosService }}
+          restartPolicy: OnFailure
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3

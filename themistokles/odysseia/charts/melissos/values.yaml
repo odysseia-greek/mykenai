@@ -1,0 +1,74 @@
+config:
+    environment: minikube
+    externalRepo: true
+    initialDelayLiveness: 20
+    initialDelayReadiness: 1
+    jobToWaitOn: demokritos
+    periodSeconds: 20
+    privateImagesInRepo: false
+    pullPolicy: Always
+    replicas:
+        high: 4
+        low: 1
+        medium: 2
+    tls: true
+envVariables:
+    channel: parmenides
+    elasticService: https://aristoteles-es-http:9200
+    eupalinosService: eupalinos:50051
+    sidecar:
+        port: 50051
+    solonService: https://solon:5443
+    vaultService: https://vault:8200
+images:
+    imageRepo: ghcr.io/odysseia-greek/
+    pullSecret: harbor-images
+    sidecar:
+        repo: ptolemaios
+        tag: v0.4.0
+    init:
+        repo: periandros
+        tag: v0.4.0
+    job:
+        repo: melissos
+        tag: v0.7.0
+    jobinit:
+        repo: thrasyboulos
+        tag: v0.4.0
+namespaceOverride: odysseia
+services:
+    init:
+        name: periandros
+    job:
+        access: dictionary
+        name: melissos
+        role: hybrid
+    jobinit:
+        name: thrasyboulos
+    services:
+        backend:
+            labels:
+                domain: backend
+    sidecar:
+        limits:
+            cpu: 100m
+            memory: 64Mi
+        name: ptolemaios
+        requests:
+            cpu: 50m
+            memory: 32Mi
+tlsConfig:
+    elastic:
+        name: elastic-certificate-pem
+        path: /app/config/certs
+        secretName: elastic-certificate-pem
+    mounts:
+        - name: solon-certs
+          path: /etc/certs/solon
+          secretName: solon-tls-certs
+    rootPath: /etc/certs
+    vault:
+        enabled: true
+        name: vault-server-tls
+        path: /etc/certs/vault
+        secretName: vault-server-tls

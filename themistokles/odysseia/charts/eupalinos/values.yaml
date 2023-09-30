@@ -1,0 +1,41 @@
+config:
+    environment: minikube
+    externalRepo: true
+    initialDelayLiveness: 20
+    initialDelayReadiness: 1
+    periodSeconds: 20
+    privateImagesInRepo: false
+    pullPolicy: Always
+    replicas:
+        high: 5
+        low: 1
+        medium: 2
+    tls: true
+envVariables:
+    queue:
+        port: 50051
+images:
+    imageRepo: ghcr.io/odysseia-greek/
+    pullSecret: harbor-images
+    stateful:
+        repo: eupalinos
+        tag: v1.0.2
+namespaceOverride: odysseia
+services:
+    queue:
+        labels:
+            domain: queue
+        limits:
+            cpu: 500m
+            memory: 64Mi
+        name: eupalinos
+        requests:
+            cpu: 250m
+            memory: 32Mi
+        role: queue
+tlsConfig:
+    mounts:
+        - name: eupalinos-certs
+          path: /etc/certs/eupalinos
+          secretName: eupalinos-tls-certs
+    rootPath: /etc/certs

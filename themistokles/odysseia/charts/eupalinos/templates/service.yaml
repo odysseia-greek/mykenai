@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "eupalinos.fullname" . }}
+  namespace: {{ template "namespace" . }}
+spec:
+  selector:
+    app: {{ include "eupalinos.fullname" . }}
+  clusterIP: None
+  ports:
+    - name: grpc
+      port: {{ .Values.envVariables.queue.port }}
+      targetPort: {{ .Values.envVariables.queue.port }}

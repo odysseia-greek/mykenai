@@ -1,0 +1,66 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Values.services.scaler.name }}
+  namespace: {{ template "namespace" . }}
+  labels:
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: "{{ .Chart.Name }}"
+    env: {{ .Values.config.environment }}
+    app: "{{ template "odysseiaapi.uname" . }}"
+    {{- range $key, $value := .Values.services.backend.labels }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: "{{ template "odysseiaapi.uname" . }}"
+  minReplicas: 2
+  maxReplicas: 8
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 40
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 60
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+        - type: Pods
+          value: 4
+          periodSeconds: 15
+        - type: Pods
+          value: 6
+          periodSeconds: 15
+        - type: Pods
+          value: 8
+          periodSeconds: 15
+      selectPolicy: Max
+    scaleDown:
+      stabilizationWindowSeconds: 120
+      policies:
+        - type: Pods
+          value: 6
+          periodSeconds: 15
+        - type: Pods
+          value: 4
+          periodSeconds: 15
+        - type: Pods
+          value: 2
+          periodSeconds: 15
