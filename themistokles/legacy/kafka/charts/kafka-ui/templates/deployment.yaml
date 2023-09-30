@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ template "kafka-ui.name" . }}"
+  namespace: {{ template "namespace" . }}
+  labels:
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: "{{ .Chart.Name }}"
+    env: {{ .Values.config.environment }}
+    app: "{{ template "kafka-ui.name" . }}"
+    {{- range $key, $value := .Values.services.backend.labels }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+  replicas: {{ int .Values.config.replicas.low }}
+  selector:
+    matchLabels:
+      app: "{{ template "kafka-ui.name" . }}"
+  template:
+    metadata:
+      labels:
+        app: "{{ template "kafka-ui.name" . }}"
+        release: {{ .Release.Name }}
+        version: {{ .Values.images.tag }}
+    spec:
+      containers:
+        - env:
+            - name: KAFKA_BROKERS
+              value: kafka:9092
+          name: "{{ template "kafka-ui.name" . }}"
+          image: {{ .Values.images.imageRepo}}:{{ .Values.images.tag }}
+          imagePullPolicy: {{ .Values.config.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.envVariables.port }}

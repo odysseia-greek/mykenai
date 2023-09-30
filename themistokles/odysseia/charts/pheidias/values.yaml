@@ -1,0 +1,36 @@
+config:
+    environment: minikube
+    externalRepo: true
+    initialDelayLiveness: 20
+    initialDelayReadiness: 1
+    periodSeconds: 20
+    privateImagesInRepo: false
+    pullPolicy: Always
+    replicas:
+        high: 4
+        low: 1
+        medium: 2
+    tls: true
+envVariables:
+    nodeEnv: production
+    odysseiaapi:
+        port: 3000
+images:
+    imageRepo: ghcr.io/odysseia-greek/
+    pullSecret: harbor-images
+    odysseiaapi:
+        repo: pheidias
+        tag: v0.6.2
+namespaceOverride: odysseia
+services:
+    frontend:
+        labels:
+            domain: frontend
+    odysseiaapi:
+        limits:
+            cpu: 100m
+            memory: 32Mi
+        name: pheidias
+        requests:
+            cpu: 50m
+            memory: 16Mi

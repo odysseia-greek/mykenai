@@ -1,0 +1,4 @@
+appsToInstall:
+  - ingress
+  - elastic
+  - rabbitmq

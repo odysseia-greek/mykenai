@@ -1,0 +1,128 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ template "odysseiaapi.uname" . }}"
+  namespace: {{ template "namespace" . }}
+  labels:
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: "{{ .Chart.Name }}"
+    env: {{ .Values.config.environment }}
+    app: "{{ template "odysseiaapi.uname" . }}"
+    {{- range $key, $value := .Values.services.backend.labels }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+  replicas: {{ int .Values.config.replicas.low }}
+  selector:
+    matchLabels:
+      app: "{{ template "odysseiaapi.uname" . }}"
+  template:
+    metadata:
+      labels:
+        app: {{ template "odysseiaapi.uname" . }}
+        release: {{ .Release.Name }}
+        version: {{ .Values.images.tag }}
+    spec:
+      {{- if .Values.config.privateImagesInRepo | quote }}
+      imagePullSecrets:
+        - name: {{ .Values.images.pullSecret}}
+      {{- end}}
+      containers:
+        - name: "{{ template "tracer.uname" . }}"
+          {{- if .Values.config.externalRepo | quote }}
+          image: {{ .Values.images.imageRepo}}{{ .Values.images.tracer.repo }}:{{ .Values.images.tracer.tag }}
+          {{ else }}
+          image: {{ .Values.images.tracer.repo }}:{{ .Values.images.tracer.tag }}
+          {{- end}}
+          imagePullPolicy: {{ .Values.config.pullPolicy }}
+          env:
+            - name: ENV
+              value: {{ .Values.config.environment }}
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: TLS_ENABLED
+              value: {{ .Values.config.tls | quote }}
+            - name: ELASTIC_SEARCH_SERVICE
+              value: {{ .Values.envVariables.elasticService }}
+            - name: ELASTIC_SEARCH_USER
+              valueFrom:
+                secretKeyRef:
+                  name: agreus-elastic
+                  key: user
+            - name: ELASTIC_SEARCH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: agreus-elastic
+                  key: password
+          ports:
+            - containerPort: {{ .Values.envVariables.tracer.port }}
+          imagePullPolicy: {{ .Values.config.pullPolicy }}
+          resources:
+            requests:
+              memory: {{ .Values.services.tracer.requests.memory }}
+              cpu: {{ .Values.services.tracer.requests.cpu }}
+            limits:
+              memory: {{.Values.services.tracer.limits.memory}}
+              cpu: {{.Values.services.tracer.limits.cpu}}
+          volumeMounts:
+            - name: {{ .Values.tlsConfig.tracer.name }}
+              mountPath: {{ .Values.tlsConfig.tracer.path }}
+              readOnly: true
+        - name: "{{ template "odysseiaapi.uname" . }}"
+          {{- if .Values.config.externalRepo | quote }}
+          image: {{ .Values.images.imageRepo}}{{ .Values.images.odysseiaapi.repo }}:{{ .Values.images.odysseiaapi.tag }}
+          {{ else }}
+          image: {{ .Values.images.odysseiaapi.repo }}:{{ .Values.images.odysseiaapi.tag }}
+          {{- end}}
+          imagePullPolicy: {{ .Values.config.pullPolicy }}
+          env:
+            - name: ENV
+              value: {{ .Values.config.environment }}
+            - name: ALEXANDROS_SERVICE
+              value: {{ .Values.envVariables.alexandrosService }}
+            - name: DIONYSIOS_SERVICE
+              value: {{ .Values.envVariables.dionysiosService }}
+            - name: HERODOTOS_SERVICE
+              value: {{ .Values.envVariables.herodotosService }}
+            - name: SOKRATES_SERVICE
+              value: {{ .Values.envVariables.sokratesService }}
+            - name: TRACE_CONFIG_PATH
+              value: /etc/config/trace-config.json
+          ports:
+            - name: graphql
+              containerPort: {{ .Values.envVariables.odysseiaapi.port }}
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.envVariables.odysseiaapi.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.envVariables.odysseiaapi.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 15
+          resources:
+            requests:
+              memory: {{ .Values.services.odysseiaapi.requests.memory }}
+              cpu: {{ .Values.services.odysseiaapi.requests.cpu }}
+            limits:
+              memory: {{.Values.services.odysseiaapi.limits.memory}}
+              cpu: {{.Values.services.odysseiaapi.limits.cpu}}
+          volumeMounts:
+            - name: trace-config-volume
+              mountPath: /etc/config
+      volumes:
+        - name: trace-config-volume
+          configMap:
+            name: homeros-trace-config
+        - name: {{ .Values.tlsConfig.tracer.name }}
+          secret:
+            secretName: {{ .Values.tlsConfig.tracer.secretName }}

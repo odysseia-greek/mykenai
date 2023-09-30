@@ -1,0 +1,5 @@
+appsToInstall:
+  - pheidias
+  - ploutarchos
+  - hippokrates
+include: apps

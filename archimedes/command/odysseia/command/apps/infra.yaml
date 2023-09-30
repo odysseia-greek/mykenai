@@ -1,0 +1,7 @@
+appsToInstall:
+  - vault
+  - solon
+  - perikles
+  - eupalinos
+  - euripides
+include: base

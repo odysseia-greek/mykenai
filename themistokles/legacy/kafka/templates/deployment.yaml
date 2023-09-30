@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ template "kafka.name" . }}"
+  namespace: {{ template "namespace" . }}
+  labels:
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: "{{ .Chart.Name }}"
+    env: {{ .Values.config.environment }}
+    app: "{{ template "kafka.name" . }}"
+    {{- range $key, $value := .Values.services.backend.labels }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+  replicas: {{ int .Values.config.replicas.low }}
+  selector:
+    matchLabels:
+      app: "{{ template "kafka.name" . }}"
+  template:
+    metadata:
+      labels:
+        app: "{{ template "kafka.name" . }}"
+        release: {{ .Release.Name }}
+        version: {{ .Values.images.tag }}
+    spec:
+      containers:
+        - env:
+            - name: ENABLE_AUTO_EXTEND
+              value: "true"
+            - name: KAFKA_RESERVED_BROKER_MAX_ID
+              value: "999999999"
+            - name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
+              value: "true"
+            - name: KAFKA_PORT
+              value: {{ .Values.envVariables.port | quote }}
+            - name: KAFKA_ADVERTISED_PORT
+              value: {{ .Values.envVariables.port | quote }}
+            - name: KAFKA_ADVERTISED_HOST_NAME
+              value: "{{ template "kafka.name" . }}"
+            - name: KAFKA_ZOOKEEPER_CONNECT
+              value: {{ .Values.services.zookeeper.name}}:{{ .Values.services.zookeeper.port }}
+          name: "{{ template "kafka.name" . }}"
+          image: {{ .Values.images.imageRepo}}:{{ .Values.images.tag }}
+          imagePullPolicy: {{ .Values.config.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.envVariables.port }}

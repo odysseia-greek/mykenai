@@ -1,0 +1,20 @@
+{{ if .Values.config.kibana }}
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kibana
+  namespace: {{ template "namespace" . }}
+  labels:
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: "{{ .Chart.Name }}"
+    env: {{ .Values.config.environment }}
+    app: "{{ template "chart.name" . }}"
+    version: {{ .Values.config.elasticVersion }}
+spec:
+  version: {{ .Values.config.elasticVersion }}
+  count: 1
+  elasticsearchRef:
+    name: "{{ template "chart.name" . }}"
+    namespace: {{ template "namespace" . }}
+{{ end }}

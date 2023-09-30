@@ -1,0 +1,40 @@
+# Default values for Odysseia.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+config:
+  privateImagesInRepo: false
+  environment: minikube
+  pullPolicy: Always
+  port: 5672
+  managementPort: 15672
+  replicas:
+    low: 1
+    medium: 2
+    high: 4
+
+
+labels: {
+  domain: queue
+}
+name: "rabbitmq"
+requests:
+  memory: 200Mi
+  cpu: 100m
+limits:
+  memory: 500Mi
+  cpu: 750m
+
+
+images:
+  imageRepo: core.harbor.domain:30003/odysseia/
+  pullSecret: harbor-images
+  tag: 3.11-management-alpine
+  repo: arm64v8/rabbitmq
+
+username: odysseia
+password: notagreatpassword
+
+secretName: rabbit-secret
+
+namespaceOverride: odysseia

@@ -1,0 +1,26 @@
+envVariables:
+  pheidias:
+    port: 3000
+  alexandros:
+    port: 5000
+  dionysios:
+    port: 5000
+  sokrates:
+    port: 5000
+  herodotos:
+    port: 5000
+  solon:
+    port: 5000
+  homeros:
+    port: 8080
+  ploutarchos:
+    port: 3000
+  xerxes:
+    port: 8089
+
+config:
+  apis: true
+  host: k3s-odysseia.greek
+  apiHost: k3s-odysseia.api.greek
+  ingress:
+    class: traefik

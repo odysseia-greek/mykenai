@@ -1,0 +1,32 @@
+{{ if not (eq .Values.config.environment "k3s") }}
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: "{{ template "chart.name" . }}"
+  namespace: {{ template "namespace" . }}
+  labels:
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: "{{ .Chart.Name }}"
+    env: {{ .Values.config.environment }}
+    app: "{{ template "chart.name" . }}"
+    version: {{ .Values.config.elasticVersion }}
+spec:
+  version: {{ .Values.config.elasticVersion }}
+  nodeSets:
+    - name: worker
+      count: {{ .Values.config.replicas }}
+      config:
+        node.store.allow_mmap: false
+      podTemplate:
+        spec:
+          containers:
+            - name: elasticsearch
+          resources:
+              requests:
+                memory: {{ .Values.nodes.master.requests.memory }}
+                cpu: {{ .Values.nodes.master.requests.cpu }}
+              limits:
+                memory: {{ .Values.nodes.master.limits.memory}}
+                cpu: {{ .Values.nodes.master.limits.cpu}}
+{{ end }}

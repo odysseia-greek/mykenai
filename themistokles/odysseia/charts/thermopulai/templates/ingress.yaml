@@ -1,0 +1,86 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: thermopulai
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.config.ingress.class }}
+  labels:
+    app: thermopulai
+spec:
+  defaultBackend:
+    service:
+      name: pheidias
+      port:
+        number: {{ .Values.envVariables.pheidias.port }}
+  rules:
+    - host: {{ .Values.config.host }}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: pheidias
+                port:
+                  number: {{ .Values.envVariables.pheidias.port }}
+          - pathType: Prefix
+            path: /graphql
+            backend:
+              service:
+                name: homeros
+                port:
+                  number: {{ .Values.envVariables.homeros.port }}
+          - pathType: Prefix
+            path: /perikles/v1
+            backend:
+              service:
+                name: perikles
+                port:
+                  number: 443
+          - pathType: Prefix
+            path: /ploutarchos/
+            backend:
+              service:
+                name: ploutarchos
+                port:
+                  number: {{ .Values.envVariables.ploutarchos.port }}
+{{ if .Values.config.apis }}
+    - host: {{ .Values.config.apiHost }}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /sokrates/v1
+            backend:
+              service:
+                name: sokrates
+                port:
+                  number: {{ .Values.envVariables.sokrates.port }}
+          - pathType: Prefix
+            path: /herodotos/v1
+            backend:
+              service:
+                name: herodotos
+                port:
+                  number: {{ .Values.envVariables.herodotos.port }}
+          - pathType: Prefix
+            path: /alexandros/v1
+            backend:
+              service:
+                name: alexandros
+                port:
+                  number: {{ .Values.envVariables.alexandros.port }}
+          - pathType: Prefix
+            path: /dionysios/v1
+            backend:
+              service:
+                name: dionysios
+                port:
+                  number: {{ .Values.envVariables.dionysios.port }}
+          - pathType: Prefix
+            path: /homeros/v1
+            backend:
+              service:
+                name: homeros
+                port:
+                  number: {{ .Values.envVariables.homeros.port }}
+{{end}}

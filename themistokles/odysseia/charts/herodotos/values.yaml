@@ -1,0 +1,97 @@
+config:
+    environment: minikube
+    externalRepo: true
+    initialDelayLiveness: 20
+    initialDelayReadiness: 1
+    periodSeconds: 20
+    privateImagesInRepo: false
+    pullPolicy: Always
+    replicas:
+        high: 5
+        low: 2
+        medium: 3
+    tls: true
+envVariables:
+    elasticService: https://aristoteles-es-http:9200
+    odysseiaapi:
+        port: 5000
+    sidecar:
+        port: 50051
+    solonService: https://solon:5443
+    tracer:
+        port: 50052
+    vaultService: https://vault:8200
+images:
+    imageRepo: ghcr.io/odysseia-greek/
+    pullSecret: harbor-images
+    sidecar:
+        repo: ptolemaios
+        tag: v0.4.0
+    init:
+        repo: periandros
+        tag: v0.4.0
+    odysseiaapi:
+        repo: herodotos
+        tag: v0.7.1
+    seeder:
+        repo: herakleitos
+        tag: v0.7.0
+    tracer:
+        repo: aristophanes
+        tag: v0.2.1
+namespaceOverride: odysseia
+services:
+    backend:
+        labels:
+            domain: backend
+    init:
+        name: periandros
+    odysseiaapi:
+        access: text
+        limits:
+            cpu: 400m
+            memory: 128Mi
+        name: herodotos
+        requests:
+            cpu: 200m
+            memory: 64Mi
+        role: api
+    seeder:
+        access: text
+        name: herakleitos
+        role: seeder
+    sidecar:
+        limits:
+            cpu: 150m
+            memory: 96Mi
+        name: ptolemaios
+        requests:
+            cpu: 50m
+            memory: 32Mi
+    tracer:
+        limits:
+            cpu: 200m
+            memory: 64Mi
+        name: aristophanes
+        requests:
+            cpu: 50m
+            memory: 32Mi
+tlsConfig:
+    elastic:
+        name: elastic-certificate-pem
+        path: /app/config/certs
+        secretName: elastic-certificate-pem
+    mounts:
+        - name: solon-certs
+          path: /etc/certs/solon
+          secretName: solon-tls-certs
+    rootPath: /etc/certs
+    tracer:
+        name: elastic-internal-tls
+        path: /app/config/elastic
+        secretName: aristoteles-es-http-certs-public
+    vault:
+        enabled: true
+        name: vault-server-tls
+        path: /etc/certs/vault
+        secretName: vault-server-tls

@@ -1,0 +1,60 @@
+config:
+    environment: minikube
+    externalRepo: true
+    initialDelayLiveness: 20
+    initialDelayReadiness: 1
+    periodSeconds: 20
+    privateImagesInRepo: false
+    pullPolicy: Always
+    replicas:
+        high: 4
+        low: 1
+        medium: 2
+    tls: true
+envVariables:
+    alexandrosService: http://alexandros:5000
+    dionysiosService: http://dionysios:5000
+    elasticService: https://aristoteles-es-http:9200
+    herodotosService: http://herodotos:5000
+    odysseiaapi:
+        health: 8088
+        port: 8080
+    sokratesService: http://sokrates:5000
+    tracer:
+        port: 50052
+images:
+    imageRepo: ghcr.io/odysseia-greek/
+    pullSecret: harbor-images
+    odysseiaapi:
+        repo: homeros
+        tag: v0.7.1
+    tracer:
+        repo: aristophanes
+        tag: v0.2.1
+namespaceOverride: odysseia
+services:
+    backend:
+        labels:
+            domain: gateway
+    odysseiaapi:
+        limits:
+            cpu: 1000m
+            memory: 256Mi
+        name: homeros
+        requests:
+            cpu: 500m
+            memory: 128Mi
+        role: api
+    tracer:
+        limits:
+            cpu: 200m
+            memory: 64Mi
+        name: aristophanes
+        requests:
+            cpu: 50m
+            memory: 32Mi
+tlsConfig:
+    tracer:
+        name: elastic-internal-tls
+        path: /app/config/elastic
+        secretName: aristoteles-es-http-certs-public

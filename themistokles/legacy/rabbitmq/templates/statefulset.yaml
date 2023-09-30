@@ -1,0 +1,127 @@
+apiVersion: apps/v1
+# See the Prerequisites section of https://www.rabbitmq.com/cluster-formation.html#peer-discovery-k8s.
+kind: StatefulSet
+metadata:
+  name: "{{ template "rabbit.uname" . }}"
+  namespace: {{ template "rabbit.namespace" . }}
+  labels:
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: "{{ .Chart.Name }}"
+    env: {{ .Values.config.environment }}
+    app: "{{ template "rabbit.uname" . }}"
+    {{- range $key, $value := .Values.labels }}
+    {{ $key }}: {{ $value | quote }}
+    {{ end }}
+spec:
+  serviceName: "{{ template "rabbit.uname" . }}"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "{{ template "rabbit.uname" . }}"
+  template:
+    metadata:
+      labels:
+        app: {{ template "rabbit.uname" . }}
+        release: {{ .Release.Name }}
+        version: {{ .Values.images.tag }}
+    spec:
+      {{- if .Values.config.privateImagesInRepo }}
+      imagePullSecrets:
+        - name: {{ .Values.images.pullSecret}}
+      {{- end}}
+      serviceAccountName: {{ template "rabbit.uname" . }}
+      containers:
+        - name: {{ template "rabbit.uname" . }}
+          {{- if .Values.config.privateImagesInRepo }}
+          image: {{ .Values.images.imageRepo}}{{ .Values.images.repo }}:{{ .Values.images.tag }}
+          imagePullPolicy: {{ .Values.config.pullPolicy }}
+          {{ else }}
+          image: {{ .Values.images.repo }}:{{ .Values.images.tag }}
+          imagePullPolicy: {{ .Values.config.pullPolicy }}
+          {{- end}}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/rabbitmq
+          # Learn more about what ports various protocols use
+          # at https://www.rabbitmq.com/networking.html#ports
+          ports:
+            - name: ui
+              protocol: TCP
+              containerPort: {{ .Values.config.managementPort }}
+            - name: http
+              protocol: TCP
+              containerPort: {{ .Values.config.port }}
+          livenessProbe:
+            exec:
+              # This is just an example. There is no "one true health check" but rather
+              # several rabbitmq-diagnostics commands that can be combined to form increasingly comprehensive
+              # and intrusive health checks.
+              # Learn more at https://www.rabbitmq.com/monitoring.html#health-checks.
+              #
+              # Stage 2 check:
+              command: ["rabbitmq-diagnostics", "status"]
+            initialDelaySeconds: 60
+            # See https://www.rabbitmq.com/monitoring.html for monitoring frequency recommendations.
+            periodSeconds: 60
+            timeoutSeconds: 15
+          readinessProbe:
+            exec:
+              # This is just an example. There is no "one true health check" but rather
+              # several rabbitmq-diagnostics commands that can be combined to form increasingly comprehensive
+              # and intrusive health checks.
+              # Learn more at https://www.rabbitmq.com/monitoring.html#health-checks.
+              #
+              # Stage 1 check:
+              command: ["rabbitmq-diagnostics", "ping"]
+            initialDelaySeconds: 20
+            periodSeconds: 60
+            timeoutSeconds: 10
+          imagePullPolicy: Always
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: RABBITMQ_USE_LONGNAME
+              value: "true"
+            # See a note on cluster_formation.k8s.address_type in the config file section
+            - name: K8S_SERVICE_NAME
+              value: rabbitmq
+            - name: RABBITMQ_NODENAME
+              value: rabbit@$(MY_POD_NAME).$(K8S_SERVICE_NAME).$(MY_POD_NAMESPACE).svc.cluster.local
+            - name: K8S_HOSTNAME_SUFFIX
+              value: .$(K8S_SERVICE_NAME).$(MY_POD_NAMESPACE).svc.cluster.local
+            - name: RABBITMQ_ERLANG_COOKIE
+              value: "mycookie"
+            - name: RABBITMQ_DEFAULT_USER
+              valueFrom:
+                secretKeyRef:
+                  name:  "{{ template "rabbit.uname" . }}"
+                  key: default_user
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name:  "{{ template "rabbit.uname" . }}"
+                  key: default_password
+          resources:
+            requests:
+              memory: {{ .Values.requests.memory }}
+              cpu: {{ .Values.requests.cpu }}
+            limits:
+              memory: {{.Values.limits.memory}}
+              cpu: {{.Values.limits.cpu}}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: rabbitmq-config
+            items:
+              - key: rabbitmq.conf
+                path: rabbitmq.conf
+              - key: enabled_plugins
+                path: enabled_plugins

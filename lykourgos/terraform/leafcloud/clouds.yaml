@@ -1,0 +1,12 @@
+clouds:
+  openstack:
+    auth:
+      auth_url: https://create.leaf.cloud:5000
+      username: "joerivrijaldenhoven@gmail.com"
+      password: "DmmHB!h#GfG9gL&PfN9dfAAT"
+      project_id: 21cdc570e29846e986324102d306bfde
+      project_name: "odysseia"
+      user_domain_name: "Default"
+    region_name: "europe-nl"
+    interface: "public"
+    identity_api_version: 3
