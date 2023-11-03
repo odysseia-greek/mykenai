@@ -1,6 +1,5 @@
 elastic:
   volumeClaimTemplate:
-    accessModes: [ "ReadWriteOnce" ]
     storageClassName: do-block-storage
     resources:
       requests:

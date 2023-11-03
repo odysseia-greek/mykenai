@@ -35,7 +35,10 @@ func (a *AppInstaller) InstallEupalinos() error {
 		glg.Debug("skipping install because already installed")
 		return nil
 	}
-	rls, err := a.Helm.Install(a.Charts.Eupalinos)
+
+	values := a.ValueConfig["infra"].(map[string]interface{})
+
+	rls, err := a.Helm.InstallWithValues(a.Charts.Eupalinos, values)
 	if err != nil {
 		return err
 	}

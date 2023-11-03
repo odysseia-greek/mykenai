@@ -8,7 +8,7 @@ data:
       "operationScores": [
         {
           "operation": "dictionary",
-          "score": 10
+          "score": 30
         },
         {
           "operation": "grammar",
@@ -32,11 +32,11 @@ data:
         },
         {
           "operation": "answer",
-          "score": 10
+          "score": 20
         },
         {
           "operation": "quiz",
-          "score": 10
+          "score": 20
         },
         {
           "operation": "status",

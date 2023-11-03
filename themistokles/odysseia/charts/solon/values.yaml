@@ -1,5 +1,6 @@
 config:
-    environment: minikube
+    environment: local
+    kubeVariant: minikube
     externalRepo: true
     harborPullPolicy: Always
     initialDelayLiveness: 20
@@ -22,12 +23,17 @@ envVariables:
         vaultRole: solon
     solonService: https://solon:5443
     vaultService: https://vault:8200
+    peisistratos:
+        vaultAuthMethod: token
 images:
     imageRepo: ghcr.io/odysseia-greek/
     pullSecret: harbor-images
     init:
         repo: drakon
         tag: v0.4.0
+    initSeeder:
+        repo: peisistratos
+        tag: v0.0.1
     odysseiaapi:
         repo: solon
         tag: v0.4.0

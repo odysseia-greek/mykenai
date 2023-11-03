@@ -1,0 +1,60 @@
+elastic:
+  config:
+    kibana: false
+  volumeClaimTemplate:
+    accessModes: [ "ReadWriteOnce" ]
+    resources:
+      requests:
+        storage: 100M
+  nodes:
+    master:
+      limits:
+        cpu: 500m
+        memory: 1Gi
+      requests:
+        cpu: 250m
+        memory: 500Mi
+
+vault:
+  server:
+    standalone:
+      enabled: true
+    ha:
+      enabled: false
+      replicas: 1
+
+apis:
+  config:
+    externalRepo: false
+    replicas:
+      high: 1
+      low: 1
+      medium: 1
+    fullJobRun: false
+  services:
+    odysseiaapi:
+      limits:
+        cpu: 200m
+        memory: 64Mi
+      requests:
+        cpu: 100m
+        memory: 32Mi
+    sidecar:
+      limits:
+        cpu: 150m
+        memory: 32Mi
+      requests:
+        cpu: 50m
+        memory: 16Mi
+    tracer:
+      limits:
+        cpu: 100m
+        memory: 32Mi
+      requests:
+        cpu: 50m
+        memory: 16Mi
+
+infra:
+  config:
+    environment: placeholder
+    externalRepo: false

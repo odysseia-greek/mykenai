@@ -1,7 +1,11 @@
 elastic:
   volumeClaimTemplate:
-    accessModes: [ "ReadWriteOnce" ]
     storageClassName: "local-path"
-    resources:
-      requests:
-        storage: 100M
+
+ingress:
+  config:
+    apis: true
+    host: k3s-odysseia.greek
+    apiHost: k3s-odysseia.api.greek
+    ingress:
+      class: traefik

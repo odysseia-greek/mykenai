@@ -19,13 +19,9 @@ func (a *AppInstaller) installPerikles() error {
 
 	cert, err := a.setupPerikles()
 
-	config := map[string]interface{}{
-		"caBundle": cert,
-	}
-
-	values := map[string]interface{}{
-		"config": config,
-	}
+	values := a.ValueConfig["infra"].(map[string]interface{})
+	config := values["config"].(map[string]interface{})
+	config["caBundle"] = cert
 
 	rls, err := a.Helm.InstallWithValues(a.Charts.Perikles, values)
 	if err != nil {
@@ -79,7 +75,7 @@ func (a *AppInstaller) waitForSolon() error {
 				return err
 			}
 
-			glg.Debug("perikles running and initiated")
+			glg.Debug("solon running and initiated")
 			break
 		}
 	}

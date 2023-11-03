@@ -34,4 +34,6 @@ const (
 	HelmValuesFile              = "values.yaml"
 	HelmChartFile               = "Chart.yaml"
 	OdysseiaImageRepo           = "ghcr.io/odysseia-greek/"
+	DefaultProfile              = "k3s"
+	DefaultEnv                  = "prod"
 )

@@ -8,6 +8,7 @@ metadata:
     release: {{ .Release.Name | quote }}
     chart: "{{ .Chart.Name }}"
     env: {{ .Values.config.environment }}
+    variant: {{ .Values.config.kubeVariant }}
     app: "{{ template "load.uname" . }}"
     {{- range $key, $value := .Values.services.tests.labels }}
     {{ $key }}: {{ $value | quote }}

@@ -1,5 +1,6 @@
 config:
-    environment: minikube
+    environment: local
+    kubeVariant: minikube
     externalRepo: true
     initialDelayLiveness: 20
     initialDelayReadiness: 1
@@ -11,6 +12,7 @@ config:
         low: 2
         medium: 3
     tls: true
+    fullJobRun: true
 envVariables:
     alexandrosService: http://alexandros:5000
     elasticService: https://aristoteles-es-http:9200

@@ -1,0 +1,15 @@
+elastic:
+  config:
+    kibana: true
+  volumeClaimTemplate:
+    accessModes: [ "ReadWriteOnce" ]
+
+apis:
+  config:
+    fullJobRun: true
+    externalRepo: false
+
+infra:
+  config:
+    environment: placeholder
+    externalRepo: false

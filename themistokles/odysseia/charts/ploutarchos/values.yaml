@@ -1,5 +1,6 @@
 config:
-    environment: minikube
+    environment: local
+    kubeVariant: minikube
     externalRepo: true
     initialDelayLiveness: 20
     initialDelayReadiness: 1
