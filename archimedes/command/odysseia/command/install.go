@@ -29,6 +29,9 @@ func Install() *cobra.Command {
 		env            string
 		profile        string
 		installProfile string
+		pathToVaultSa  string
+		keyRing        string
+		cryptoKey      string
 		build          bool
 	)
 	cmd := &cobra.Command{
@@ -73,6 +76,12 @@ func Install() *cobra.Command {
 				glg.Warn("warning! You are about to install without a configfile this means archimedes will download everything needed to /tmp. After a reboot you will loose your helm charts. To avoid this from happening please run archimedes config set")
 
 				odysseiaSettings, _ = settings.DownloadRepos("")
+			}
+
+			if pathToVaultSa != "" {
+				if _, err := os.Stat(pathToVaultSa); os.IsNotExist(err) {
+					glg.Fatal("file at path %s does not exist", pathToVaultSa)
+				}
 			}
 
 			cfg, err := ioutil.ReadFile(kubePath)
@@ -156,6 +165,9 @@ func Install() *cobra.Command {
 				Harbor:           nil,
 				AppsToInstall:    ati,
 				Build:            build,
+				VaultSaPath:      pathToVaultSa,
+				CryptoKey:        cryptoKey,
+				KeyRing:          keyRing,
 			}
 
 			err = odysseia.InstallOdysseiaComplete()
@@ -170,6 +182,9 @@ func Install() *cobra.Command {
 	cmd.PersistentFlags().StringVarP(&installProfile, "install-profile", "p", "", "the install profile for apps (tests, infra  etc)")
 	cmd.PersistentFlags().StringVarP(&env, "env", "e", "", "the env to use when installing (local, prod)")
 	cmd.PersistentFlags().StringVarP(&profile, "profile", "d", "", "the profile to use when installing (k3d, k3s, digital-ocean")
+	cmd.PersistentFlags().StringVarP(&pathToVaultSa, "savault", "s", "", "path to vault sa to use for auto unsealing")
+	cmd.PersistentFlags().StringVarP(&cryptoKey, "cryptokey", "c", "", "gcp cryptoring")
+	cmd.PersistentFlags().StringVarP(&keyRing, "keyring", "r", "", "gcp keyring")
 	cmd.PersistentFlags().BoolVarP(&build, "build", "b", true, "whether to build images")
 
 	return cmd

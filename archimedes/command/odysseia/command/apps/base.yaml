@@ -2,3 +2,4 @@ appsToInstall:
   - ingress
   - elastic
   - rabbitmq
+  - vault

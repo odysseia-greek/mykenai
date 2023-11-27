@@ -122,6 +122,9 @@ func (a *AppInstaller) InstallOdysseiaComplete() error {
 		splitName := strings.Split(a.Charts.Solon, "/")
 		chartName := strings.ToLower(splitName[len(splitName)-1])
 		values := a.ValueConfig["infra"].(map[string]interface{})
+		if a.VaultUnsealMethod != "" {
+			values["envVariables"].(map[string]interface{})["peisistratos"].(map[string]interface{})["unsealProvider"] = a.VaultUnsealMethod
+		}
 		err = a.installHelmChartWithValues(chartName, a.Charts.Solon, values)
 		if err != nil {
 			return err

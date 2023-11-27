@@ -25,6 +25,7 @@ envVariables:
     vaultService: https://vault:8200
     peisistratos:
         vaultAuthMethod: token
+        unsealProvider: ""
 images:
     imageRepo: ghcr.io/odysseia-greek/
     pullSecret: harbor-images

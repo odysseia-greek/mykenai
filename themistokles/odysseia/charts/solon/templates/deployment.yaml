@@ -113,6 +113,13 @@ spec:
               value: {{ .Values.envVariables.peisistratos.vaultAuthMethod }}
             - name: VAULT_ROLE
               value: {{ .Values.envVariables.solon.vaultRole }}
+            - name: UNSEAL_PROVIDER
+              value: {{ .Values.envVariables.peisistratos.unsealProvider }}
+          {{- if .Values.envVariables.peisistratos.unsealProvider }}
+          envFrom:
+            - configMapRef:
+                name: gcpconfig
+          {{- end }}
           volumeMounts:
             - name: {{ .Values.tlsConfig.vault.name }}
               mountPath: {{ .Values.tlsConfig.vault.path }}

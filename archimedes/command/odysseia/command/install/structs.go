@@ -8,22 +8,26 @@ import (
 )
 
 type AppInstaller struct {
-	Namespace        string
-	ConfigPath       string
-	CurrentPath      string
-	ThemistoklesRoot string
-	OdysseiaRoot     string
-	Profile          string
-	Build            bool
-	Minikube         bool
-	AppsToInstall    []string
-	ElasticConfig    ElasticOperator
-	Charts           Themistokles
-	Kube             kubernetes.KubeClient
-	Helm             helm.HelmClient
-	Harbor           harbor.Client
-	Config           command.CurrentInstallConfig
-	ValueConfig      map[string]interface{}
+	Namespace         string
+	ConfigPath        string
+	CurrentPath       string
+	ThemistoklesRoot  string
+	OdysseiaRoot      string
+	Profile           string
+	VaultSaPath       string
+	VaultUnsealMethod string
+	CryptoKey         string
+	KeyRing           string
+	Build             bool
+	Minikube          bool
+	AppsToInstall     []string
+	ElasticConfig     ElasticOperator
+	Charts            Themistokles
+	Kube              kubernetes.KubeClient
+	Helm              helm.HelmClient
+	Harbor            harbor.Client
+	Config            command.CurrentInstallConfig
+	ValueConfig       map[string]interface{}
 }
 
 type Themistokles struct {

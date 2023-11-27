@@ -1,0 +1,10 @@
+{{- if .Values.envVariables.peisistratos.unsealProvider }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gcpconfig
+data:
+  KEY_RING: "autounseal"
+  CRYPTO_KEY: "vaultkey"
+  LOCATION: "global"
+{{- end }}

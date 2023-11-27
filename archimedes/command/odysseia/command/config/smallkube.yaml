@@ -18,10 +18,10 @@ elastic:
 vault:
   server:
     standalone:
-      enabled: true
-    ha:
       enabled: false
-      replicas: 1
+    ha:
+      enabled: true
+
 
 apis:
   config:
