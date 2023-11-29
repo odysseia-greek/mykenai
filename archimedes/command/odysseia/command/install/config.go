@@ -38,24 +38,3 @@ func (a *AppInstaller) checkConfigForEmpty() error {
 
 	return nil
 }
-
-func (a *AppInstaller) parseValueOverwrite(service string) (map[string]interface{}, error) {
-	var unmarshalledFields map[string]interface{}
-
-	switch service {
-	case "harbor":
-		harborValues, err := yaml.Marshal(a.ValueConfig.Harbor)
-		if err != nil {
-			return nil, err
-		}
-		err = yaml.Unmarshal(harborValues, &unmarshalledFields)
-	case "elastic":
-		elasticValues, err := yaml.Marshal(a.ValueConfig.Elastic)
-		if err != nil {
-			return nil, err
-		}
-		err = yaml.Unmarshal(elasticValues, &unmarshalledFields)
-	}
-
-	return unmarshalledFields, nil
-}

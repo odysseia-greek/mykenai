@@ -1,4 +1,4 @@
-{{ if not (eq .Values.config.environment "k3s") }}
+{{ if not (eq .Values.config.environment "production") }}
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
@@ -9,6 +9,8 @@ metadata:
     release: {{ .Release.Name | quote }}
     chart: "{{ .Chart.Name }}"
     env: {{ .Values.config.environment }}
+    variant: {{ .Values.config.kubeVariant }}
+    variant: {{ .Values.config.kubeVariant }}
     app: "{{ template "chart.name" . }}"
     version: {{ .Values.config.elasticVersion }}
 spec:

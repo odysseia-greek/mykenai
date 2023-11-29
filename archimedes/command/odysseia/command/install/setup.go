@@ -129,15 +129,8 @@ func (a *AppInstaller) installPrerequisites() error {
 		if err != nil {
 			glg.Error(err)
 		}
-	case "k3s":
-		glg.Info("no ingress installed because cluster is running on k3s")
 	default:
-		rls, err := a.Helm.InstallNamespaced(command.NginxRepoPath, command.NginxNamespace, true)
-		if err != nil {
-			return err
-		}
-
-		glg.Debugf("created nginx release on an unknown k8s %v in ns %v", rls.Name, rls.Namespace)
+		glg.Info("no ingress installed")
 	}
 
 	return nil

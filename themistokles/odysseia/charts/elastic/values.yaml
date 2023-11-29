@@ -3,11 +3,11 @@
 # Declare variables to be passed into your templates.
 
 config:
-  environment: minikube
+  environment: local
+  kubeVariant: minikube
   kibana: true
   elasticVersion: 8.8.0
   replicas: 1
-
 
 nameOverride: aristoteles
 

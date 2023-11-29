@@ -1,15 +1,15 @@
 package install
 
 import (
+	"fmt"
 	"github.com/kpango/glg"
-	"github.com/odysseia-greek/mykenai/archimedes/command"
 	"github.com/odysseia-greek/mykenai/archimedes/util"
 	"gopkg.in/yaml.v3"
 	"path/filepath"
 	"strings"
 )
 
-func (a *AppInstaller) InstallOdysseiaComplete(legacyElastic bool) error {
+func (a *AppInstaller) InstallOdysseiaComplete() error {
 	err := a.preSteps()
 	if err != nil {
 		glg.Error(err)
@@ -54,7 +54,6 @@ func (a *AppInstaller) InstallOdysseiaComplete(legacyElastic bool) error {
 	//1. loop over install candidates
 	installElastic := false
 	installPerikles := false
-	installHarbor := false
 	installVault := false
 	installSolon := false
 	installIngress := false
@@ -70,8 +69,6 @@ func (a *AppInstaller) InstallOdysseiaComplete(legacyElastic bool) error {
 			installElastic = true
 		case "perikles":
 			installPerikles = true
-		case "harbor":
-			installHarbor = true
 		case "vault":
 			installVault = true
 		case "solon":
@@ -88,22 +85,16 @@ func (a *AppInstaller) InstallOdysseiaComplete(legacyElastic bool) error {
 	}
 
 	if installElastic {
-		if legacyElastic {
-			err = a.createElastic()
-			if err != nil {
-				return err
-			}
-		} else {
-			a.addElasticOperator()
-			err = a.installElasticOperator()
-			if err != nil {
-				return err
-			}
-			err := a.setElasticSettings()
-			if err != nil {
-				return err
-			}
+		a.addElasticOperator()
+		err = a.installElasticOperator()
+		if err != nil {
+			return err
 		}
+		err := a.setElasticSettings()
+		if err != nil {
+			return err
+		}
+
 	}
 
 	//2. install perikles
@@ -114,38 +105,9 @@ func (a *AppInstaller) InstallOdysseiaComplete(legacyElastic bool) error {
 		}
 	}
 
-	if installHarbor {
-		//3. install harbor
-		err = a.installHarborHelmChart()
-		if err != nil {
-			return err
-		}
-
-		//3.a create harbor project etc.
-		err = a.setupHarbor()
-		if err != nil {
-			return err
-		}
-
-		glg.Infof("created harbor project %s at %s", command.DefaultNamespace, command.DefaultHarborUrl)
-
-		//3.b. docker login
-		err = a.dockerLogin()
-		if err != nil {
-			return err
-		}
-
-	}
-
 	if installVault {
 		//4. install vault
-		intstalled, err := a.installVaultHelmChart()
-		if err != nil {
-			return err
-		}
-
-		//4b. provision vault
-		err = a.setupVault(intstalled)
+		_, err := a.installVaultHelmChart()
 		if err != nil {
 			return err
 		}
@@ -160,7 +122,29 @@ func (a *AppInstaller) InstallOdysseiaComplete(legacyElastic bool) error {
 
 		splitName := strings.Split(a.Charts.Solon, "/")
 		chartName := strings.ToLower(splitName[len(splitName)-1])
-		err = a.installHelmChart(chartName, a.Charts.Solon)
+		values := a.ValueConfig["infra"].(map[string]interface{})
+		if a.VaultUnsealMethod != "" {
+			if values["envVariables"] == nil {
+				values["envVariables"] = make(map[string]interface{})
+			}
+
+			envVariables, ok := values["envVariables"].(map[string]interface{})
+			if !ok {
+				return fmt.Errorf("peisistratos config could not be created")
+			}
+
+			if envVariables["peisistratos"] == nil {
+				envVariables["peisistratos"] = make(map[string]interface{})
+			}
+
+			peisistratos, ok := envVariables["peisistratos"].(map[string]interface{})
+			if !ok {
+				return fmt.Errorf("peisistratos config could not be created")
+			}
+
+			peisistratos["unsealProvider"] = a.VaultUnsealMethod
+		}
+		err = a.installHelmChartWithValues(chartName, a.Charts.Solon, values)
 		if err != nil {
 			return err
 		}
@@ -173,9 +157,12 @@ func (a *AppInstaller) InstallOdysseiaComplete(legacyElastic bool) error {
 
 	if installEuripides {
 		//7. install euripides
+		err = a.waitForSolon()
+
 		splitName := strings.Split(a.Charts.Euripides, "/")
 		chartName := strings.ToLower(splitName[len(splitName)-1])
-		err = a.installHelmChart(chartName, a.Charts.Euripides)
+		values := a.ValueConfig["apis"].(map[string]interface{})
+		err = a.installHelmChartWithValues(chartName, a.Charts.Euripides, values)
 		if err != nil {
 			return err
 		}
@@ -183,6 +170,11 @@ func (a *AppInstaller) InstallOdysseiaComplete(legacyElastic bool) error {
 
 	if installEupalinos {
 		err = a.waitForPerikles()
+		if err != nil {
+			return err
+		}
+
+		err = a.waitForSolon()
 		if err != nil {
 			return err
 		}
@@ -198,7 +190,8 @@ func (a *AppInstaller) InstallOdysseiaComplete(legacyElastic bool) error {
 		//9. install homeros
 		splitName := strings.Split(a.Charts.Homeros, "/")
 		chartName := strings.ToLower(splitName[len(splitName)-1])
-		err = a.installHelmChart(chartName, a.Charts.Homeros)
+		values := a.ValueConfig["apis"].(map[string]interface{})
+		err = a.installHelmChartWithValues(chartName, a.Charts.Homeros, values)
 		if err != nil {
 			return err
 		}
@@ -226,7 +219,8 @@ func (a *AppInstaller) InstallOdysseiaComplete(legacyElastic bool) error {
 		//6. install ingress
 		splitName := strings.Split(a.Charts.Thermopulai, "/")
 		chartName := strings.ToLower(splitName[len(splitName)-1])
-		err = a.installHelmChart(chartName, a.Charts.Thermopulai)
+		values := a.ValueConfig["ingress"].(map[string]interface{})
+		err = a.installHelmChartWithValues(chartName, a.Charts.Thermopulai, values)
 		if err != nil {
 			return err
 		}

@@ -14,7 +14,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
 //go:embed "config"
@@ -27,8 +26,12 @@ func Install() *cobra.Command {
 	var (
 		namespace      string
 		kubePath       string
+		env            string
+		profile        string
 		installProfile string
-		legacy         bool
+		pathToVaultSa  string
+		keyRing        string
+		cryptoKey      string
 		build          bool
 	)
 	cmd := &cobra.Command{
@@ -49,6 +52,14 @@ func Install() *cobra.Command {
 				namespace = command.DefaultNamespace
 			}
 
+			if env == "" {
+				env = command.DefaultEnv
+			}
+
+			if profile == "" {
+				profile = command.DefaultProfile
+			}
+
 			if kubePath == "" {
 				glg.Debugf("defaulting to %s", command.DefaultKubeConfig)
 				homeDir, err := os.UserHomeDir()
@@ -67,6 +78,15 @@ func Install() *cobra.Command {
 				odysseiaSettings, _ = settings.DownloadRepos("")
 			}
 
+			var vaultUnsealMethod string
+			if pathToVaultSa != "" {
+				if _, err := os.Stat(pathToVaultSa); os.IsNotExist(err) {
+					glg.Fatal("file at path %s does not exist", pathToVaultSa)
+				}
+
+				vaultUnsealMethod = "gcp"
+			}
+
 			cfg, err := ioutil.ReadFile(kubePath)
 			if err != nil {
 				glg.Error("error getting kubeconfig")
@@ -82,28 +102,32 @@ func Install() *cobra.Command {
 				glg.Fatal("error creating helmclient")
 			}
 
-			profile, err := kubeManager.Cluster().GetCurrentContext()
-			if err != nil {
-				glg.Fatal("error getting current context")
-			}
-
-			glg.Debugf("current profile is: %s", profile)
-
-			glg.Info("getting config from yaml files")
-
 			config, err := configPath.ReadFile(fmt.Sprintf("config/%s.yaml", profile))
 			if err != nil {
 				glg.Info(err.Error())
-				if strings.Contains(err.Error(), "file does not exist") {
-					config, _ = configPath.ReadFile("config/default.yaml")
-				}
 			}
 
-			var valueOverwrite install.ValueOverwrite
-			err = yaml.Unmarshal(config, &valueOverwrite)
+			envProfile, err := configPath.ReadFile(fmt.Sprintf("config/%s.yaml", env))
+			if err != nil {
+				glg.Info(err.Error())
+			}
+
+			var configOverwrite map[string]interface{}
+			err = yaml.Unmarshal(config, &configOverwrite)
 			if err != nil {
 				glg.Fatal("error marshalling yaml")
 			}
+
+			var envOverwrite map[string]interface{}
+			err = yaml.Unmarshal(envProfile, &envOverwrite)
+			if err != nil {
+				glg.Fatal("error marshalling yaml")
+			}
+
+			// Merge k3dConfig into envOverwrite, overwriting values where keys match.
+			mergeMaps(envOverwrite, configOverwrite)
+
+			addConfigFields(envOverwrite, env, profile)
 
 			glg.Info("creating a new install for odysseia")
 
@@ -129,24 +153,28 @@ func Install() *cobra.Command {
 			}
 
 			odysseia := install.AppInstaller{
-				Namespace:        namespace,
-				ConfigPath:       "",
-				CurrentPath:      "",
-				ThemistoklesRoot: odysseiaSettings.HelmPath,
-				OdysseiaRoot:     odysseiaSettings.SourcePath,
-				Charts:           install.Themistokles{},
-				Config:           newConfig,
-				ValueConfig:      valueOverwrite,
-				Kube:             kubeManager,
-				Helm:             helmManager,
-				ElasticConfig:    elasticConfig,
-				Profile:          profile,
-				Harbor:           nil,
-				AppsToInstall:    ati,
-				Build:            build,
+				Namespace:         namespace,
+				ConfigPath:        "",
+				CurrentPath:       "",
+				ThemistoklesRoot:  odysseiaSettings.HelmPath,
+				OdysseiaRoot:      odysseiaSettings.SourcePath,
+				Charts:            install.Themistokles{},
+				Config:            newConfig,
+				ValueConfig:       envOverwrite,
+				Kube:              kubeManager,
+				Helm:              helmManager,
+				ElasticConfig:     elasticConfig,
+				Profile:           profile,
+				Harbor:            nil,
+				AppsToInstall:     ati,
+				Build:             build,
+				VaultSaPath:       pathToVaultSa,
+				CryptoKey:         cryptoKey,
+				KeyRing:           keyRing,
+				VaultUnsealMethod: vaultUnsealMethod,
 			}
 
-			err = odysseia.InstallOdysseiaComplete(legacy)
+			err = odysseia.InstallOdysseiaComplete()
 			if err != nil {
 				glg.Error(err)
 				os.Exit(1)
@@ -155,8 +183,12 @@ func Install() *cobra.Command {
 	}
 	cmd.PersistentFlags().StringVarP(&namespace, "namespace", "n", "", "kubernetes namespace defaults to odysseia")
 	cmd.PersistentFlags().StringVarP(&kubePath, "kubepath", "k", "", "kubeconfig filepath defaults to ~/.kube/config")
-	cmd.PersistentFlags().StringVarP(&installProfile, "profile", "p", "", "the profile to use when installing")
-	cmd.PersistentFlags().BoolVarP(&legacy, "legacy", "l", false, "install legacy elastic with helm chart")
+	cmd.PersistentFlags().StringVarP(&installProfile, "install-profile", "p", "", "the install profile for apps (tests, infra  etc)")
+	cmd.PersistentFlags().StringVarP(&env, "env", "e", "", "the env to use when installing (local, prod)")
+	cmd.PersistentFlags().StringVarP(&profile, "profile", "d", "", "the profile to use when installing (k3d, k3s, digital-ocean")
+	cmd.PersistentFlags().StringVarP(&pathToVaultSa, "savault", "s", "", "path to vault sa to use for auto unsealing")
+	cmd.PersistentFlags().StringVarP(&cryptoKey, "cryptokey", "c", "", "gcp cryptoring")
+	cmd.PersistentFlags().StringVarP(&keyRing, "keyring", "r", "", "gcp keyring")
 	cmd.PersistentFlags().BoolVarP(&build, "build", "b", true, "whether to build images")
 
 	return cmd
@@ -188,4 +220,43 @@ func readAppsYaml(profile string) ([]string, error) {
 	}
 
 	return ati, nil
+}
+
+func mergeMaps(dest, src map[string]interface{}) {
+	for key, srcValue := range src {
+		destValue, ok := dest[key]
+		if !ok {
+			// Key doesn't exist in the destination map, so we add it.
+			dest[key] = srcValue
+		} else {
+			// Key exists in the destination map, we need to merge if it's a nested map.
+			destMap, destMapOK := destValue.(map[string]interface{})
+			srcMap, srcMapOK := srcValue.(map[string]interface{})
+			if srcMapOK && destMapOK {
+				mergeMaps(destMap, srcMap)
+			} else {
+				// Not a map, overwrite the value in the destination.
+				dest[key] = srcValue
+			}
+		}
+	}
+}
+
+// Traverse the merged map and add environment and kubeVariant within "config" sections.
+func addConfigFields(m map[string]interface{}, env, variant string) {
+	for _, value := range m {
+		subMap, isMap := value.(map[string]interface{})
+		if isMap {
+			if config, exists := subMap["config"]; exists {
+				configMap, isConfigMap := config.(map[string]interface{})
+				if isConfigMap {
+					// Add "environment" and "kubeVariant" to the "config" section.
+					configMap["environment"] = env
+					configMap["kubeVariant"] = variant
+				}
+			}
+			// Continue recursively within the sub-map.
+			addConfigFields(subMap, env, variant)
+		}
+	}
 }

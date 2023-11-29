@@ -1,5 +1,4 @@
 appsToInstall:
-  - vault
   - solon
   - perikles
   - eupalinos

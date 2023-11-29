@@ -20,3 +20,6 @@ rules:
   - apiGroups: [""] # "" indicates the core API group
     resources: ["secrets"]
     verbs: ["get", "list", "update", "create"]
+  - apiGroups: ["apps"]
+    resources: ["statefulsets"]
+    verbs: ["get", "list"] # Add "get" for StatefulSets

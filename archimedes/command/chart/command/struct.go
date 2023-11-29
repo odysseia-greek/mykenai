@@ -11,6 +11,7 @@ type Application struct {
 	Load       string `yaml:"load,omitempty"`
 	Stateful   string `yaml:"stateful,omitempty"`
 	Tracer     string `yaml:"tracer,omitempty"`
+	InitSeeder string `yaml:"initSeeder,omitempty"`
 }
 
 type Config struct {
@@ -47,6 +48,7 @@ type ImagesConfig struct {
 	Load        Repo   `yaml:"load,omitempty"`
 	Stateful    Repo   `yaml:"stateful,omitempty"`
 	Tracer      Repo   `yaml:"tracer,omitempty"`
+	InitSeeder  Repo   `yaml:"initSeeder,omitempty"`
 }
 
 type Repo struct {

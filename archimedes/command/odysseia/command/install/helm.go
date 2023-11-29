@@ -10,6 +10,7 @@ import (
 func (a *AppInstaller) installAppsHelmChart() error {
 	timer := 360 * time.Second
 	err := a.checkStatusOfPod("solon", timer)
+	values := a.ValueConfig["apis"].(map[string]interface{})
 	if err != nil {
 		return err
 	}
@@ -26,7 +27,7 @@ func (a *AppInstaller) installAppsHelmChart() error {
 					continue
 				}
 
-				err := a.installHelmChart(chartName, chart)
+				err := a.installHelmChartWithValues(chartName, chart, values)
 				if err != nil {
 					if strings.Contains(chartName, "ingress") {
 						continue

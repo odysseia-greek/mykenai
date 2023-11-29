@@ -1,0 +1,12 @@
+elastic:
+  volumeClaimTemplate:
+    storageClassName: "local-path"
+    resources:
+      requests:
+        storage: 100M
+
+ingress:
+  config:
+    apis: true
+    host: odysseia-greek.internal
+    apiHost: odysseia-greek.api.internal

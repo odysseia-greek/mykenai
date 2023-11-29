@@ -1,14 +1,20 @@
 package install
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/kpango/glg"
-	"github.com/odysseia-greek/mykenai/archimedes/command"
 	vaultCommand "github.com/odysseia-greek/mykenai/archimedes/command/vault/command"
+	"os"
+	"path/filepath"
 	"strings"
-	"time"
 )
 
 const vaultName string = "vault"
+
+type ServiceAccountInfo struct {
+	ProjectID string `json:"project_id"`
+}
 
 func (a *AppInstaller) installVaultHelmChart() (bool, error) {
 	helmInstalled, _ := a.checkForHelmRelease(vaultName)
@@ -79,7 +85,47 @@ func (a *AppInstaller) installVaultHelmChart() (bool, error) {
 
 	vaultCommand.EnableTlS(a.Namespace, vaultName, a.Kube)
 
-	rls, err := a.Helm.Install(a.Charts.Vault)
+	if a.VaultSaPath != "" {
+		data, err := os.ReadFile(a.VaultSaPath)
+		if err != nil {
+			return false, err
+		}
+
+		secretName, dataKey := a.determineSecretAttributes()
+		if secretName == "" || dataKey == "" {
+			return false, fmt.Errorf("Failed to determine secret name or data key")
+		}
+
+		// Check if the secret already exists; if it does, delete it
+		err = a.Kube.Configuration().DeleteSecret(a.Namespace, secretName)
+		if err != nil {
+			if !strings.Contains(err.Error(), "not found") {
+				return false, err
+			}
+		}
+
+		secret := map[string][]byte{
+			dataKey: data,
+		}
+
+		err = a.Kube.Configuration().CreateSecret(a.Namespace, secretName, secret)
+		if err != nil {
+			return false, err
+		}
+
+		var saInfo ServiceAccountInfo
+		err = json.Unmarshal(data, &saInfo)
+		if err != nil {
+			return false, err
+		}
+
+		a.updateHelmValues(secretName, dataKey, saInfo.ProjectID)
+	}
+
+	values := a.ValueConfig["vault"].(map[string]interface{})
+
+	rls, err := a.Helm.InstallWithValues(a.Charts.Vault, values)
+
 	if err != nil {
 		return false, err
 	}
@@ -89,76 +135,129 @@ func (a *AppInstaller) installVaultHelmChart() (bool, error) {
 	return true, nil
 }
 
-func (a *AppInstaller) setupVault(installed bool) error {
-	ready := false
-	helmInstalled, _ := a.checkForHelmRelease(vaultName)
-	if helmInstalled {
-		pods, err := a.Kube.Workload().List(command.DefaultNamespace)
-		if err != nil {
-			return err
+func (a *AppInstaller) determineSecretAttributes() (string, string) {
+	fileName := filepath.Base(a.VaultSaPath)
+	secretNames := []string{"gcp", "azure", "aws"}
+
+	for _, name := range secretNames {
+		if strings.Contains(fileName, name) {
+			a.VaultUnsealMethod = name
+			return fmt.Sprintf("vaultunseal%s", name), fmt.Sprintf("%sconfig.json", name)
+		}
+	}
+
+	return "", ""
+}
+
+func (a *AppInstaller) updateHelmValues(secretName, dataKey, project string) {
+	values := a.ValueConfig["vault"].(map[string]interface{})
+	volumeMountName := fmt.Sprintf("userconfig-%s", secretName)
+
+	serverConfig := map[string]interface{}{
+		"extraEnvironmentVars": map[string]interface{}{
+			"VAULT_CACERT":                   "/vault/userconfig/vault-server-tls/vault.ca",
+			"GOOGLE_APPLICATION_CREDENTIALS": fmt.Sprintf("/vault/userconfig/unseal/%s", dataKey),
+			"GOOGLE_REGION":                  "global",
+			"GOOGLE_PROJECT":                 project,
+		},
+		"volumes": []map[string]interface{}{
+			{
+				"name": "userconfig-vault-server-tls",
+				"secret": map[string]interface{}{
+					"defaultMode": int64(420),
+					"secretName":  "vault-server-tls",
+				},
+			},
+			{
+				"name": volumeMountName,
+				"secret": map[string]interface{}{
+					"secretName": secretName,
+				},
+			},
+		},
+		"volumeMounts": []map[string]interface{}{
+			{
+				"mountPath": "/vault/userconfig/vault-server-tls",
+				"name":      "userconfig-vault-server-tls",
+				"readOnly":  true,
+			},
+			{
+				"mountPath": "/vault/userconfig/unseal",
+				"name":      volumeMountName,
+			},
+		},
+	}
+
+	mergeMaps(values["server"].(map[string]interface{}), serverConfig)
+	var storageType string
+	haMode, exists := values["server"].(map[string]interface{})["ha"].(map[string]interface{})["enabled"].(bool)
+	if !exists {
+		storageType = "file"
+	} else if haMode {
+		storageType = "raft"
+	} else {
+		storageType = "file"
+	}
+
+	config := fmt.Sprintf(`
+            ui = true
+            listener "tcp" {
+                address = "[::]:8200"
+                cluster_address = "[::]:8201"
+                tls_cert_file = "/vault/userconfig/vault-server-tls/vault.crt"
+                tls_key_file  = "/vault/userconfig/vault-server-tls/vault.key"
+                tls_client_ca_file = "/vault/userconfig/vault-server-tls/vault.crt"
+            }
+
+            seal "gcpckms" {
+                project     = "%s"
+                region      = "global"
+                key_ring    = "%s"
+                crypto_key  = "%s"
+            }
+
+            storage "%s" {
+                path = "/vault/data"
+            }
+        `, project, a.KeyRing, a.CryptoKey, storageType)
+
+	if haMode {
+		raftSection, raftExists := values["server"].(map[string]interface{})["ha"].(map[string]interface{})["raft"]
+		if !raftExists || raftSection == nil {
+			raftSection = make(map[string]interface{})
+			values["server"].(map[string]interface{})["ha"].(map[string]interface{})["raft"] = raftSection
 		}
 
-		for _, pod := range pods.Items {
-			if strings.Contains(pod.Name, "vault") {
+		values["server"].(map[string]interface{})["ha"].(map[string]interface{})["raft"].(map[string]interface{})["config"] = config
+	} else {
+		standaloneSection, standaloneExists := values["server"].(map[string]interface{})["standalone"]
+		if !standaloneExists || standaloneSection == nil {
+			standaloneSection = make(map[string]interface{})
+			values["server"].(map[string]interface{})["standalone"] = standaloneSection
+		}
 
-				timer := 60 * time.Second
-				err := a.podIsRunning(pod.Name, timer)
-				if err != nil {
-					glg.Debugf("skipping install because vault is not running after %v seconds", timer)
-					return err
-				}
+		values["server"].(map[string]interface{})["standalone"].(map[string]interface{})["config"] = config
+	}
 
-				po, err := a.Kube.Workload().GetPodByName(command.DefaultNamespace, pod.Name)
-				if err != nil {
-					glg.Debug("error getting pod")
-					return err
-				}
+	a.ValueConfig["vault"] = values
+}
 
-				for _, condition := range po.Status.Conditions {
-					if condition.Type == "Ready" && condition.Status == "True" {
-						glg.Infof("pod: %s ready: %s", po.Name, condition.Type)
-						ready = true
-					}
-				}
+func mergeMaps(dest, src map[string]interface{}) {
+	for k, v := range src {
+		if val, ok := dest[k]; ok {
+			destValueMap, destIsMap := val.(map[string]interface{})
+			srcValueMap, srcIsMap := v.(map[string]interface{})
+
+			if destIsMap && srcIsMap {
+				// If both values are maps, recursively merge them
+				mergeMaps(destValueMap, srcValueMap)
+			} else {
+				// Otherwise, overwrite the destination value with the source value
+				dest[k] = v
 			}
+		} else {
+			// If the key doesn't exist in the destination map, add it
+			dest[k] = v
 		}
 	}
-
-	if ready {
-		glg.Debug("vault running and initiated")
-		return nil
-	}
-
-	if !ready && installed {
-		glg.Debug("vault running but not initiated")
-		time.Sleep(2000 * time.Millisecond)
-		vaultConfig, err := vaultCommand.NewVaultFlow(a.Namespace, a.Kube)
-		a.Config.VaultUnsealKey = vaultConfig.UnsealKeysHex[0]
-		a.Config.VaultRootToken = vaultConfig.RootToken
-		return err
-	} else if !ready && !installed {
-		glg.Info("vault is not ready and not installed so it might be an older install checking status")
-		status, err := vaultCommand.VaultStatus(a.Namespace, a.Kube)
-		if err != nil && status == nil {
-			return err
-		}
-
-		log, _ := status.Marshal()
-		glg.Debug(string(log))
-
-		if !status.Initialized {
-			time.Sleep(2000 * time.Millisecond)
-			vaultConfig, err := vaultCommand.NewVaultFlow(a.Namespace, a.Kube)
-			a.Config.VaultUnsealKey = vaultConfig.UnsealKeysHex[0]
-			a.Config.VaultRootToken = vaultConfig.RootToken
-			return err
-		}
-
-		if status.Initialized && status.Sealed {
-			glg.Debug("should be deleted and reinstalled")
-		}
-
-	}
-
-	return nil
 }

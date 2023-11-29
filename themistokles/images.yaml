@@ -1,53 +1,54 @@
 melissos:
-  sidecar: v0.4.0
+  sidecar: v0.5.0
   init: v0.4.0
   jobinit: v0.4.0
-  job: v0.7.0
+  job: v0.7.2
 
 alexandros:
-  deployment: v0.7.1
+  deployment: v0.8.0
   init: v0.4.0
-  seeder: v0.7.0
-  sidecar: v0.4.0
+  seeder: v0.7.2
+  sidecar: v0.5.0
   tracer: v0.2.1
 
 dionysios:
-  deployment: v0.7.1
+  deployment: v0.8.0
   init: v0.4.0
-  seeder: v0.7.0
-  sidecar: v0.4.0
+  seeder: v0.7.2
+  sidecar: v0.5.0
   tracer: v0.2.1
 
 euripides:
   deployment: v0.2.1
   init: v0.4.0
-  seeder: v0.7.0
-  sidecar: v0.4.0
+  seeder: v0.7.3
+  sidecar: v0.5.0
 
 herodotos:
-  deployment: v0.7.1
+  deployment: v0.8.0
   init: v0.4.0
-  seeder: v0.7.0
-  sidecar: v0.4.0
+  seeder: v0.7.3
+  sidecar: v0.5.0
   tracer: v0.2.1
 
 sokrates:
-  deployment: v0.7.1
+  deployment: v0.8.0
   init: v0.4.0
-  seeder: v0.7.1
-  sidecar: v0.4.0
+  seeder: v0.7.2
+  sidecar: v0.5.0
   tracer: v0.2.1
 
 solon:
-  deployment: v0.4.0
+  deployment: v0.5.0
+  initSeeder: v0.5.0
   init: v0.4.0
 
 homeros:
-  deployment: v0.7.1
+  deployment: v0.8.0
   tracer: v0.2.1
 
 perikles:
-  deployment: v0.3.1
+  deployment: v0.5.0
 
 pheidias:
   deployment: v0.6.2

@@ -1,9 +1,10 @@
 config:
-    environment: minikube
+    environment: local
     externalRepo: true
     harborPullPolicy: Always
     initialDelayLiveness: 20
     initialDelayReadiness: 1
+    kubeVariant: minikube
     periodSeconds: 20
     privateImagesInRepo: false
     pullPolicy: Always

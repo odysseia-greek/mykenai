@@ -129,16 +129,16 @@ func enableKubernetesAsAuth(namespace, policyName, rootToken string, kube kubern
 	}
 
 	searchString := "vault-token"
-	var jwtToken string
+	var jwt string
 
 	for _, secret := range secrets.Items {
 		if strings.Contains(secret.Name, searchString) {
-			jwtToken = string(secret.Data["token"])
+			jwt = string(secret.Data["token"])
 			break
 		}
 	}
 
-	glg.Debugf("found token in cluster: %s", jwtToken)
+	glg.Debugf("found token in cluster: %s", jwt)
 
 	filePath := "/tmp/ca-cert-vault-archimedes.crt"
 	ca, err := kube.Cluster().GetHostCaCert()
@@ -194,7 +194,7 @@ func enableKubernetesAsAuth(namespace, policyName, rootToken string, kube kubern
 
 	glg.Info("step 2: write config to kubernetes auth method")
 
-	reviewer := fmt.Sprintf("token_review_jwt=%s", jwtToken)
+	reviewer := fmt.Sprintf("token_review_jwt=%s", jwt)
 	configHost := fmt.Sprintf("kubernetes_host=%s", kubeHost)
 	caCert := fmt.Sprintf("kubernetes_ca_cert=@%s", filePath)
 
