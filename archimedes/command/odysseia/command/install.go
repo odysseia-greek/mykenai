@@ -78,10 +78,13 @@ func Install() *cobra.Command {
 				odysseiaSettings, _ = settings.DownloadRepos("")
 			}
 
+			var vaultUnsealMethod string
 			if pathToVaultSa != "" {
 				if _, err := os.Stat(pathToVaultSa); os.IsNotExist(err) {
 					glg.Fatal("file at path %s does not exist", pathToVaultSa)
 				}
+
+				vaultUnsealMethod = "gcp"
 			}
 
 			cfg, err := ioutil.ReadFile(kubePath)
@@ -150,24 +153,25 @@ func Install() *cobra.Command {
 			}
 
 			odysseia := install.AppInstaller{
-				Namespace:        namespace,
-				ConfigPath:       "",
-				CurrentPath:      "",
-				ThemistoklesRoot: odysseiaSettings.HelmPath,
-				OdysseiaRoot:     odysseiaSettings.SourcePath,
-				Charts:           install.Themistokles{},
-				Config:           newConfig,
-				ValueConfig:      envOverwrite,
-				Kube:             kubeManager,
-				Helm:             helmManager,
-				ElasticConfig:    elasticConfig,
-				Profile:          profile,
-				Harbor:           nil,
-				AppsToInstall:    ati,
-				Build:            build,
-				VaultSaPath:      pathToVaultSa,
-				CryptoKey:        cryptoKey,
-				KeyRing:          keyRing,
+				Namespace:         namespace,
+				ConfigPath:        "",
+				CurrentPath:       "",
+				ThemistoklesRoot:  odysseiaSettings.HelmPath,
+				OdysseiaRoot:      odysseiaSettings.SourcePath,
+				Charts:            install.Themistokles{},
+				Config:            newConfig,
+				ValueConfig:       envOverwrite,
+				Kube:              kubeManager,
+				Helm:              helmManager,
+				ElasticConfig:     elasticConfig,
+				Profile:           profile,
+				Harbor:            nil,
+				AppsToInstall:     ati,
+				Build:             build,
+				VaultSaPath:       pathToVaultSa,
+				CryptoKey:         cryptoKey,
+				KeyRing:           keyRing,
+				VaultUnsealMethod: vaultUnsealMethod,
 			}
 
 			err = odysseia.InstallOdysseiaComplete()

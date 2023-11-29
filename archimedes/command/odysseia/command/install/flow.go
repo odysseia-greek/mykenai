@@ -1,6 +1,7 @@
 package install
 
 import (
+	"fmt"
 	"github.com/kpango/glg"
 	"github.com/odysseia-greek/mykenai/archimedes/util"
 	"gopkg.in/yaml.v3"
@@ -123,7 +124,25 @@ func (a *AppInstaller) InstallOdysseiaComplete() error {
 		chartName := strings.ToLower(splitName[len(splitName)-1])
 		values := a.ValueConfig["infra"].(map[string]interface{})
 		if a.VaultUnsealMethod != "" {
-			values["envVariables"].(map[string]interface{})["peisistratos"].(map[string]interface{})["unsealProvider"] = a.VaultUnsealMethod
+			if values["envVariables"] == nil {
+				values["envVariables"] = make(map[string]interface{})
+			}
+
+			envVariables, ok := values["envVariables"].(map[string]interface{})
+			if !ok {
+				return fmt.Errorf("peisistratos config could not be created")
+			}
+
+			if envVariables["peisistratos"] == nil {
+				envVariables["peisistratos"] = make(map[string]interface{})
+			}
+
+			peisistratos, ok := envVariables["peisistratos"].(map[string]interface{})
+			if !ok {
+				return fmt.Errorf("peisistratos config could not be created")
+			}
+
+			peisistratos["unsealProvider"] = a.VaultUnsealMethod
 		}
 		err = a.installHelmChartWithValues(chartName, a.Charts.Solon, values)
 		if err != nil {
@@ -138,6 +157,8 @@ func (a *AppInstaller) InstallOdysseiaComplete() error {
 
 	if installEuripides {
 		//7. install euripides
+		err = a.waitForSolon()
+
 		splitName := strings.Split(a.Charts.Euripides, "/")
 		chartName := strings.ToLower(splitName[len(splitName)-1])
 		values := a.ValueConfig["apis"].(map[string]interface{})
@@ -149,6 +170,11 @@ func (a *AppInstaller) InstallOdysseiaComplete() error {
 
 	if installEupalinos {
 		err = a.waitForPerikles()
+		if err != nil {
+			return err
+		}
+
+		err = a.waitForSolon()
 		if err != nil {
 			return err
 		}

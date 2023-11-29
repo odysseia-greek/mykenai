@@ -1,9 +1,9 @@
 config:
     environment: local
-    kubeVariant: minikube
     externalRepo: true
     initialDelayLiveness: 20
     initialDelayReadiness: 1
+    kubeVariant: minikube
     periodSeconds: 20
     privateImagesInRepo: false
     pullPolicy: Always
@@ -28,7 +28,7 @@ images:
     pullSecret: harbor-images
     odysseiaapi:
         repo: homeros
-        tag: v0.7.1
+        tag: v0.8.0
     tracer:
         repo: aristophanes
         tag: v0.2.1

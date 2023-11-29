@@ -164,6 +164,10 @@ func updateImageTags(imageValues *ImagesConfig, values Application) {
 	if values.Tracer != "" {
 		imageValues.Tracer.Tag = values.Tracer
 	}
+
+	if values.InitSeeder != "" {
+		imageValues.InitSeeder.Tag = values.InitSeeder
+	}
 }
 
 func readAndReplaceHelmChart(values Application, path, dest, version string) error {

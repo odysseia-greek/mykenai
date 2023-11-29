@@ -1,9 +1,9 @@
 config:
     environment: local
-    kubeVariant: minikube
     externalRepo: true
     initialDelayLiveness: 20
     initialDelayReadiness: 1
+    kubeVariant: minikube
     periodSeconds: 20
     privateImagesInRepo: false
     pullPolicy: Always

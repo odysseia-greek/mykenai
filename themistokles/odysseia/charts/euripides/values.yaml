@@ -24,7 +24,7 @@ images:
     pullSecret: harbor-images
     sidecar:
         repo: ptolemaios
-        tag: v0.4.0
+        tag: v0.5.0
     init:
         repo: periandros
         tag: v0.4.0
@@ -33,7 +33,7 @@ images:
         tag: v0.2.1
     seeder:
         repo: anaximenes
-        tag: v0.7.0
+        tag: v0.7.3
 namespaceOverride: odysseia
 services:
     backend:

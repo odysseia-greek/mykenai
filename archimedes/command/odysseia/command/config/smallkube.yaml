@@ -18,10 +18,9 @@ elastic:
 vault:
   server:
     standalone:
-      enabled: false
-    ha:
       enabled: true
-
+    ha:
+      enabled: false
 
 apis:
   config:
