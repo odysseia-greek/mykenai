@@ -5,7 +5,6 @@ import (
 	"github.com/kpango/glg"
 	"github.com/odysseia-greek/mykenai/archimedes/command"
 	"github.com/odysseia-greek/mykenai/archimedes/util"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -57,7 +56,7 @@ func (a *AppInstaller) preSteps() error {
 }
 
 func (a *AppInstaller) fillHelmChartPaths() error {
-	files, err := ioutil.ReadDir(a.ThemistoklesRoot)
+	files, err := os.ReadDir(a.ThemistoklesRoot)
 	if err != nil {
 		return err
 	}

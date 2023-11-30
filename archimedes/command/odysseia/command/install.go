@@ -4,14 +4,13 @@ import (
 	"embed"
 	"fmt"
 	"github.com/kpango/glg"
+	"github.com/odysseia-greek/agora/thales"
 	"github.com/odysseia-greek/mykenai/archimedes/command"
 	settings "github.com/odysseia-greek/mykenai/archimedes/command/config/command"
 	"github.com/odysseia-greek/mykenai/archimedes/command/odysseia/command/install"
 	"github.com/odysseia-greek/mykenai/archimedes/util/helm"
-	kubernetes "github.com/odysseia-greek/thales"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -73,9 +72,6 @@ func Install() *cobra.Command {
 			odysseiaSettings, err := settings.ReadOutConfig()
 			if err != nil {
 				glg.Error(err)
-				glg.Warn("warning! You are about to install without a configfile this means archimedes will download everything needed to /tmp. After a reboot you will loose your helm charts. To avoid this from happening please run archimedes config set")
-
-				odysseiaSettings, _ = settings.DownloadRepos("")
 			}
 
 			var vaultUnsealMethod string
@@ -87,12 +83,12 @@ func Install() *cobra.Command {
 				vaultUnsealMethod = "gcp"
 			}
 
-			cfg, err := ioutil.ReadFile(kubePath)
+			cfg, err := os.ReadFile(kubePath)
 			if err != nil {
 				glg.Error("error getting kubeconfig")
 			}
 
-			kubeManager, err := kubernetes.NewKubeClient(cfg, namespace)
+			kubeManager, err := thales.NewKubeClient(cfg, namespace)
 			if err != nil {
 				glg.Fatal("error creating kubeclient")
 			}
@@ -145,13 +141,6 @@ func Install() *cobra.Command {
 				glg.Fatal(err)
 			}
 
-			newConfig := command.CurrentInstallConfig{
-				ElasticPassword: "",
-				HarborPassword:  "",
-				VaultRootToken:  "",
-				VaultUnsealKey:  "",
-			}
-
 			odysseia := install.AppInstaller{
 				Namespace:         namespace,
 				ConfigPath:        "",
@@ -159,13 +148,11 @@ func Install() *cobra.Command {
 				ThemistoklesRoot:  odysseiaSettings.HelmPath,
 				OdysseiaRoot:      odysseiaSettings.SourcePath,
 				Charts:            install.Themistokles{},
-				Config:            newConfig,
 				ValueConfig:       envOverwrite,
 				Kube:              kubeManager,
 				Helm:              helmManager,
 				ElasticConfig:     elasticConfig,
 				Profile:           profile,
-				Harbor:            nil,
 				AppsToInstall:     ati,
 				Build:             build,
 				VaultSaPath:       pathToVaultSa,

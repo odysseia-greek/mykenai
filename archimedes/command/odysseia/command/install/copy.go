@@ -3,12 +3,12 @@ package install
 import (
 	"github.com/kpango/glg"
 	"github.com/odysseia-greek/mykenai/archimedes/util"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 )
 
 func (a *AppInstaller) copyToCurrentDir() error {
-	files, err := ioutil.ReadDir(a.ConfigPath)
+	files, err := os.ReadDir(a.ConfigPath)
 	if err != nil {
 		glg.Error(err)
 		return err

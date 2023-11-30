@@ -2,9 +2,9 @@ package command
 
 import (
 	"github.com/kpango/glg"
+	kubernetes "github.com/odysseia-greek/agora/thales"
 	"github.com/odysseia-greek/mykenai/archimedes/command"
 	"github.com/odysseia-greek/mykenai/archimedes/util/helm"
-	kubernetes "github.com/odysseia-greek/thales"
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"os"

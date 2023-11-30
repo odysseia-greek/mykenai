@@ -5,8 +5,9 @@ import (
 	settings "github.com/odysseia-greek/mykenai/archimedes/command/config/command"
 	"github.com/odysseia-greek/mykenai/archimedes/util"
 	"github.com/spf13/cobra"
-	"io/ioutil"
+	"os"
 	"path/filepath"
+	"strings"
 )
 
 func CreateSingleImage() *cobra.Command {
@@ -14,7 +15,6 @@ func CreateSingleImage() *cobra.Command {
 		tag             string
 		destinationRepo string
 		name            string
-		minikube        bool
 	)
 	cmd := &cobra.Command{
 		Use:   "single",
@@ -32,7 +32,7 @@ func CreateSingleImage() *cobra.Command {
 
 			if tag == "" {
 				glg.Warn("no tag set for image, using the git short hash")
-				gitTag, err := util.ExecCommandWithReturn(`git rev-parse --short HEAD`, odysseiaSettings.OlymposPath)
+				gitTag, err := util.ExecCommandWithReturn(`git rev-parse --short HEAD`, odysseiaSettings.OlympiaPath)
 				if err != nil {
 					glg.Fatal(err)
 				}
@@ -40,86 +40,73 @@ func CreateSingleImage() *cobra.Command {
 				tag = gitTag
 			}
 
-			if destinationRepo != "" {
-				minikube = false
-			}
-
-			if destinationRepo == "" && !minikube {
+			if destinationRepo == "" {
 				glg.Warnf("destination repo empty, default to %s", defaultRepo)
 				destinationRepo = defaultRepo
 			}
 
 			glg.Infof("filepath set to: %s", odysseiaSettings.SourcePath)
 
-			BuildImage(odysseiaSettings.SourcePath, name, tag, destinationRepo, minikube)
+			BuildImage(odysseiaSettings.SourcePath, name, tag, destinationRepo)
 		},
 	}
 
 	cmd.PersistentFlags().StringVarP(&name, "name", "n", "", "image name")
 	cmd.PersistentFlags().StringVarP(&tag, "tag", "t", "", "image tag")
 	cmd.PersistentFlags().StringVarP(&destinationRepo, "dest", "d", "", "destination repo address")
-	cmd.PersistentFlags().BoolVarP(&minikube, "minikube", "m", false, "if minikube is used images will be loaded into minikube instead of pushing to a remote repo")
 
 	return cmd
 }
 
-func BuildImage(rootPath, name, tag, dest string, minikube bool) {
-	directories, err := ioutil.ReadDir(rootPath)
+func BuildImage(rootPath, name, tag, destRepo string) {
+	directories, err := os.ReadDir(rootPath)
 	if err != nil {
 		glg.Fatal(err)
 	}
 
-	var filePath string
-	found := false
 	for _, dir := range directories {
-		if found {
-			break
-		}
-
-		if dir.Name() == name {
-			filePath = filepath.Join(rootPath, dir.Name())
-			found = true
-			break
-		}
-
-		for _, source := range sourceDirs {
-			if found {
-				break
-			}
-			fp := filepath.Join(rootPath, source)
-			innerDirs, err := ioutil.ReadDir(fp)
+		if dir.IsDir() && !strings.HasPrefix(dir.Name(), ".") {
+			repoPath := filepath.Join(rootPath, dir.Name())
+			innerDirs, err := os.ReadDir(repoPath)
 			if err != nil {
 				glg.Fatal(err)
 			}
+
+			if dir.Name() == name {
+				for _, innerFile := range innerDirs {
+					if innerFile.Name() == "Dockerfile" {
+						glg.Infof("working on project: %s", name)
+						err := runImageBuildFlow(repoPath, name, tag, destRepo)
+						if err != nil {
+							glg.Error(err)
+						}
+						return
+					}
+				}
+			}
+
 			for _, innerDir := range innerDirs {
 				if innerDir.Name() == name {
-					filePath = filepath.Join(rootPath, source)
-					found = true
-					break
+					if innerDir.IsDir() && !strings.HasPrefix(innerDir.Name(), ".") {
+						innerFp := filepath.Join(rootPath, dir.Name(), innerDir.Name())
+						innerFiles, err := os.ReadDir(innerFp)
+						if err != nil {
+							glg.Fatal(err)
+						}
+
+						for _, innerFile := range innerFiles {
+							if innerFile.Name() == "Dockerfile" {
+								glg.Infof("working on project: %s", innerFp)
+								err := runImageBuildFlow(innerFp, innerDir.Name(), tag, destRepo)
+								if err != nil {
+									glg.Error(err)
+									return
+								}
+							}
+						}
+					}
 				}
 			}
 		}
-	}
-
-	for _, flow := range differentFlow {
-		if flow == name {
-			err = buildImageWithLocalFile(filePath, name, tag, dest)
-			if err != nil {
-				glg.Error(err)
-				return
-			}
-			return
-		}
-	}
-
-	apiPath := filePath
-	if name != hippokrates && name != eupalinos {
-		apiPath = filepath.Join(filePath, name)
-	}
-
-	err = runImageBuildFlow(filePath, apiPath, name, tag, dest)
-	if err != nil {
-		glg.Error(err)
-		return
 	}
 }

@@ -1,6 +1,6 @@
 package command
 
-func runImageBuildFlow(filePath, projectPath, project, tag, dest string) error {
+func runImageBuildFlow(projectPath, project, tag, dest string) error {
 	err := isDockerRunning()
 	if err != nil {
 		return err
@@ -22,7 +22,7 @@ func runImageBuildFlow(filePath, projectPath, project, tag, dest string) error {
 		}
 	}
 
-	err = buildImageMultiArch(filePath, project, tag, dest)
+	err = buildImageMultiArch(projectPath, project, tag, dest)
 	if err != nil {
 		return err
 	}
