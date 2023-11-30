@@ -7,15 +7,16 @@ import (
 	settings "github.com/odysseia-greek/mykenai/archimedes/command/config/command"
 	"github.com/odysseia-greek/mykenai/archimedes/util"
 	"github.com/spf13/cobra"
-	"io/ioutil"
+	"io"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
 )
 
 var swaggerApis = [...]string{"alexandros", "dionysios", "herodotos", "solon", "sokrates"}
-var gatewayApis = [...]string{"homeros"}
-var grpcApis = [...]string{command.Aristophanes}
+var gatewayApis = [...]string{"homeros", "euripides"}
+var grpcApis = [...]string{command.Aristophanes, "ptolemaios"}
 
 const (
 	swaggerOutputPath string = "docs/swagger.json"
@@ -56,7 +57,7 @@ func GenerateDocs() *cobra.Command {
 func generateDocs(rootPath string) {
 	for _, grpc := range grpcApis {
 		var path string
-		ploutarchosDocs := filepath.Join(rootPath, command.Olympos, command.Ploutarchos, command.Docs, "grpc")
+		ploutarchosDocs := filepath.Join(rootPath, command.Olympia, command.Ploutarchos, command.Docs, "grpc")
 		if grpc == command.Aristophanes {
 			path = filepath.Join(rootPath, command.Attike, command.Aristophanes)
 		}
@@ -67,11 +68,11 @@ func generateDocs(rootPath string) {
 	}
 
 	for _, api := range swaggerApis {
-		path := filepath.Join(rootPath, command.Olympos)
+		path := filepath.Join(rootPath, command.Olympia)
 		if api == "solon" {
 			path = filepath.Join(rootPath, command.Delphi)
 		}
-		ploutarchosDocs := filepath.Join(rootPath, command.Olympos, command.Ploutarchos, command.Docs)
+		ploutarchosDocs := filepath.Join(rootPath, command.Olympia, command.Ploutarchos, command.Docs)
 		err := generateSwaggerFiles(path, ploutarchosDocs, api)
 		if err != nil {
 			glg.Error(err)
@@ -79,7 +80,7 @@ func generateDocs(rootPath string) {
 	}
 
 	for _, gateway := range gatewayApis {
-		apiPath := filepath.Join(rootPath, command.Olympos, gateway, command.Docs)
+		apiPath := filepath.Join(rootPath, command.Olympia, gateway, command.Docs)
 		err := generateSpectaql(rootPath, apiPath)
 		if err != nil {
 			glg.Error(err)
@@ -124,7 +125,7 @@ func generateOpenApi(swaggerFilePath, openapiFile string) error {
 		"Content-Type": "application/json",
 	}
 
-	fileContent, err := ioutil.ReadFile(swaggerFilePath)
+	fileContent, err := os.ReadFile(swaggerFilePath)
 	if err != nil {
 		return err
 	}
@@ -146,12 +147,12 @@ func generateOpenApi(swaggerFilePath, openapiFile string) error {
 	}
 	defer response.Body.Close()
 
-	responseBody, err := ioutil.ReadAll(response.Body)
+	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {
 		return err
 	}
 
-	err = ioutil.WriteFile(openapiFile, responseBody, 0644)
+	err = os.WriteFile(openapiFile, responseBody, 0644)
 	if err != nil {
 		return err
 	}
@@ -169,7 +170,7 @@ func generateSpectaql(rootPath, spectaqlPath string) error {
 
 	glg.Info("****** 📋 Generated Spectaql Doc 📋 ******")
 
-	ploutarchosPath := filepath.Join(rootPath, command.Olympos, command.Ploutarchos, command.Docs, "public")
+	ploutarchosPath := filepath.Join(rootPath, command.Olympia, command.Ploutarchos, command.Docs, "public")
 	spectaqlDir := filepath.Join(spectaqlPath, "public")
 	err = util.CopyDir(spectaqlDir, ploutarchosPath)
 

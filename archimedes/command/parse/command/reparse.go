@@ -3,8 +3,8 @@ package command
 import (
 	"encoding/json"
 	"github.com/kpango/glg"
+	"github.com/odysseia-greek/agora/plato/models"
 	"github.com/odysseia-greek/mykenai/archimedes/util"
-	"github.com/odysseia-greek/plato/models"
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"os"

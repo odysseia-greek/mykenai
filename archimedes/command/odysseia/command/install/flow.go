@@ -3,9 +3,6 @@ package install
 import (
 	"fmt"
 	"github.com/kpango/glg"
-	"github.com/odysseia-greek/mykenai/archimedes/util"
-	"gopkg.in/yaml.v3"
-	"path/filepath"
 	"strings"
 )
 
@@ -26,30 +23,6 @@ func (a *AppInstaller) InstallOdysseiaComplete() error {
 	if err != nil {
 		return err
 	}
-
-	defer func() {
-		//save config to configpath
-		err = a.checkConfigForEmpty()
-		if err != nil {
-			glg.Error(err)
-		}
-
-		currentConfig, err := yaml.Marshal(a.Config)
-		if err != nil {
-			glg.Error(err)
-		}
-
-		glg.Info(string(currentConfig))
-		currentConfigPath := filepath.Join(a.ConfigPath, "config.yaml")
-		util.WriteFile(currentConfig, currentConfigPath)
-		// copy everything to currentdir
-		err = a.copyToCurrentDir()
-		if err != nil {
-			glg.Error(err)
-		}
-
-		return
-	}()
 
 	//1. loop over install candidates
 	installElastic := false
@@ -90,11 +63,6 @@ func (a *AppInstaller) InstallOdysseiaComplete() error {
 		if err != nil {
 			return err
 		}
-		err := a.setElasticSettings()
-		if err != nil {
-			return err
-		}
-
 	}
 
 	//2. install perikles

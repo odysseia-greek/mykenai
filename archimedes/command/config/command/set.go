@@ -8,7 +8,6 @@ import (
 	"github.com/odysseia-greek/mykenai/archimedes/util"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -17,7 +16,9 @@ import (
 
 type Settings struct {
 	SourcePath  string `yaml:"sourcePath"`
-	OlymposPath string `yaml:"olymposPath"`
+	OlympiaPath string `yaml:"olympiaPath"`
+	DelphiPath  string `yaml:"delphiPath"`
+	AgoraPath   string `yaml:"agoraPath"`
 	HelmPath    string `yaml:"helmPath"`
 }
 
@@ -118,7 +119,7 @@ func ReadOutConfig() (*Settings, error) {
 	}
 
 	settingsPath := filepath.Join(homeDir, command.ConfigFilePath, command.SettingsName)
-	cfg, err := ioutil.ReadFile(settingsPath)
+	cfg, err := os.ReadFile(settingsPath)
 	if err != nil {
 		return nil, err
 	}
@@ -138,7 +139,7 @@ func Gather(sourcePath, helmPath string) (*Settings, error) {
 			return err
 		}
 
-		files, err := ioutil.ReadDir(input)
+		files, err := os.ReadDir(input)
 		if err != nil {
 			return err
 		}
@@ -178,7 +179,7 @@ func Gather(sourcePath, helmPath string) (*Settings, error) {
 
 	if helmPath == "" {
 		mykenaiPath := filepath.Join(sourcePath, command.DefaultMykenai)
-		files, err := ioutil.ReadDir(mykenaiPath)
+		files, err := os.ReadDir(mykenaiPath)
 		if err != nil {
 			return nil, err
 		}
@@ -209,10 +210,14 @@ func Gather(sourcePath, helmPath string) (*Settings, error) {
 		glg.Infof("HelmPath has been set to: %s", helmPath)
 	}
 
-	olymposPath := filepath.Join(sourcePath, command.Olympos)
+	olympiaPath := filepath.Join(sourcePath, command.Olympia)
+	agoraPath := filepath.Join(sourcePath, command.Agora)
+	delphiPath := filepath.Join(sourcePath, command.Delphi)
 
 	return &Settings{
-		OlymposPath: olymposPath,
+		OlympiaPath: olympiaPath,
+		AgoraPath:   agoraPath,
+		DelphiPath:  delphiPath,
 		SourcePath:  sourcePath,
 		HelmPath:    helmPath,
 	}, nil
@@ -231,7 +236,7 @@ func DownloadRepos(downloadPath string) (*Settings, error) {
 	source := "source"
 
 	projects := map[string]string{
-		source: "olympos",
+		source: "olympia",
 		helm:   "mykenai",
 	}
 
@@ -250,7 +255,7 @@ func DownloadRepos(downloadPath string) (*Settings, error) {
 
 		switch projectType {
 		case source:
-			settings.OlymposPath = path
+			settings.OlympiaPath = path
 		case helm:
 			helmPath := filepath.Join(path, command.DefaultNamespace, "charts")
 			settings.HelmPath = helmPath

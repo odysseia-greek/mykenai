@@ -5,10 +5,8 @@ import (
 	"github.com/odysseia-greek/mykenai/archimedes/command/chart"
 	"github.com/odysseia-greek/mykenai/archimedes/command/config"
 	"github.com/odysseia-greek/mykenai/archimedes/command/images"
-	"github.com/odysseia-greek/mykenai/archimedes/command/kubernetes"
 	"github.com/odysseia-greek/mykenai/archimedes/command/odysseia"
 	"github.com/odysseia-greek/mykenai/archimedes/command/parse"
-	"github.com/odysseia-greek/mykenai/archimedes/command/vault"
 	"github.com/spf13/cobra"
 	"strings"
 )
@@ -44,8 +42,6 @@ func main() {
 	rootCmd.AddCommand(
 		images.Manager(),
 		parse.Manager(),
-		vault.Manager(),
-		kubernetes.Manager(),
 		odysseia.Manager(),
 		config.Manager(),
 		chart.Manager(),

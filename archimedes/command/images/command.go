@@ -13,7 +13,6 @@ func Manager() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		command.CreateImages(),
 		command.CreateImagesFromRepo(),
 		command.CreateSingleImage(),
 	)

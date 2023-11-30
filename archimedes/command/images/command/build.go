@@ -8,23 +8,6 @@ import (
 	"path/filepath"
 )
 
-func buildImageWithLocalFile(projectPath, projectName, tag, dest string) error {
-	glg.Info("****** 🖊️ Tagging Container Image 🖊️ ******")
-	imageName := fmt.Sprintf("%s/%s:%s", dest, projectName, tag)
-	glg.Infof("****** 📗 Tagged Image %s 📗 ******", imageName)
-
-	glg.Info("****** 🔨 Building Container Image 🔨 ******")
-	buildCommand := fmt.Sprintf("docker buildx build --platform=linux/arm64,linux/amd64 --build-arg project_name=%s -f %s -t %s . --push", projectName, dockerFile, imageName)
-	err := util.ExecCommand(buildCommand, projectPath)
-	if err != nil {
-		return err
-	}
-
-	glg.Info("****** 🔱 Image Done 🔱 ******")
-
-	return err
-}
-
 func buildLocal(path, projectName string) error {
 	for _, arch := range ARCHS {
 

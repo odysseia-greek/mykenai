@@ -4,8 +4,8 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/kpango/glg"
+	"github.com/odysseia-greek/agora/plato/certificates"
 	"github.com/odysseia-greek/mykenai/archimedes/command"
-	"github.com/odysseia-greek/plato/certificates"
 	"strings"
 	"time"
 )

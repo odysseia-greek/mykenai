@@ -1,10 +1,8 @@
 package install
 
 import (
-	"github.com/odysseia-greek/mykenai/archimedes/command"
+	kubernetes "github.com/odysseia-greek/agora/thales"
 	"github.com/odysseia-greek/mykenai/archimedes/util/helm"
-	"github.com/odysseia-greek/plato/harbor"
-	kubernetes "github.com/odysseia-greek/thales"
 )
 
 type AppInstaller struct {
@@ -25,8 +23,6 @@ type AppInstaller struct {
 	Charts            Themistokles
 	Kube              kubernetes.KubeClient
 	Helm              helm.HelmClient
-	Harbor            harbor.Client
-	Config            command.CurrentInstallConfig
 	ValueConfig       map[string]interface{}
 }
 
@@ -37,7 +33,6 @@ type Themistokles struct {
 	Homeros       string
 	Vault         string
 	Solon         string
-	Harbor        string
 	Kibana        string
 	Ploutarchos   string
 	Xerxes        string
