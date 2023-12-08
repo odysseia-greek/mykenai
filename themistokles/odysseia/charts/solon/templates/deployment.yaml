@@ -8,12 +8,12 @@
       serviceAccountName: {{ .Values.serviceAccountName }}
       initContainers:
         - name: drakon
-          {{- if .Values.commonConfig.config.externalRepo | quote }}
-          image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.init.repo }}:{{ .Values.images.init.tag }}
+          {{- if .Values.global.commonConfig.config.externalRepo | quote }}
+          image: {{ .Values.global.commonConfig.images.imageRepo}}{{ .Values.images.init.repo }}:{{ .Values.images.init.tag }}
           {{ else }}
           image: {{ .Values.images.init.repo }}:{{ .Values.images.init.tag }}
           {{- end}}
-          imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
+          imagePullPolicy: {{ .Values.global.commonConfig.config.pullPolicy }}
           env:
           - name: POD_NAME
             valueFrom:
@@ -44,12 +44,12 @@
               mountPath: {{ .Values.tlsConfig.elastic.path }}
               readOnly: true
         - name: peisistratos
-          {{- if .Values.commonConfig.config.externalRepo | quote }}
-          image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.initSeeder.repo }}:{{ .Values.images.initSeeder.tag }}
+          {{- if .Values.global.commonConfig.config.externalRepo | quote }}
+          image: {{ .Values.global.commonConfig.images.imageRepo}}{{ .Values.images.initSeeder.repo }}:{{ .Values.images.initSeeder.tag }}
           {{ else }}
           image: {{ .Values.images.init.repo }}:{{ .Values.images.initSeeder.tag }}
           {{- end}}
-          imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
+          imagePullPolicy: {{ .Values.global.commonConfig.config.pullPolicy }}
           env:
             - name: POD_NAME
               valueFrom:
@@ -61,10 +61,10 @@
                   fieldPath: metadata.namespace
             - name: AUTH_METHOD
               value: {{ .Values.envVariables.peisistratos.vaultAuthMethod }}
+          {{- if .Values.envVariables.peisistratos.unsealProvider }}
           envFrom:
             - configMapRef:
                 name: {{ .Values.name }}
-          {{- if .Values.envVariables.peisistratos.unsealProvider }}
           envFrom:
             - configMapRef:
                 name: gcpconfig
@@ -75,12 +75,12 @@
               readOnly: true
       containers:
         - name: "{{ .Values.name }}"
-          {{- if .Values.commonConfig.config.externalRepo | quote }}
-          image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.odysseiaapi.repo }}:{{ .Values.images.odysseiaapi.tag }}
+          {{- if .Values.global.commonConfig.config.externalRepo | quote }}
+          image: {{ .Values.global.commonConfig.images.imageRepo}}{{ .Values.images.odysseiaapi.repo }}:{{ .Values.images.odysseiaapi.tag }}
           {{ else }}
           image: {{ .Values.images.odysseiaapi.repo }}:{{ .Values.images.odysseiaapi.tag }}
           {{- end}}
-          imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
+          imagePullPolicy: {{ .Values.global.commonConfig.config.pullPolicy }}
           env:
           - name: NAMESPACE
             valueFrom:
@@ -109,21 +109,21 @@
               readOnly: true
             {{- end }}
           ports:
-            - containerPort: {{ .Values.commonConfig.envVariables.https.port }}
+            - containerPort: {{ .Values.envVariables.solon.port }}
           livenessProbe:
             httpGet:
               scheme: HTTPS
               path: /solon/v1/health
-              port: {{ .Values.commonConfig.envVariables.https.port }}
-            initialDelaySeconds: {{ .Values.commonConfig.config.initialDelayLiveness }}
-            periodSeconds: {{ .Values.commonConfig.config.periodSeconds }}
+              port: {{ .Values.envVariables.solon.port }}
+            initialDelaySeconds: {{ .Values.global.commonConfig.config.initialDelayLiveness }}
+            periodSeconds: {{ .Values.global.commonConfig.config.periodSeconds }}
           readinessProbe:
             httpGet:
               scheme: HTTPS
               path: /solon/v1/ping
-              port: {{ .Values.commonConfig.envVariables.https.port }}
-            initialDelaySeconds: {{ .Values.commonConfig.config.initialDelayReadiness }}
-            periodSeconds: {{ .Values.commonConfig.config.periodSeconds }}
+              port: {{ .Values.envVariables.solon.port }}
+            initialDelaySeconds: {{ .Values.global.commonConfig.config.initialDelayReadiness }}
+            periodSeconds: {{ .Values.global.commonConfig.config.periodSeconds }}
           resources:
             requests:
               memory: {{ .Values.services.solon.requests.memory }}

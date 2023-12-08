@@ -14,12 +14,12 @@
 {{- include "koinos.tracer" . | indent 8 }}
 {{- include "koinos.api" . | indent 8 }}
       volumes:
-        - name: {{ .Values.commonConfig.tlsConfig.vault.name }}
+        - name: {{ .Values.global.commonConfig.tlsConfig.vault.name }}
           secret:
-            secretName: {{ .Values.commonConfig.tlsConfig.vault.secretName }}
-        - name: {{ .Values.commonConfig.tlsConfig.tracer.name }}
+            secretName: {{ .Values.global.commonConfig.tlsConfig.vault.secretName }}
+        - name: {{ .Values.global.commonConfig.tlsConfig.tracer.name }}
           secret:
-            secretName: {{ .Values.commonConfig.tlsConfig.tracer.secretName }}
+            secretName: {{ .Values.global.commonConfig.tlsConfig.tracer.secretName }}
                 {{- range .Values.tlsConfig.mounts }}
         - name: {{ .name }}
           secret:

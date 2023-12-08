@@ -3,12 +3,12 @@
       containers:
 {{- include "koinos.tracer" . | indent 8 }}
         - name: {{ .Values.name }}
-          {{- if .Values.commonConfig.config.externalRepo | quote }}
-          image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.odysseiaapi.repo }}:{{ .Values.images.odysseiaapi.tag }}
+          {{- if .Values.global.commonConfig.config.externalRepo | quote }}
+          image: {{ .Values.global.commonConfig.images.imageRepo}}{{ .Values.images.odysseiaapi.repo }}:{{ .Values.images.odysseiaapi.tag }}
           {{ else }}
           image: {{ .Values.images.odysseiaapi.repo }}:{{ .Values.images.odysseiaapi.tag }}
           {{- end}}
-          imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
+          imagePullPolicy: {{ .Values.global.commonConfig.config.pullPolicy }}
           env:
             - name: TRACE_CONFIG_PATH
               value: /etc/config/trace-config.json
@@ -43,6 +43,6 @@
         - name: trace-config-volume
           configMap:
             name: {{ .Values.traceConfig }}
-        - name: {{ .Values.commonConfig.tlsConfig.tracer.name }}
+        - name: {{ .Values.global.commonConfig.tlsConfig.tracer.name }}
           secret:
-            secretName: {{ .Values.commonConfig.tlsConfig.tracer.secretName }}
+            secretName: {{ .Values.global.commonConfig.tlsConfig.tracer.secretName }}

@@ -1,4 +1,4 @@
-{{ if eq .Values.commonConfig.config.environment "production" }}
+{{ if eq .Values.global.commonConfig.config.environment "production" }}
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
@@ -8,8 +8,8 @@ metadata:
     heritage: {{ .Release.Service | quote }}
     release: {{ .Release.Name | quote }}
     chart: "{{ .Chart.Name }}"
-    env: {{ .Values.commonConfig.config.environment }}
-    variant: {{ .Values.commonConfig.config.kubeVariant }}
+    env: {{ .Values.global.commonConfig.config.environment }}
+    variant: {{ .Values.global.commonConfig.config.kubeVariant }}
     app: {{ .Values.name }}
     version: {{ .Values.config.elasticVersion }}
 spec:
