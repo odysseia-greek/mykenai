@@ -34,9 +34,6 @@ If your SourcePath has not been set it will prompt you to provide one. DownloadP
 			odysseiaSettings, err := settings.ReadOutConfig()
 			if err != nil {
 				glg.Error(err)
-				glg.Warn("warning! You are about to install without a configfile this means archimedes will download everything needed to /tmp. After a reboot you will loose your helm charts. To avoid this from happening please run archimedes config set")
-
-				odysseiaSettings, _ = settings.DownloadRepos("")
 			}
 
 			if helmPath == "" && odysseiaSettings.HelmPath == "" {

@@ -16,7 +16,7 @@ spec:
         version: {{ .Values.images.stateful.tag }}
       annotations:
         perikles/hostname: "eupalinos"
-        perikles/validity: "365"
+        perikles/validity: "35"
     spec:
       terminationGracePeriodSeconds: 3
       {{- if .Values.config.privateImagesInRepo | quote }}

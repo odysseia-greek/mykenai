@@ -1,7 +1,6 @@
 package command
 
 import (
-	"fmt"
 	"github.com/kpango/glg"
 	"github.com/manifoldco/promptui"
 	"github.com/odysseia-greek/mykenai/archimedes/command"
@@ -10,8 +9,6 @@ import (
 	"gopkg.in/yaml.v3"
 	"os"
 	"path/filepath"
-
-	"github.com/go-git/go-git/v5"
 )
 
 type Settings struct {
@@ -24,10 +21,8 @@ type Settings struct {
 
 func Set() *cobra.Command {
 	var (
-		sourcePath   string
-		helmPath     string
-		downloadPath string
-		download     bool
+		sourcePath string
+		helmPath   string
 	)
 	cmd := &cobra.Command{
 		Use:   "set",
@@ -36,21 +31,11 @@ func Set() *cobra.Command {
 If your SourcePath has not been set it will prompt you to provide one. DownloadPath will default to /tmp
 - SourcePath
 - HelmPath
-- Download
-- DownloadPath
 `,
 		Run: func(cmd *cobra.Command, args []string) {
 			glg.Green("Creating odysseia settings so all other commands can use these defaults")
 			odysseiaSettings := &Settings{}
 			var err error
-
-			if download {
-				glg.Infof("Odysseia will be downloaded as a project and stored here: %s", downloadPath)
-				odysseiaSettings, err = DownloadRepos(downloadPath)
-				if err != nil {
-					glg.Fatal(err)
-				}
-			}
 
 			if sourcePath == "" && odysseiaSettings.SourcePath == "" {
 				odysseiaSettings, err = Gather("", "")
@@ -85,8 +70,6 @@ If your SourcePath has not been set it will prompt you to provide one. DownloadP
 	}
 	cmd.PersistentFlags().StringVarP(&helmPath, "helm", "m", "", "where to find the helm chart")
 	cmd.PersistentFlags().StringVarP(&sourcePath, "source", "s", "", "where to find the source code")
-	cmd.PersistentFlags().BoolVarP(&download, "download", "d", false, "set this flag to true if you want to download")
-	cmd.PersistentFlags().StringVarP(&downloadPath, "downloadPath", "p", "/tmp", "where to download odysseia to")
 
 	return cmd
 }
@@ -222,45 +205,4 @@ func Gather(sourcePath, helmPath string) (*Settings, error) {
 		HelmPath:    helmPath,
 	}, nil
 
-}
-
-func DownloadRepos(downloadPath string) (*Settings, error) {
-	var settings Settings
-	if downloadPath == "" {
-		downloadPath = "/tmp"
-	}
-
-	settings.SourcePath = downloadPath
-
-	helm := "helm"
-	source := "source"
-
-	projects := map[string]string{
-		source: "olympia",
-		helm:   "mykenai",
-	}
-
-	for projectType, repo := range projects {
-		gitUrl := fmt.Sprintf("%s/%s.git", command.GitPath, repo)
-		glg.Debugf("downloading minimum needed repos to run odysseia: %s", gitUrl)
-		path := filepath.Join(downloadPath, command.DefaultNamespace, repo)
-		_, err := git.PlainClone(path, false, &git.CloneOptions{
-			URL:      gitUrl,
-			Progress: os.Stdout,
-		})
-
-		if err != nil {
-			return nil, err
-		}
-
-		switch projectType {
-		case source:
-			settings.OlympiaPath = path
-		case helm:
-			helmPath := filepath.Join(path, command.DefaultNamespace, "charts")
-			settings.HelmPath = helmPath
-		}
-	}
-
-	return &settings, nil
 }

@@ -865,9 +865,9 @@ server:
         tls_disable = false
         address = "[::]:8200"
         cluster_address = "[::]:8201"
-        tls_cert_file = "/vault/userconfig/vault-server-tls/vault.crt"
-        tls_key_file  = "/vault/userconfig/vault-server-tls/vault.key"
-        tls_client_ca_file = "/vault/userconfig/vault-server-tls/vault.ca"
+        tls_cert_file = "/vault/userconfig/vault-server-tls/tls.crt"
+        tls_key_file  = "/vault/userconfig/vault-server-tls/tls.key"
+        tls_client_ca_file = "/vault/userconfig/vault-server-tls/tls.ca"
       }
       storage "raft" {
         path = "/vault/data"

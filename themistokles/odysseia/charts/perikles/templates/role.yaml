@@ -16,7 +16,8 @@ rules:
       - '*'
   - apiGroups: [""] # "" indicates the core API group
     resources: ["secrets"]
-    verbs: ["get", "list", "update", "create"]
+    verbs: ["get", "list", "update", "create", "delete"]
   - apiGroups: ["apps"] # "" indicates the core API group
-    resources: ["deployments"]
-    verbs: ["update", "get"]
+    resources: ["deployments", "statefulsets"]
+    verbs: ["update", "get", "list"]
+
