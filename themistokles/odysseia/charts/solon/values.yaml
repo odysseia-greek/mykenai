@@ -1,31 +1,14 @@
-config:
-    environment: local
-    externalRepo: true
-    harborPullPolicy: Always
-    initialDelayLiveness: 20
-    initialDelayReadiness: 1
-    kubeVariant: minikube
-    periodSeconds: 20
-    privateImagesInRepo: false
-    pullPolicy: Always
-    replicas:
-        high: 4
-        low: 1
-        medium: 2
-    sidecarOverwrite: true
-    tls: true
+name: solon
+serviceAccountName: solon-access-sa
+namespace: odysseia
+replicas: 1
+
 envVariables:
-    elasticService: https://aristoteles-es-http:9200
-    elasticUser: elastic
     peisistratos:
         unsealProvider: gcp
         vaultAuthMethod: token
     solon:
-        port: 5443
         vaultAuthMethod: kubernetes
-        vaultRole: solon
-    solonService: https://solon:5443
-    vaultService: https://vault:8200
 images:
     imageRepo: ghcr.io/odysseia-greek/
     pullSecret: harbor-images
@@ -38,11 +21,6 @@ images:
     initSeeder:
         repo: peisistratos
         tag: v0.5.0
-namespaceOverride: odysseia
-role:
-    name: api-access
-serviceAccount:
-    name: solon-access-sa
 services:
     backend:
         labels:
@@ -66,7 +44,6 @@ tlsConfig:
         - name: solon-certs
           path: /etc/certs/solon
           secretName: solon-tls-certs
-    rootPath: /etc/certs
     vault:
         enabled: true
         name: vault-server-tls

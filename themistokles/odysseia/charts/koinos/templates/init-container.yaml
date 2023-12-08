@@ -1,0 +1,36 @@
+{{- define "koinos.initContainer" -}}
+{{- println -}}
+- name: "{{ .Values.global.commonConfig.images.init.repo }}"
+  {{- if .Values.global.commonConfig.config.externalRepo | quote }}
+  image: {{ .Values.global.commonConfig.images.imageRepo}}{{ .Values.global.commonConfig.images.init.repo }}:{{ .Values.global.commonConfig.images.init.tag }}
+    {{ else }}
+  image: {{ .Values.global.commonConfig.images.init.repo }}:{{ .Values.global.commonConfig.images.init.tag }}
+  {{- end}}
+  imagePullPolicy: {{ .Values.global.commonConfig.config.pullPolicy }}
+  env:
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    - name: NAMESPACE
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
+    - name: ELASTIC_ROLE
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.annotations['odysseia-greek/role']
+    - name: ELASTIC_ACCESS
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.annotations['odysseia-greek/access']
+  envFrom:
+    - configMapRef:
+        name: {{ .Values.name }}
+  volumeMounts:
+    {{- range .Values.global.commonConfig.tlsConfig.mounts }}
+    - name: {{ .name }}
+      mountPath: {{ .path }}
+      readOnly: true
+    {{- end }}
+{{- end -}}

@@ -1,0 +1,13 @@
+{{- define "koinos.configmap" -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.global.commonConfig.namespace }}
+data:
+  ELASTIC_SEARCH_SERVICE: "{{ .Values.global.commonConfig.envVariables.elasticService }}"
+  ENV: "{{ .Values.global.commonConfig.config.environment }}"
+  TLSENABLED: "{{ .Values.global.commonConfig.config.tls }}"
+  CERT_ROOT: "{{ .Values.global.commonConfig.tlsConfig.rootPath }}"
+  SOLON_SERVICE: "{{ .Values.global.commonConfig.envVariables.solonService }}"
+{{- end -}}

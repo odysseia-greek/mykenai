@@ -1,5 +1,13 @@
 apiVersion: v2
 appVersion: 0.6.0
-description: Docs relating to odysseia
+description: The docs service within odysseia-greek.
 name: ploutarchos
 version: 0.1.1
+home: https://www.odysseia-greek.com
+sources:
+  - https://github.com/odysseia-greek/olympia
+  - https://github.com/odysseia-greek/olympia/tree/main/ploutarchos
+dependencies:
+  - name: koinos
+    version: ">= 0.1.0"
+    repository: "file://../koinos"

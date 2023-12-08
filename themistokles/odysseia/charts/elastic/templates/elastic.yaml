@@ -1,17 +1,16 @@
-{{ if not (eq .Values.config.environment "production") }}
+{{ if not (eq .Values.global.commonConfig.config.environment "production") }}
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
-  name: "{{ template "chart.name" . }}"
-  namespace: {{ template "namespace" . }}
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
   labels:
     heritage: {{ .Release.Service | quote }}
     release: {{ .Release.Name | quote }}
     chart: "{{ .Chart.Name }}"
-    env: {{ .Values.config.environment }}
-    variant: {{ .Values.config.kubeVariant }}
-    variant: {{ .Values.config.kubeVariant }}
-    app: "{{ template "chart.name" . }}"
+    env: {{ .Values.global.commonConfig.config.environment }}
+    variant: {{ .Values.global.commonConfig.config.kubeVariant }}
+    app: {{ .Values.name }}
     version: {{ .Values.config.elasticVersion }}
 spec:
   version: {{ .Values.config.elasticVersion }}

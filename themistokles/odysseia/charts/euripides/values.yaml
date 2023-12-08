@@ -1,80 +1,36 @@
-config:
-    environment: minikube
-    externalRepo: true
-    initialDelayLiveness: 20
-    initialDelayReadiness: 1
-    periodSeconds: 20
-    privateImagesInRepo: false
-    pullPolicy: Always
-    replicas:
-        high: 3
-        low: 1
-        medium: 2
-    tls: true
+name: euripides
+namespace: odysseia
+jobName: anaximenes
+livenessPath: /euripides/v1/health
+readinessPath: /euripides/v1/ping
+replicas: 2
 envVariables:
-    elasticService: https://aristoteles-es-http:9200
-    odysseiaapi:
-        port: 8080
-    sidecar:
-        port: 50051
-    solonService: https://solon:5443
-    vaultService: https://vault:8200
+    maxAge: 14
 images:
-    imageRepo: ghcr.io/odysseia-greek/
-    pullSecret: harbor-images
-    sidecar:
-        repo: ptolemaios
-        tag: v0.5.0
-    init:
-        repo: periandros
-        tag: v0.4.0
     odysseiaapi:
         repo: euripides
         tag: v0.2.1
     seeder:
         repo: anaximenes
-        tag: v0.7.3
-namespaceOverride: odysseia
+        tag: v0.7.2
 services:
-    backend:
-        labels:
-            domain: backend
-    init:
-        name: periandros
     odysseiaapi:
         access: tracing
         limits:
             cpu: 600m
             memory: 128Mi
-        name: euripides
+        name:
         requests:
             cpu: 300m
             memory: 64Mi
         role: api
     seeder:
         access: tracing
-        name: anaximenes
         role: alias
-    sidecar:
-        limits:
-            cpu: 100m
-            memory: 64Mi
-        name: ptolemaios
-        requests:
-            cpu: 50m
-            memory: 32Mi
 tlsConfig:
-    elastic:
-        name: elastic-certificate-pem
-        path: /app/config/certs
-        secretName: elastic-certificate-pem
     mounts:
         - name: solon-certs
           path: /etc/certs/solon
           secretName: solon-tls-certs
     rootPath: /etc/certs
-    vault:
-        enabled: true
-        name: vault-server-tls
-        path: /etc/certs/vault
-        secretName: vault-server-tls
+

@@ -12,8 +12,8 @@ webhooks:
         scope:       "Namespaced"
     clientConfig:
       service:
-        name: {{ template "perikles.name" . }}
-        namespace: {{ template "perikles.namespace" . }}
+        name: {{ .Values.name }}
+        namespace: {{ .Values.namespace }}
         path: "/perikles/v1/validate"
         port: 443
       caBundle: {{ .Values.config.caBundle }}

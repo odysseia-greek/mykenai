@@ -1,37 +1,12 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: "{{ template "perikles.uname" . }}"
-  namespace: {{ template "perikles.namespace" . }}
-  labels:
-    heritage: {{ .Release.Service | quote }}
-    release: {{ .Release.Name | quote }}
-    chart: "{{ .Chart.Name }}"
-    env: {{ .Values.config.environment }}
-    variant: {{ .Values.config.kubeVariant }}
-    app: "{{ template "perikles.uname" . }}"
-    {{- range $key, $value := .Values.services.backend.labels }}
-    {{ $key }}: {{ $value | quote }}
-  {{- end }}
-spec:
-  replicas: {{ int .Values.config.replicas.low }}
-  selector:
-    matchLabels:
-      app: "{{ template "perikles.uname" . }}"
-  template:
-    metadata:
-      labels:
-        app: {{ template "perikles.uname" . }}
-        release: {{ .Release.Name }}
-        version: {{ .Values.images.tag }}
+{{- include "koinos.deploymentbase" .}}
     spec:
-      serviceAccountName: {{ template "perikles.serviceAccountName" . }}
+      serviceAccountName: {{ .Values.serviceAccountName }}
       {{- if .Values.config.externalRepo | quote }}
       imagePullSecrets:
         - name: {{ .Values.images.pullSecret }}
       {{- end}}
       containers:
-        - name: "{{ template "perikles.uname" . }}"
+        - name: {{ .Values.name }}
           {{- if .Values.config.externalRepo | quote }}
           image: {{ .Values.images.imageRepo}}{{ .Values.images.odysseiaapi.repo }}:{{ .Values.images.odysseiaapi.tag }}
           imagePullPolicy: {{ .Values.config.harborPullPolicy }}

@@ -1,8 +1,8 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  namespace: {{ template "namespace" . }}
-  name: {{ template "roleName" $ }}
+  name: {{ .Values.jobName }}
+  namespace: {{ .Values.namespace }}
   labels:
     heritage: {{ .Release.Service | quote }}
     release: {{ .Release.Name | quote }}

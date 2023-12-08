@@ -1,0 +1,27 @@
+{{- define "koinos.jobbase" -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.jobName }}
+  namespace: {{ .Values.global.commonConfig.namespace }}
+  labels:
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: "{{ .Chart.Name }}"
+    env: {{ .Values.global.commonConfig.config.environment }}
+    variant: {{ .Values.global.commonConfig.config.kubeVariant }}
+    app: {{ .Values.jobName }}
+spec:
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.jobName }}
+        release: {{ .Release.Name }}
+        version: {{ .Values.images.seeder.tag }}
+      annotations:
+      {{- if and .Values.services.seeder.role .Values.services.seeder.access }}
+        odysseia-greek/role: {{ .Values.services.seeder.role }}
+        odysseia-greek/access: {{ .Values.services.seeder.access }}
+      {{- end }}
+        perikles/accesses: solon
+{{- end }}

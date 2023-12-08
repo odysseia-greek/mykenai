@@ -20,3 +20,6 @@ rules:
   - apiGroups: ["apps"] # "" indicates the core API group
     resources: ["deployments"]
     verbs: ["update", "get"]
+  - apiGroups: ["apps"]
+    resources: ["statefulsets"]
+    verbs: ["get", "list"]

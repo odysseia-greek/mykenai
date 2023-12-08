@@ -47,7 +47,7 @@ serviceAccount:
 
 podAnnotations: {}
 
-# Security items common to everything in the pod.  Here we require that it
+# Security items koinos to everything in the pod.  Here we require that it
 # does not run as the user defined in the image, literally named "nonroot".
 podSecurityContext:
   runAsNonRoot: true

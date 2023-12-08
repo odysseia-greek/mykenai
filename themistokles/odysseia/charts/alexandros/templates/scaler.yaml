@@ -1,23 +1,9 @@
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: {{ .Values.services.scaler.name }}
-  namespace: {{ template "namespace" . }}
-  labels:
-    heritage: {{ .Release.Service | quote }}
-    release: {{ .Release.Name | quote }}
-    chart: "{{ .Chart.Name }}"
-    env: {{ .Values.config.environment }}
-    variant: {{ .Values.config.kubeVariant }}
-    app: "{{ template "odysseiaapi.uname" . }}"
-    {{- range $key, $value := .Values.services.backend.labels }}
-    {{ $key }}: {{ $value | quote }}
-    {{- end }}
+{{- include "koinos.autoscaler" .}}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: "{{ template "odysseiaapi.uname" . }}"
+    name: {{ .Values.name }}
   minReplicas: 2
   maxReplicas: 8
   metrics:

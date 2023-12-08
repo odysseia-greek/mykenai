@@ -1,0 +1,4 @@
+{{- include "koinos.configmap" . -}}
+{{ println}}
+  MAX_NGRAM: {{ .Values.services.seeder.maxGram | quote }}
+  MIN_NGRAM: {{ .Values.services.seeder.minGram | quote }}

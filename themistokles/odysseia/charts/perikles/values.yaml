@@ -1,3 +1,9 @@
+name: perikles
+serviceAccountName: periklessa
+namespace: odysseia
+replicas: 1
+
+
 clusterRole:
     name: odysseia-greek-crd
 clusterRoleBinding:
@@ -31,7 +37,6 @@ images:
     odysseiaapi:
         repo: perikles
         tag: v0.5.0
-namespaceOverride: odysseia
 role:
     name: perikles-api-access
 roleBinding:

@@ -1,5 +1,13 @@
 apiVersion: v2
 appVersion: 0.8.0
-description: One cannot know before one has learned
+description: The gateway service within odysseia-greek.
 name: homeros
 version: 0.1.1
+home: https://www.odysseia-greek.com
+sources:
+  - https://github.com/odysseia-greek/olympia
+  - https://github.com/odysseia-greek/olympia/tree/main/homeros
+dependencies:
+  - name: koinos
+    version: ">= 0.1.0"
+    repository: "file://../koinos"

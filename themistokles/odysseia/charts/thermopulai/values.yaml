@@ -5,6 +5,8 @@ envVariables:
     port: 5000
   dionysios:
     port: 5000
+  euripdes:
+    port: 5000
   sokrates:
     port: 5000
   herodotos:
@@ -14,9 +16,8 @@ envVariables:
   homeros:
     port: 8080
   ploutarchos:
-    port: 3000
-  xerxes:
-    port: 8089
+    port: 5000
+
 
 config:
   apis: true

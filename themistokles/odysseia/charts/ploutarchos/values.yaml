@@ -1,33 +1,21 @@
-config:
-    environment: local
-    externalRepo: true
-    initialDelayLiveness: 20
-    initialDelayReadiness: 1
-    kubeVariant: minikube
-    periodSeconds: 20
-    port: 3000
-    privateImagesInRepo: false
-    pullPolicy: Always
-    replicas:
-        high: 4
-        low: 1
-        medium: 2
+name: ploutarchos
+namespace: odysseia
+replicas: 1
+livenessPath: /ploutarchos/v1/health
+readinessPath: /ploutarchos/v1/ping
 images:
     imageRepo: ghcr.io/odysseia-greek/
-    pullSecret: harbor-images
     odysseiaapi:
         repo: ploutarchos
         tag: v0.6.0
-namespaceOverride: odysseia
 services:
     docs:
         labels:
             domain: docs
-    openapi:
+    odysseiaapi:
         limits:
             cpu: 100m
             memory: 32Mi
-        name: ploutarchos
         requests:
             cpu: 50m
             memory: 16Mi
