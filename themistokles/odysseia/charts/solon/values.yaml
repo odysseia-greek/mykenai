@@ -2,25 +2,25 @@ name: solon
 serviceAccountName: solon-access-sa
 namespace: odysseia
 replicas: 1
+
 envVariables:
     peisistratos:
+        unsealProvider: gcp
         vaultAuthMethod: token
-        autoUnseal: true
-        autoUnsealMethod: gcp
-        configmapName: gcpconfig
     solon:
         vaultAuthMethod: kubernetes
 images:
     imageRepo: ghcr.io/odysseia-greek/
+    pullSecret: harbor-images
     init:
         repo: drakon
-        tag: v0.0.11
+        tag: v0.4.0
     odysseiaapi:
         repo: solon
-        tag: v0.0.11
+        tag: v0.5.0
     initSeeder:
         repo: peisistratos
-        tag: v0.0.11
+        tag: v0.5.0
 services:
     backend:
         labels:

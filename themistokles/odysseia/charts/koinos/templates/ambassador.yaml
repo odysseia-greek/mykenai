@@ -1,16 +1,16 @@
 {{- define "koinos.ambassador" -}}
 {{- println -}}
-- name: "{{ .Values.commonConfig.images.sidecar.repo }}"
-  {{- if .Values.commonConfig.config.externalRepo | quote }}
-  image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.commonConfig.images.sidecar.repo }}:{{ .Values.commonConfig.images.sidecar.tag }}
+- name: "{{ .Values.global.commonConfig.images.sidecar.repo }}"
+  {{- if .Values.global.commonConfig.config.externalRepo | quote }}
+  image: {{ .Values.global.commonConfig.images.imageRepo}}{{ .Values.global.commonConfig.images.sidecar.repo }}:{{ .Values.global.commonConfig.images.sidecar.tag }}
   {{ else }}
-  image: {{ .Values.commonConfig.images.sidecar.repo }}:{{ .Values.commonConfig.images.sidecar.tag }}
+  image: {{ .Values.global.commonConfig.images.sidecar.repo }}:{{ .Values.global.commonConfig.images.sidecar.tag }}
   {{- end}}
   env:
     - name: VAULT_SERVICE
-      value: {{ .Values.commonConfig.envVariables.vaultService }}
+      value: {{ .Values.global.commonConfig.envVariables.vaultService }}
     - name: VAULT_TLS
-      value:  {{ .Values.commonConfig.tlsConfig.vault.enabled | quote }}
+      value:  {{ .Values.global.commonConfig.tlsConfig.vault.enabled | quote }}
     - name: POD_NAME
       valueFrom:
         fieldRef:
@@ -19,22 +19,22 @@
     - configMapRef:
         name: {{ .Values.name }}
   ports:
-    - containerPort: {{ .Values.commonConfig.envVariables.sidecar.port }}
+    - containerPort: {{ .Values.global.commonConfig.envVariables.sidecar.port }}
   volumeMounts:
-    - name: {{ .Values.commonConfig.tlsConfig.vault.name }}
-      mountPath: {{ .Values.commonConfig.tlsConfig.vault.path }}
+    - name: {{ .Values.global.commonConfig.tlsConfig.vault.name }}
+      mountPath: {{ .Values.global.commonConfig.tlsConfig.vault.path }}
       readOnly: true
-      {{- range .Values.commonConfig.tlsConfig.mounts  }}
+      {{- range .Values.global.commonConfig.tlsConfig.mounts  }}
     - name: {{ .name }}
       mountPath: {{ .path }}
       readOnly: true
       {{- end }}
-  imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
+  imagePullPolicy: {{ .Values.global.commonConfig.config.pullPolicy }}
   resources:
     requests:
-      memory: {{ .Values.commonConfig.services.sidecar.requests.memory }}
-      cpu: {{ .Values.commonConfig.services.sidecar.requests.cpu }}
+      memory: {{ .Values.global.commonConfig.services.sidecar.requests.memory }}
+      cpu: {{ .Values.global.commonConfig.services.sidecar.requests.cpu }}
     limits:
-      memory: {{.Values.commonConfig.services.sidecar.limits.memory}}
-      cpu: {{.Values.commonConfig.services.sidecar.limits.cpu}}
+      memory: {{.Values.global.commonConfig.services.sidecar.limits.memory}}
+      cpu: {{.Values.global.commonConfig.services.sidecar.limits.cpu}}
 {{- end -}}

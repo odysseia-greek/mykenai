@@ -1,12 +1,12 @@
 {{- define "koinos.api" -}}
 {{- println -}}
 - name: "{{ .Values.name }}"
-  {{- if .Values.commonConfig.config.externalRepo | quote }}
-  image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.odysseiaapi.repo }}:{{ .Values.images.odysseiaapi.tag }}
+  {{- if .Values.global.commonConfig.config.externalRepo | quote }}
+  image: {{ .Values.global.commonConfig.images.imageRepo}}{{ .Values.images.odysseiaapi.repo }}:{{ .Values.images.odysseiaapi.tag }}
   {{ else }}
   image: {{ .Values.images.odysseiaapi.repo }}:{{ .Values.images.odysseiaapi.tag }}
   {{- end}}
-  imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
+  imagePullPolicy: {{ .Values.global.commonConfig.config.pullPolicy }}
   env:
     - name: POD_NAME
       valueFrom:
@@ -20,25 +20,25 @@
     - configMapRef:
         name: {{ .Values.name }}
   volumeMounts:
-    {{- range .Values.commonConfig.tlsConfig.mounts }}
+    {{- range .Values.global.commonConfig.tlsConfig.mounts }}
     - name: {{ .name }}
       mountPath: {{ .path }}
       readOnly: true
     {{- end }}
   ports:
-    - containerPort: {{ .Values.commonConfig.envVariables.odysseiaapi.port }}
+    - containerPort: {{ .Values.global.commonConfig.envVariables.odysseiaapi.port }}
   livenessProbe:
     httpGet:
       path: {{ .Values.livenessPath }}
-      port: {{ .Values.commonConfig.envVariables.odysseiaapi.port }}
-    initialDelaySeconds: {{ .Values.commonConfig.config.initialDelayLiveness }}
-    periodSeconds: {{ .Values.commonConfig.config.periodSeconds }}
+      port: {{ .Values.global.commonConfig.envVariables.odysseiaapi.port }}
+    initialDelaySeconds: {{ .Values.global.commonConfig.config.initialDelayLiveness }}
+    periodSeconds: {{ .Values.global.commonConfig.config.periodSeconds }}
   readinessProbe:
     httpGet:
       path: {{ .Values.readinessPath }}
-      port: {{ .Values.commonConfig.envVariables.odysseiaapi.port }}
-    initialDelaySeconds: {{ .Values.commonConfig.config.initialDelayReadiness }}
-    periodSeconds: {{ .Values.commonConfig.config.periodSeconds }}
+      port: {{ .Values.global.commonConfig.envVariables.odysseiaapi.port }}
+    initialDelaySeconds: {{ .Values.global.commonConfig.config.initialDelayReadiness }}
+    periodSeconds: {{ .Values.global.commonConfig.config.periodSeconds }}
   resources:
     requests:
       memory: {{ .Values.services.odysseiaapi.requests.memory }}

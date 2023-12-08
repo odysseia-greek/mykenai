@@ -1,12 +1,12 @@
 {{- define "koinos.initContainer" -}}
 {{- println -}}
-- name: "{{ .Values.commonConfig.images.init.repo }}"
-  {{- if .Values.commonConfig.config.externalRepo | quote }}
-  image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.commonConfig.images.init.repo }}:{{ .Values.commonConfig.images.init.tag }}
+- name: "{{ .Values.global.commonConfig.images.init.repo }}"
+  {{- if .Values.global.commonConfig.config.externalRepo | quote }}
+  image: {{ .Values.global.commonConfig.images.imageRepo}}{{ .Values.global.commonConfig.images.init.repo }}:{{ .Values.global.commonConfig.images.init.tag }}
     {{ else }}
-  image: {{ .Values.commonConfig.images.init.repo }}:{{ .Values.commonConfig.images.init.tag }}
+  image: {{ .Values.global.commonConfig.images.init.repo }}:{{ .Values.global.commonConfig.images.init.tag }}
   {{- end}}
-  imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
+  imagePullPolicy: {{ .Values.global.commonConfig.config.pullPolicy }}
   env:
     - name: POD_NAME
       valueFrom:
@@ -28,7 +28,7 @@
     - configMapRef:
         name: {{ .Values.name }}
   volumeMounts:
-    {{- range .Values.commonConfig.tlsConfig.mounts }}
+    {{- range .Values.global.commonConfig.tlsConfig.mounts }}
     - name: {{ .name }}
       mountPath: {{ .path }}
       readOnly: true

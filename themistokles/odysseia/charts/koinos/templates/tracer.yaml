@@ -1,10 +1,10 @@
 {{- define "koinos.tracer" -}}
 {{- println -}}
-- name: "{{ .Values.commonConfig.images.tracer.repo }}"
-  {{- if .Values.commonConfig.config.externalRepo | quote }}
-  image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.commonConfig.images.tracer.repo }}:{{ .Values.commonConfig.images.tracer.tag }}
+- name: "{{ .Values.global.commonConfig.images.tracer.repo }}"
+  {{- if .Values.global.commonConfig.config.externalRepo | quote }}
+  image: {{ .Values.global.commonConfig.images.imageRepo}}{{ .Values.global.commonConfig.images.tracer.repo }}:{{ .Values.global.commonConfig.images.tracer.tag }}
   {{ else }}
-  image: {{ .Values.commonConfig.images.tracer.repo }}:{{ .Values.commonConfig.images.tracer.tag }}
+  image: {{ .Values.global.commonConfig.images.tracer.repo }}:{{ .Values.global.commonConfig.images.tracer.tag }}
   {{- end}}
   env:
     - name: POD_NAME
@@ -29,17 +29,17 @@
     - configMapRef:
         name: {{ .Values.name }}
   ports:
-    - containerPort: {{ .Values.commonConfig.envVariables.tracer.port }}
-  imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
+    - containerPort: {{ .Values.global.commonConfig.envVariables.tracer.port }}
+  imagePullPolicy: {{ .Values.global.commonConfig.config.pullPolicy }}
   resources:
     requests:
-      memory: {{ .Values.commonConfig.services.tracer.requests.memory }}
-      cpu: {{ .Values.commonConfig.services.tracer.requests.cpu }}
+      memory: {{ .Values.global.commonConfig.services.tracer.requests.memory }}
+      cpu: {{ .Values.global.commonConfig.services.tracer.requests.cpu }}
     limits:
-      memory: {{.Values.commonConfig.services.tracer.limits.memory}}
-      cpu: {{.Values.commonConfig.services.tracer.limits.cpu}}
+      memory: {{.Values.global.commonConfig.services.tracer.limits.memory}}
+      cpu: {{.Values.global.commonConfig.services.tracer.limits.cpu}}
   volumeMounts:
-    - name: {{ .Values.commonConfig.tlsConfig.tracer.name }}
-      mountPath: {{ .Values.commonConfig.tlsConfig.tracer.path }}
+    - name: {{ .Values.global.commonConfig.tlsConfig.tracer.name }}
+      mountPath: {{ .Values.global.commonConfig.tlsConfig.tracer.path }}
       readOnly: true
 {{- end -}}
