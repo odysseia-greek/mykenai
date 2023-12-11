@@ -3,13 +3,13 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ .Values.jobName }}
-  namespace: {{ .Values.global.commonConfig.namespace }}
+  namespace: {{ .Values.commonConfig.namespace }}
   labels:
     heritage: {{ .Release.Service | quote }}
     release: {{ .Release.Name | quote }}
     chart: "{{ .Chart.Name }}"
-    env: {{ .Values.global.commonConfig.config.environment }}
-    variant: {{ .Values.global.commonConfig.config.kubeVariant }}
+    env: {{ .Values.commonConfig.config.environment }}
+    variant: {{ .Values.commonConfig.config.kubeVariant }}
     app: {{ .Values.jobName }}
 spec:
   template:

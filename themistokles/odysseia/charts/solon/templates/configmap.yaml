@@ -1,6 +1,7 @@
 {{- include "koinos.configmap" . -}}
+{{ println }}
   VAULT_TLS: {{ .Values.tlsConfig.vault.enabled | quote }}
-  VAULT_SERVICE: {{ .Values.global.commonConfig.envVariables.vaultService }}
+  VAULT_SERVICE: {{ .Values.commonConfig.envVariables.vaultService }}
+  TLS_FILES: /etc/certs
   ELASTIC_USER: elastic
-  UNSEAL_PROVIDER: gcp
   VAULT_ROLE: solon

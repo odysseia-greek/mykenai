@@ -15,27 +15,27 @@ spec:
         heritage: {{ .Release.Service | quote }}
         release: {{ .Release.Name | quote }}
         chart: "{{ .Chart.Name }}"
-        env: {{ .Values.global.commonConfig.config.environment }}
-        variant: {{ .Values.global.commonConfig.config.kubeVariant }}
+        env: {{ .Values.commonConfig.config.environment }}
+        variant: {{ .Values.commonConfig.config.kubeVariant }}
         app: {{ .Values.name }}
       annotations:
         perikles/hostname: "eupalinos"
-        perikles/validity: "365"
+        perikles/validity: "60"
     spec:
       terminationGracePeriodSeconds: 3
       containers:
         - name: {{ .Values.name }}
-          {{- if .Values.global.commonConfig.config.externalRepo | quote }}
-          image: {{ .Values.global.commonConfig.images.imageRepo}}{{ .Values.images.stateful.repo }}:{{ .Values.images.stateful.tag }}
+          {{- if .Values.commonConfig.config.externalRepo | quote }}
+          image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.stateful.repo }}:{{ .Values.images.stateful.tag }}
           {{ else }}
           image: {{ .Values.images.stateful.repo }}:{{ .Values.images.stateful.tag }}
           {{- end}}
-          imagePullPolicy: {{ .Values.global.commonConfig.config.pullPolicy }}
+          imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
           ports:
             - containerPort: {{ .Values.envVariables.queue.port }}
           env:
             - name: ENV
-              value: {{ .Values.global.commonConfig.config.environment }}
+              value: {{ .Values.commonConfig.config.environment }}
             - name: POD_NAME
               valueFrom:
                 fieldRef:
@@ -47,4 +47,4 @@ spec:
             - name: TOTAL_REPLICAS
               value: {{ .Values.replicas | quote }}
             - name: CERT_ROOT
-              value: "{{ .Values.global.commonConfig.tlsConfig.rootPath }}"
+              value: "{{ .Values.commonConfig.tlsConfig.rootPath }}"
