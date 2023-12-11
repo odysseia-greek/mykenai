@@ -2,7 +2,8 @@ package command
 
 import (
 	"encoding/json"
-	"github.com/kpango/glg"
+	"fmt"
+	"github.com/odysseia-greek/agora/plato/logging"
 	"github.com/odysseia-greek/agora/plato/models"
 	"github.com/odysseia-greek/mykenai/archimedes/util"
 	"github.com/spf13/cobra"
@@ -27,17 +28,19 @@ func ReparseList() *cobra.Command {
 - Filepath
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			glg.Green("parsing")
 			homeDir, _ := os.UserHomeDir()
 
 			var parsedPath string
 			if all {
-				parsedPath = filepath.Join(homeDir, GODIR, IONIADIR)
+				parsedPath = filepath.Join(homeDir, GODIR, "")
 			} else {
-				parsedPath = filepath.Join(homeDir, GODIR, IONIADIR, sullegoPath)
+				parsedPath = filepath.Join(homeDir, GODIR, "", sullegoPath)
 			}
 
-			parseVerbNounMisc(parsedPath, all)
+			err := parseVerbNounMisc(parsedPath, all)
+			if err != nil {
+				logging.Error(err.Error())
+			}
 
 		},
 	}
@@ -47,7 +50,7 @@ func ReparseList() *cobra.Command {
 	return cmd
 }
 
-func parseVerbNounMisc(sullegoPath string, all bool) {
+func parseVerbNounMisc(sullegoPath string, all bool) error {
 	if all {
 		// Walk through subdirectories of sullegoPath
 		err := filepath.Walk(sullegoPath, func(path string, info os.FileInfo, err error) error {
@@ -86,7 +89,7 @@ func parseVerbNounMisc(sullegoPath string, all bool) {
 					}
 
 					// Print a message indicating the processing is done
-					glg.Infof("Processed and saved data in %s\n", fileOut)
+					logging.Info(fmt.Sprintf("Processed and saved data in %s\n", fileOut))
 				}
 			}
 
@@ -94,29 +97,31 @@ func parseVerbNounMisc(sullegoPath string, all bool) {
 		})
 
 		if err != nil {
-			glg.Error(err)
+			return err
 		}
 	} else {
 		// Process the "logos.json" file in sullegoPath (as in your original code)
 		readOut := filepath.Join(sullegoPath, "logos.json")
-		plan, err := ioutil.ReadFile(readOut)
+		plan, err := os.ReadFile(readOut)
 		if err != nil {
-			glg.Error(err)
+			return err
 		}
 
 		var logos models.Logos
 		err = json.Unmarshal(plan, &logos)
 		if err != nil {
-			glg.Error(err)
+			return err
 		}
 
 		parsedLogos := parseOutDifferentPaths(logos)
 		fileOut := filepath.Join(sullegoPath, "logos.json")
 		err = util.WriteJSONToFilePrettyPrint(parsedLogos, fileOut)
 		if err != nil {
-			glg.Error(err)
+			return err
 		}
 	}
+
+	return nil
 }
 
 func parseOutDifferentPaths(logoi models.Logos) models.Logos {

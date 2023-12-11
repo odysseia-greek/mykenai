@@ -1,6 +1,0 @@
-elastic:
-  volumeClaimTemplate:
-    storageClassName: do-block-storage
-    resources:
-      requests:
-        storage: 2Gi

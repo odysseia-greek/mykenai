@@ -414,7 +414,7 @@ server:
       # kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
       #   or
-      # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
 
     # Optionally use ingressClassName instead of deprecated annotation.
@@ -484,7 +484,7 @@ server:
     #       mv vault-plugin-secrets-oauthapp-v1.2.0-linux-amd64 /usr/local/libexec/vault/oauthapp &&
     #       chmod +x /usr/local/libexec/vault/oauthapp
     #   volumeMounts:
-    #     - name: plugins
+  #     - name: plugins
   #       mountPath: /usr/local/libexec/vault
 
   # extraContainers is a list of sidecar containers. Specified as a YAML list.
@@ -500,7 +500,7 @@ server:
   # extraPorts is a list of extra ports. Specified as a YAML list.
   # This is useful if you need to add additional ports to the statefulset in dynamic way.
   extraPorts: null
-    # - containerPort: 8300
+  # - containerPort: 8300
   #   name: http-monitoring
 
   # Used to define custom readinessProbe settings
@@ -556,7 +556,7 @@ server:
   #  extraEnvironmentVars: {}
   extraEnvironmentVars:
     VAULT_CACERT: /vault/userconfig/vault-server-tls/vault.ca
-#    GOOGLE_APPLICATION_CREDENTIALS: /vault/userconfig/unseal/gcpconfig.json
+    #    GOOGLE_APPLICATION_CREDENTIALS: /vault/userconfig/unseal/gcpconfig.json
 
     # extraEnvironmentVars is a list of extra environment variables to set with the stateful set. These could be
     # used to include variables required for auto-unseal.
@@ -569,15 +569,15 @@ server:
   extraSecretEnvironmentVars: []
     # - envName: AWS_SECRET_ACCESS_KEY
     #   secretName: vault
-  #   secretKey: AWS_SECRET_ACCESS_KEY
+    #   secretKey: AWS_SECRET_ACCESS_KEY
 
-  # Deprecated: please use 'volumes' instead.
-  # extraVolumes is a list of extra volumes to mount. These will be exposed
-  # to Vault in the path `/vault/userconfig/<name>/`. The value below is
-  # an array of objects, examples are shown below.
-  # extraVolumes: []
+    # Deprecated: please use 'volumes' instead.
+    # extraVolumes is a list of extra volumes to mount. These will be exposed
+    # to Vault in the path `/vault/userconfig/<name>/`. The value below is
+    # an array of objects, examples are shown below.
+    # extraVolumes: []
     # - type: secret (or "configMap")
-    #   name: my-secret
+  #   name: my-secret
   #   path: null # default is `/vault/userconfig`
 
   # volumes is a list of volumes made available to all containers. These are rendered
@@ -588,9 +588,9 @@ server:
       secret:
         defaultMode: 420
         secretName: vault-server-tls
-#    - name: vaultunsealgcp-secret
-#      secret:
-#        secretName: vaultunsealgcp
+  #    - name: vaultunsealgcp-secret
+  #      secret:
+  #        secretName: vaultunsealgcp
 
   # volumeMounts is a list of volumeMounts for the main server container. These are rendered
   # via toYaml rather than pre-processed like the extraVolumes value.
@@ -599,8 +599,8 @@ server:
     - mountPath: /vault/userconfig/vault-server-tls
       name: userconfig-vault-server-tls
       readOnly: true
-#    - mountPath: /vault/userconfig/unseal
-#      name: vaultunsealgcp-secret
+  #    - mountPath: /vault/userconfig/unseal
+  #      name: vaultunsealgcp-secret
 
   # Affinity Settings
   # Commenting out or setting as empty the affinity variable, will allow
@@ -772,7 +772,7 @@ server:
   # the "file" backend.  This mode is not highly available and should not be scaled
   # past a single replica.
   standalone:
-    enabled: false
+    enabled: true
     config: |
       ui = true
       listener "tcp" {
@@ -780,7 +780,7 @@ server:
         cluster_address = "[::]:8201"
         tls_cert_file = "/vault/userconfig/vault-server-tls/vault.crt"
         tls_key_file  = "/vault/userconfig/vault-server-tls/vault.key"
-        tls_client_ca_file = "/vault/userconfig/vault-server-tls/vault.crt"
+        tls_client_ca_file = "/vault/userconfig/vault-server-tls/vault.ca"
       }
 
       storage "file" {
@@ -799,7 +799,7 @@ server:
   # Helm project by default.  It is possible to manually configure Vault to use a
   # different HA backend.
   ha:
-    enabled: true
+    enabled: false
     replicas: 3
 
     # Set the api_addr configuration for Vault HA

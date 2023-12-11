@@ -3,15 +3,15 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ .Values.name }}
-  namespace: {{ .Values.global.commonConfig.namespace }}
+  namespace: {{ .Values.commonConfig.namespace }}
   labels:
     heritage: {{ .Release.Service | quote }}
     release: {{ .Release.Name | quote }}
     chart: "{{ .Chart.Name }}"
-    env: {{ .Values.global.commonConfig.config.environment }}
-    variant: {{ .Values.global.commonConfig.config.kubeVariant }}
+    env: {{ .Values.commonConfig.config.environment }}
+    variant: {{ .Values.commonConfig.config.kubeVariant }}
     app: {{ .Values.name }}
-    {{- range $key, $value := .Values.global.commonConfig.services.backend.labels }}
+    {{- range $key, $value := .Values.commonConfig.services.backend.labels }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
 {{- end }}

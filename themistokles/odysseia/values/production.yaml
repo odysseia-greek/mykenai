@@ -1,0 +1,5 @@
+commonConfig:
+  namespace: odysseia
+  config:
+    environment: production
+    kubeVariant: k3s

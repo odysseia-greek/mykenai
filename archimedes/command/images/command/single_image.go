@@ -1,112 +1,131 @@
 package command
 
 import (
-	"github.com/kpango/glg"
-	settings "github.com/odysseia-greek/mykenai/archimedes/command/config/command"
+	"fmt"
+	"github.com/odysseia-greek/agora/plato/logging"
 	"github.com/odysseia-greek/mykenai/archimedes/util"
 	"github.com/spf13/cobra"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
 func CreateSingleImage() *cobra.Command {
 	var (
 		tag             string
 		destinationRepo string
-		name            string
+		rootPath        string
+		target          string
 	)
 	cmd := &cobra.Command{
-		Use:   "single",
-		Short: "create single image",
-		Long: `Allows you to create images for all apis
-- Filepath
-`,
-		Run: func(cmd *cobra.Command, args []string) {
-			glg.Green("creating")
+		Use:   "single [ROOT PATH]",
+		Short: "Create a single image",
+		Long: `This command allows you to create a single image within a specified root path, using a given tag, destination repository, and target.
+If no root path is specified through the "-r" flag or positional argument, the command assumes the current working directory as the root path.`,
+		Example: `  # build images from current directory
+    archimedes images single -t v0.10.0
+    # or 
+    archimedes images single -t v0.10.0 .
+  
+    # build images from specified repo path
+    archimedes images single -t v0.10.0 -r /path/to/image`,
+		Aliases:                    []string{"s", "si"},
+		SuggestionsMinimumDistance: 2,
 
-			odysseiaSettings, err := settings.ReadOutConfig()
-			if err != nil {
-				glg.Error(err)
+		Run: func(cmd *cobra.Command, args []string) {
+			argPath := ""
+			if len(args) > 0 {
+				argPath = args[0]
+			}
+
+			if argPath == "." {
+				currentDir, err := os.Getwd()
+				if err != nil {
+					return
+				}
+				argPath = currentDir
+			}
+
+			if rootPath == "" {
+				rootPath = argPath
+			}
+
+			if rootPath == "" {
+				currentDir, err := os.Getwd()
+				if err != nil {
+					return
+				}
+
+				logging.Debug(fmt.Sprintf("rootPath is empty, defaulting to current dir %s", currentDir))
+				rootPath = currentDir
 			}
 
 			if tag == "" {
-				glg.Warn("no tag set for image, using the git short hash")
-				gitTag, err := util.ExecCommandWithReturn(`git rev-parse --short HEAD`, odysseiaSettings.OlympiaPath)
+				logging.Warn("no tag set for image, using the git short hash")
+				gitTag, err := util.ExecCommandWithReturn(`git rev-parse --short HEAD`, rootPath)
 				if err != nil {
-					glg.Fatal(err)
+					logging.Error(err.Error())
+					return
 				}
 
 				tag = gitTag
 			}
 
 			if destinationRepo == "" {
-				glg.Warnf("destination repo empty, default to %s", defaultRepo)
+				logging.Info(fmt.Sprintf("destination repo empty, default to %s", defaultRepo))
 				destinationRepo = defaultRepo
 			}
 
-			glg.Infof("filepath set to: %s", odysseiaSettings.SourcePath)
+			err := isDockerRunning()
+			if err != nil {
+				return
+			}
 
-			BuildImage(odysseiaSettings.SourcePath, name, tag, destinationRepo)
+			logging.Info(fmt.Sprintf("working on repo: %s", rootPath))
+
+			if err := BuildImage(rootPath, tag, destinationRepo, target); err != nil {
+				return
+			}
 		},
+		Args: func(cmd *cobra.Command, args []string) error {
+			targetFlag := cmd.Flag("target")
+			if !targetFlag.Changed {
+				return nil
+			}
+			target := targetFlag.Value.String()
+			for _, validArg := range cmd.ValidArgs {
+				if validArg == target {
+					return nil
+				}
+			}
+			return fmt.Errorf("invalid platform specified: %s", target)
+		},
+		ValidArgs: []string{"debug", "prod"},
 	}
 
-	cmd.PersistentFlags().StringVarP(&name, "name", "n", "", "image name")
-	cmd.PersistentFlags().StringVarP(&tag, "tag", "t", "", "image tag")
-	cmd.PersistentFlags().StringVarP(&destinationRepo, "dest", "d", "", "destination repo address")
+	cmd.PersistentFlags().StringVarP(&rootPath, "root", "r", "", "Root path to start building from. Interprets '.' as current directory. Defaults to current directory when no value or positional argument is provided.")
+	cmd.PersistentFlags().StringVarP(&tag, "tag", "t", "", "The tag for the image, if not set it defaults to the current git commit hash.")
+	cmd.PersistentFlags().StringVarP(&destinationRepo, "dest", "d", "", "The destination repository address, defaults to predefined DefaultRepo when no value is provided.")
+	cmd.PersistentFlags().StringVarP(&target, "target", "g", "prod", "The target to build for, defaults to 'prod' when no value provided.")
 
 	return cmd
 }
 
-func BuildImage(rootPath, name, tag, destRepo string) {
-	directories, err := os.ReadDir(rootPath)
+func BuildImage(rootPath, tag, destRepo, target string) error {
+	innerFiles, err := os.ReadDir(rootPath)
 	if err != nil {
-		glg.Fatal(err)
+		return err
 	}
 
-	for _, dir := range directories {
-		if dir.IsDir() && !strings.HasPrefix(dir.Name(), ".") {
-			repoPath := filepath.Join(rootPath, dir.Name())
-			innerDirs, err := os.ReadDir(repoPath)
-			if err != nil {
-				glg.Fatal(err)
-			}
+	_, projectName := filepath.Split(rootPath)
 
-			if dir.Name() == name {
-				for _, innerFile := range innerDirs {
-					if innerFile.Name() == "Dockerfile" {
-						glg.Infof("working on project: %s", name)
-						err := runImageBuildFlow(repoPath, name, tag, destRepo)
-						if err != nil {
-							glg.Error(err)
-						}
-						return
-					}
-				}
-			}
-
-			for _, innerDir := range innerDirs {
-				if innerDir.Name() == name {
-					if innerDir.IsDir() && !strings.HasPrefix(innerDir.Name(), ".") {
-						innerFp := filepath.Join(rootPath, dir.Name(), innerDir.Name())
-						innerFiles, err := os.ReadDir(innerFp)
-						if err != nil {
-							glg.Fatal(err)
-						}
-
-						for _, innerFile := range innerFiles {
-							if innerFile.Name() == "Dockerfile" {
-								glg.Infof("working on project: %s", innerFp)
-								err := runImageBuildFlow(innerFp, innerDir.Name(), tag, destRepo)
-								if err != nil {
-									glg.Error(err)
-									return
-								}
-							}
-						}
-					}
-				}
+	for _, innerFile := range innerFiles {
+		if innerFile.Name() == "Dockerfile" {
+			logging.Info(fmt.Sprintf(fmt.Sprintf("working on project: %s", projectName)))
+			if err := buildImageMultiArch(rootPath, projectName, tag, destRepo, target); err != nil {
+				return err
 			}
 		}
 	}
+
+	return nil
 }

@@ -1,9 +1,7 @@
 package main
 
 import (
-	"github.com/kpango/glg"
-	"github.com/odysseia-greek/mykenai/archimedes/command/chart"
-	"github.com/odysseia-greek/mykenai/archimedes/command/config"
+	"github.com/odysseia-greek/agora/plato/logging"
 	"github.com/odysseia-greek/mykenai/archimedes/command/images"
 	"github.com/odysseia-greek/mykenai/archimedes/command/odysseia"
 	"github.com/odysseia-greek/mykenai/archimedes/command/parse"
@@ -11,7 +9,11 @@ import (
 	"strings"
 )
 
-var (
+var version = "v0.1.0"
+
+var rootCmd *cobra.Command
+
+func main() {
 	rootCmd = &cobra.Command{
 		Use:   "archimedes",
 		Short: "Deploy everything related to odysseia",
@@ -19,36 +21,36 @@ var (
 Allows you to parse words from a txt file,
 build all container images
 work with vault and much more is coming`,
-	}
-)
-
-func main() {
-	//https://patorjk.com/software/taag/#p=display&f=Crawford2&t=ARCHIMEDES
-	glg.Info(`
+		Version: version,
+		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			if cmd.Parent() == rootCmd || cmd.Name() == "help" {
+				//https://patorjk.com/software/taag/#p=display&f=Crawford2&t=ARCHIMEDES
+				logging.System(`
   ____  ____      __  __ __  ____  ___ ___    ___  ___      ___  _____
  /    ||    \    /  ]|  |  ||    ||   |   |  /  _]|   \    /  _]/ ___/
-|  o  ||  D  )  /  / |  |  | |  | | _   _ | /  [_ |    \  /  [_(   \_ 
+|  o  ||  D  )  /  / |  |  | |  | | _   _ | /  [_ |    \  /  [_(   \_
 |     ||    /  /  /  |  _  | |  | |  \_/  ||    _]|  D  ||    _]\__  |
 |  _  ||    \ /   \_ |  |  | |  | |   |   ||   [_ |     ||   [_ /  \ |
 |  |  ||  .  \\     ||  |  | |  | |   |   ||     ||     ||     |\    |
 |__|__||__|\_| \____||__|__||____||___|___||_____||_____||_____| \___|
-                                                                      
+
 `)
-	glg.Info(strings.Repeat("~", 37))
-	glg.Info("\"εὕρηκα\"")
-	glg.Info("\"I found it!\"")
-	glg.Info(strings.Repeat("~", 37))
+				logging.System(strings.Repeat("~", 37))
+				logging.System("\"εὕρηκα\"")
+				logging.System("\"I found it!\"")
+				logging.System(strings.Repeat("~", 37))
+			}
+		},
+	}
 
 	rootCmd.AddCommand(
 		images.Manager(),
 		parse.Manager(),
 		odysseia.Manager(),
-		config.Manager(),
-		chart.Manager(),
 	)
 
 	err := rootCmd.Execute()
 	if err != nil {
-		glg.Error(err)
+		logging.Error(err.Error())
 	}
 }

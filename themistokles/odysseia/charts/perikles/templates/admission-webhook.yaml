@@ -8,7 +8,7 @@ webhooks:
       - apiGroups:   ["apps"]
         apiVersions: ["v1"]
         operations:  ["CREATE", "UPDATE"]
-        resources:   ["deployments"]
+        resources:   ["deployments", "statefulsets"]
         scope:       "Namespaced"
     clientConfig:
       service:
