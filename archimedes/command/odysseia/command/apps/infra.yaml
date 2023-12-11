@@ -1,6 +1,0 @@
-appsToInstall:
-  - solon
-  - perikles
-  - eupalinos
-  - euripides
-include: base

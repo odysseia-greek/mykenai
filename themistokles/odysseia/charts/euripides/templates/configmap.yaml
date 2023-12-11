@@ -1,0 +1,3 @@
+{{- include "koinos.configmap" . -}}
+{{ println}}
+  MAX_AGE: "{{ .Values.envVariables.maxAge }}"

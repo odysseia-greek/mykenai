@@ -3,26 +3,28 @@ package util
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/kpango/glg"
+	"github.com/odysseia-greek/agora/plato/logging"
 	"io"
 	"os"
 	"path/filepath"
 )
 
-func WriteFile(input []byte, outputFile string) {
+func WriteFile(input []byte, outputFile string) error {
 	openedFile, err := os.Create(outputFile)
 	if err != nil {
-		glg.Error(err)
+		return err
 	}
 	defer openedFile.Close()
 
 	outputFromWrite, err := openedFile.Write(input)
 	if err != nil {
-		glg.Error(err)
+		return err
 	}
 
-	glg.Info(fmt.Sprintf("finished writing %d bytes", outputFromWrite))
-	glg.Info(fmt.Sprintf("file written to %s", outputFile))
+	logging.Info(fmt.Sprintf("finished writing %d bytes", outputFromWrite))
+	logging.Info(fmt.Sprintf("file written to %s", outputFile))
+
+	return nil
 }
 
 func WriteJSONToFilePrettyPrint(data interface{}, outputFile string) error {
@@ -45,7 +47,7 @@ func WriteJSONToFilePrettyPrint(data interface{}, outputFile string) error {
 		return err
 	}
 
-	glg.Info(fmt.Sprintf("file written to %s", outputFile))
+	logging.Info(fmt.Sprintf("file written to %s", outputFile))
 	return nil
 }
 

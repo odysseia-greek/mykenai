@@ -14,7 +14,6 @@ func Manager() *cobra.Command {
 
 	cmd.AddCommand(
 		command.Install(),
-		command.Uninstall(),
 		command.GenerateDocs(),
 	)
 

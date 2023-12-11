@@ -3,19 +3,19 @@ apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
 metadata:
   name: kibana
-  namespace: {{ template "namespace" . }}
+  namespace: {{ .Values.namespace }}
   labels:
     heritage: {{ .Release.Service | quote }}
     release: {{ .Release.Name | quote }}
     chart: "{{ .Chart.Name }}"
-    env: {{ .Values.config.environment }}
-    variant: {{ .Values.config.kubeVariant }}
-    app: "{{ template "chart.name" . }}"
+    env: {{ .Values.commonConfig.config.environment }}
+    variant: {{ .Values.commonConfig.config.kubeVariant }}
+    app: {{ .Values.name }}
     version: {{ .Values.config.elasticVersion }}
 spec:
   version: {{ .Values.config.elasticVersion }}
   count: 1
   elasticsearchRef:
-    name: "{{ template "chart.name" . }}"
-    namespace: {{ template "namespace" . }}
+    name: {{ .Values.name }}
+    namespace: {{ .Values.namespace }}
 {{ end }}

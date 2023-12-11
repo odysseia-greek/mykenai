@@ -1,8 +1,8 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  namespace: {{ template "solon.namespace" . }}
-  name: {{ template "solon.roleName" $ }}
+  namespace: {{ .Values.namespace }}
+  name: {{ .Values.name }}
   labels:
     heritage: {{ .Release.Service | quote }}
     release: {{ .Release.Name | quote }}
@@ -22,4 +22,4 @@ rules:
     verbs: ["get", "list", "update", "create"]
   - apiGroups: ["apps"]
     resources: ["statefulsets"]
-    verbs: ["get", "list"] # Add "get" for StatefulSets
+    verbs: ["get", "list"]

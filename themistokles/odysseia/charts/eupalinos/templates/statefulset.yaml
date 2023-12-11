@@ -1,41 +1,41 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "eupalinos.fullname" . }}
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
 spec:
-  replicas: {{ .Values.config.replicas.low }}
-  serviceName: {{ include "eupalinos.fullname" . }}
+  replicas: {{ .Values.replicas }}
+  serviceName: {{ .Values.name }}
   selector:
     matchLabels:
-      app: {{ include "eupalinos.fullname" . }}
+      app: {{ .Values.name }}
   template:
     metadata:
       labels:
-        app: {{ include "eupalinos.fullname" . }}
-        release: {{ .Release.Name }}
-        version: {{ .Values.images.stateful.tag }}
+        heritage: {{ .Release.Service | quote }}
+        release: {{ .Release.Name | quote }}
+        chart: "{{ .Chart.Name }}"
+        env: {{ .Values.commonConfig.config.environment }}
+        variant: {{ .Values.commonConfig.config.kubeVariant }}
+        app: {{ .Values.name }}
       annotations:
         perikles/hostname: "eupalinos"
-        perikles/validity: "365"
+        perikles/validity: "60"
     spec:
       terminationGracePeriodSeconds: 3
-      {{- if .Values.config.privateImagesInRepo | quote }}
-      imagePullSecrets:
-        - name: {{ .Values.images.pullSecret}}
-      {{- end}}
       containers:
-        - name: {{ include "eupalinos.fullname" . }}
-          {{- if .Values.config.externalRepo | quote }}
-          image: {{ .Values.images.imageRepo}}{{ .Values.images.stateful.repo }}:{{ .Values.images.stateful.tag }}
+        - name: {{ .Values.name }}
+          {{- if .Values.commonConfig.config.externalRepo | quote }}
+          image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.stateful.repo }}:{{ .Values.images.stateful.tag }}
           {{ else }}
           image: {{ .Values.images.stateful.repo }}:{{ .Values.images.stateful.tag }}
           {{- end}}
-          imagePullPolicy: {{ .Values.config.pullPolicy }}
+          imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
           ports:
             - containerPort: {{ .Values.envVariables.queue.port }}
           env:
             - name: ENV
-              value: {{ .Values.config.environment }}
+              value: {{ .Values.commonConfig.config.environment }}
             - name: POD_NAME
               valueFrom:
                 fieldRef:
@@ -45,6 +45,6 @@ spec:
                 fieldRef:
                   fieldPath: metadata.namespace
             - name: TOTAL_REPLICAS
-              value: {{ .Values.config.replicas.low | quote }}
+              value: {{ .Values.replicas | quote }}
             - name: CERT_ROOT
-              value: ""
+              value: "{{ .Values.commonConfig.tlsConfig.rootPath }}"

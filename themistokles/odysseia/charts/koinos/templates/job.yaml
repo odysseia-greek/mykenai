@@ -1,0 +1,45 @@
+{{- define "koinos.job" -}}
+{{- include "koinos.jobbase" . }}
+    spec:
+    {{- if .Values.serviceAccountName }}
+      serviceAccountName: {{ .Values.serviceAccountName }}
+    {{- end }}
+      initContainers:
+{{- include "koinos.initContainer" . | indent 8 }}
+      containers:
+{{- include "koinos.ambassador" . | indent 8 }}
+        - name: "{{ .Values.jobName }}"
+          {{- if .Values.commonConfig.config.externalRepo | quote }}
+          image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.seeder.repo }}:{{ .Values.images.seeder.tag }}
+          imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
+          {{ else }}
+          image: {{ .Values.images.seeder.repo }}:{{ .Values.images.seeder.tag }}
+          imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
+          {{- end}}
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.name }}
+      restartPolicy: Never
+      volumes:
+        - name: {{ .Values.commonConfig.tlsConfig.vault.name }}
+          secret:
+            secretName: {{ .Values.commonConfig.tlsConfig.vault.secretName }}
+        {{- range .Values.tlsConfig.mounts }}
+        - name: {{ .name }}
+          secret:
+            secretName: {{ .secretName }}
+            {{- if .defaultMode }}
+            defaultMode: {{ .defaultMode }}
+        {{- end }}
+  {{- end }}
+  backoffLimit: 3
+{{- end -}}

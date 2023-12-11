@@ -2,9 +2,8 @@ package command
 
 import (
 	"fmt"
-	"github.com/kpango/glg"
+	"github.com/odysseia-greek/agora/plato/logging"
 	"github.com/odysseia-greek/mykenai/archimedes/command"
-	settings "github.com/odysseia-greek/mykenai/archimedes/command/config/command"
 	"github.com/odysseia-greek/mykenai/archimedes/util"
 	"github.com/spf13/cobra"
 	"io"
@@ -33,15 +32,15 @@ func GenerateDocs() *cobra.Command {
 		Long: `Allows you to create documentation for all apis
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			glg.Green("creating")
-
-			odysseiaSettings, err := settings.ReadOutConfig()
-			if err != nil {
-				glg.Error(err)
-			}
 
 			if rootPath == "" {
-				rootPath = odysseiaSettings.SourcePath
+				currentDir, err := os.Getwd()
+				if err != nil {
+					return
+				}
+
+				logging.Debug(fmt.Sprintf("rootPath is empty defaulting to current dir %s", currentDir))
+				rootPath = currentDir
 			}
 
 			generateDocs(rootPath)
@@ -63,7 +62,7 @@ func generateDocs(rootPath string) {
 		}
 		err := generateGRPC(ploutarchosDocs, command.Aristophanes, path)
 		if err != nil {
-			glg.Error(err)
+			logging.Error(err.Error())
 		}
 	}
 
@@ -75,7 +74,7 @@ func generateDocs(rootPath string) {
 		ploutarchosDocs := filepath.Join(rootPath, command.Olympia, command.Ploutarchos, command.Docs)
 		err := generateSwaggerFiles(path, ploutarchosDocs, api)
 		if err != nil {
-			glg.Error(err)
+			logging.Error(err.Error())
 		}
 	}
 
@@ -83,13 +82,13 @@ func generateDocs(rootPath string) {
 		apiPath := filepath.Join(rootPath, command.Olympia, gateway, command.Docs)
 		err := generateSpectaql(rootPath, apiPath)
 		if err != nil {
-			glg.Error(err)
+			logging.Error(err.Error())
 		}
 	}
 }
 
 func generateSwaggerFiles(rootPath, ploutarchosDocs, api string) error {
-	glg.Info("****** 🗄️ Generating Swagger Docs 🗄️ ******")
+	logging.Info("****** 🗄️ Generating Swagger Docs 🗄️ ******")
 
 	apiPath := filepath.Join(rootPath, api)
 	buildCommand := fmt.Sprintf("docker run -v %s:%s -e SWAGGER_GENERATE_EXTENSION=true --workdir %s quay.io/goswagger/swagger generate spec -o %s -m", rootPath, rootPath, apiPath, swaggerOutputPath)
@@ -99,12 +98,12 @@ func generateSwaggerFiles(rootPath, ploutarchosDocs, api string) error {
 		return err
 	}
 
-	glg.Info("****** 🗄️ Generated Swagger Docs 🗄️ ******")
+	logging.Info("****** 🗄️ Generated Swagger Docs 🗄️ ******")
 
 	swaggerFile := filepath.Join(apiPath, swaggerOutputPath)
 	openapiFile := filepath.Join(apiPath, openapiOutputPath)
 	generateOpenApi(swaggerFile, openapiFile)
-	glg.Info("****** 📋 Generated OpenApi Doc 📋 ******")
+	logging.Info("****** 📋 Generated OpenApi Doc 📋 ******")
 
 	ploutarchosPath := filepath.Join(ploutarchosDocs, "templates", fmt.Sprintf("%s.yaml", api))
 
@@ -117,7 +116,7 @@ func generateSwaggerFiles(rootPath, ploutarchosDocs, api string) error {
 }
 
 func generateOpenApi(swaggerFilePath, openapiFile string) error {
-	glg.Info("****** 📋 Transforming OpenApi Doc 📋 ******")
+	logging.Info("****** 📋 Transforming OpenApi Doc 📋 ******")
 
 	url := "https://converter.swagger.io/api/convert"
 	headers := map[string]string{
@@ -161,14 +160,14 @@ func generateOpenApi(swaggerFilePath, openapiFile string) error {
 }
 
 func generateSpectaql(rootPath, spectaqlPath string) error {
-	glg.Info("****** 📋 Generating Spectaql Doc 📋 ******")
+	logging.Info("****** 📋 Generating Spectaql Doc 📋 ******")
 	buildCommand := "npx spectaql spectaql.yaml"
 	err := util.ExecCommand(buildCommand, spectaqlPath)
 	if err != nil {
 		return err
 	}
 
-	glg.Info("****** 📋 Generated Spectaql Doc 📋 ******")
+	logging.Info("****** 📋 Generated Spectaql Doc 📋 ******")
 
 	ploutarchosPath := filepath.Join(rootPath, command.Olympia, command.Ploutarchos, command.Docs, "public")
 	spectaqlDir := filepath.Join(spectaqlPath, "public")
@@ -178,7 +177,7 @@ func generateSpectaql(rootPath, spectaqlPath string) error {
 }
 
 func generateGRPC(ploutarchosDocs, api, path string) error {
-	glg.Info("****** 🗄️ Generating GRPC Docs 🗄️ ******")
+	logging.Info("****** 🗄️ Generating GRPC Docs 🗄️ ******")
 
 	buildCommand := fmt.Sprintf("docker run -v %s/docs:/out -v %s/proto:/protos pseudomuto/protoc-gen-doc --doc_opt=html,%s.html", path, path, api)
 
@@ -187,7 +186,7 @@ func generateGRPC(ploutarchosDocs, api, path string) error {
 		return err
 	}
 
-	glg.Info("****** 🗄️ Generated GRPC Docs 🗄️ ******")
+	logging.Info("****** 🗄️ Generated GRPC Docs 🗄️ ******")
 
 	fileName := fmt.Sprintf("%s.html", api)
 	grpcFile := filepath.Join(path, command.Docs, fileName)

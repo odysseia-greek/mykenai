@@ -1,8 +1,0 @@
-appsToInstall:
-  - homeros
-  - sokrates
-  - herodotos
-  - alexandros
-  - dionysios
-  - melissos
-include: infra

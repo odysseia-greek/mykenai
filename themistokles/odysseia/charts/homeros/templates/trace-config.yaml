@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.traceConfig }}
+  namespace: {{ .Values.namespace }}
+data:
+  trace-config.json: |
+    {
+      "operationScores": [
+        {
+          "operation": "dictionary",
+          "score": 30
+        },
+        {
+          "operation": "grammar",
+          "score": 50
+        },
+        {
+          "operation": "authors",
+          "score": 100
+        },
+        {
+          "operation": "sentence",
+          "score": 50
+        },
+        {
+          "operation": "text",
+          "score": 50
+        },
+        {
+          "operation": "methods",
+          "score": 100
+        },
+        {
+          "operation": "answer",
+          "score": 20
+        },
+        {
+          "operation": "quiz",
+          "score": 20
+        },
+        {
+          "operation": "status",
+          "score": 1
+        }
+      ]
+    }

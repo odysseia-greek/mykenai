@@ -2,14 +2,25 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+commonConfig:
+  namespace: odysseia
+  config:
+    environment: local
+    externalRepo: true
+    initialDelayLiveness: 20
+    initialDelayReadiness: 1
+    kubeVariant: k3d
+    periodSeconds: 20
+    pullPolicy: Always
+    tls: true
+
 config:
-  environment: local
-  kubeVariant: minikube
   kibana: true
-  elasticVersion: 8.8.0
+  elasticVersion: 8.11.0
   replicas: 1
 
-nameOverride: aristoteles
+name: aristoteles
+namespace: odysseia
 
 nodes:
   master:

@@ -1,0 +1,5 @@
+commonConfig:
+  namespace: odysseia
+  config:
+    environment: staging
+    kubeVariant: k3d

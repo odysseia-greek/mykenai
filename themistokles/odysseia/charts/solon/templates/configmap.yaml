@@ -1,10 +1,7 @@
-{{- if .Values.envVariables.peisistratos.unsealProvider }}
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: gcpconfig
-data:
-  KEY_RING: "autounseal"
-  CRYPTO_KEY: "vaultkey"
-  LOCATION: "global"
-{{- end }}
+{{- include "koinos.configmap" . -}}
+{{ println }}
+  VAULT_TLS: {{ .Values.tlsConfig.vault.enabled | quote }}
+  VAULT_SERVICE: {{ .Values.commonConfig.envVariables.vaultService }}
+  TLS_FILES: /etc/certs
+  ELASTIC_USER: elastic
+  VAULT_ROLE: solon

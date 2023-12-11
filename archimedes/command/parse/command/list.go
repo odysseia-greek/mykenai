@@ -2,12 +2,12 @@ package command
 
 import (
 	"fmt"
-	"github.com/kpango/glg"
 	"github.com/odysseia-greek/agora/plato/helpers"
+	"github.com/odysseia-greek/agora/plato/logging"
 	"github.com/odysseia-greek/agora/plato/models"
 	"github.com/odysseia-greek/mykenai/archimedes/util"
 	"github.com/spf13/cobra"
-	"io/ioutil"
+	"log"
 	"os"
 	"regexp"
 	"strings"
@@ -32,14 +32,13 @@ func ListToWords() *cobra.Command {
 - OutDir
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			glg.Green("parsing")
 			if filePath == "" {
-				glg.Error(fmt.Sprintf("filepath is empty"))
+				logging.Debug(fmt.Sprintf("filepath is empty"))
 				return
 			}
 
 			if outDir == "" {
-				glg.Debug(fmt.Sprintf("no outdir set assuming one"))
+				logging.Debug(fmt.Sprintf("no outdir set assuming one"))
 				homeDir, _ := os.UserHomeDir()
 				outDir = fmt.Sprintf("%s/go/src/github.com/odysseia-greek/ionia/parmenides/sullego", homeDir)
 			}
@@ -60,24 +59,24 @@ func ListToWords() *cobra.Command {
 }
 
 func parse(filePath, outDir, mode string) {
-	plan, _ := ioutil.ReadFile(filePath)
+	plan, _ := os.ReadFile(filePath)
 	wordList := strings.Split(string(plan), "\n")
-	glg.Info(fmt.Sprintf("found %d words in %s", len(wordList), filePath))
+	logging.Info(fmt.Sprintf("found %d words in %s", len(wordList), filePath))
 
 	if mode == ByFile {
 		pathParts := strings.Split(filePath, "/")
 		name := strings.Split(pathParts[len(pathParts)-1], ".")[0]
-		glg.Info(name)
+		logging.Info(name)
 
 		parseLinesByFile(outDir, name, wordList)
 	} else if mode == ByLetter {
 		parseLinesByLetter(outDir, wordList)
 	} else {
-		glg.Fatal("No mode provided")
+		log.Fatal("No mode provided")
 	}
 }
 
-func parseLinesByLetter(outDir string, wordList []string) {
+func parseLinesByLetter(outDir string, wordList []string) error {
 	var biblos models.Biblos
 	currentLetter := "α"
 
@@ -91,7 +90,7 @@ func parseLinesByLetter(outDir string, wordList []string) {
 				if currentLetter != removedAccent {
 					jsonBiblos, err := biblos.Marshal()
 					if err != nil {
-						glg.Error(err)
+						return err
 					}
 
 					outputFile := fmt.Sprintf("%s/%s.json", outDir, currentLetter)
@@ -102,12 +101,12 @@ func parseLinesByLetter(outDir string, wordList []string) {
 			}
 			matched, err := regexp.MatchString(`[A-Za-z]`, c)
 			if err != nil {
-				glg.Error(err)
+				return err
 			}
 			if matched {
 				greek = strings.TrimSpace(word[0 : j-1])
 				english = strings.TrimSpace(word[j-1:])
-				glg.Debug(fmt.Sprintf("found the greek: %s and the english %s", greek, english))
+				logging.Debug(fmt.Sprintf("found the greek: %s and the english %s", greek, english))
 
 				meros := models.Meros{
 					Greek:   greek,
@@ -121,7 +120,7 @@ func parseLinesByLetter(outDir string, wordList []string) {
 		if i == len(wordList)-1 {
 			jsonBiblos, err := biblos.Marshal()
 			if err != nil {
-				glg.Error(err)
+				return err
 			}
 
 			outputFile := fmt.Sprintf("%s/%s.json", outDir, currentLetter)
@@ -129,10 +128,11 @@ func parseLinesByLetter(outDir string, wordList []string) {
 		}
 	}
 
-	glg.Info(fmt.Sprintf("all words have been parsed and saved to %s", outDir))
+	logging.Info(fmt.Sprintf("all words have been parsed and saved to %s", outDir))
+	return nil
 }
 
-func parseLinesByFile(outDir, name string, wordList []string) {
+func parseLinesByFile(outDir, name string, wordList []string) error {
 	var logos models.Logos
 
 	for _, word := range wordList {
@@ -142,12 +142,12 @@ func parseLinesByFile(outDir, name string, wordList []string) {
 			c := fmt.Sprintf("%c", char)
 			matched, err := regexp.MatchString(`[A-Za-z]`, c)
 			if err != nil {
-				glg.Error(err)
+				return err
 			}
 			if matched {
 				greek = strings.TrimSpace(word[0 : j-1])
 				translation = strings.TrimSpace(word[j-1:])
-				glg.Debug(fmt.Sprintf("found the greek: %s and the translation %s", greek, translation))
+				logging.Debug(fmt.Sprintf("found the greek: %s and the translation %s", greek, translation))
 
 				meros := models.Word{
 					Greek:       greek,
@@ -196,11 +196,13 @@ func parseLinesByFile(outDir, name string, wordList []string) {
 
 	jsonLogos, err := logos.Marshal()
 	if err != nil {
-		glg.Error(err)
+		return err
 	}
 
 	outputFile := fmt.Sprintf("%s/%s.json", outDir, name)
 	util.WriteFile(jsonLogos, outputFile)
+
+	return nil
 }
 
 func uniqueNumber(numberList []int, number int) bool {

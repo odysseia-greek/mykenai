@@ -1,11 +1,10 @@
 package command
 
 import (
-	"github.com/kpango/glg"
-	settings "github.com/odysseia-greek/mykenai/archimedes/command/config/command"
+	"fmt"
+	"github.com/odysseia-greek/agora/plato/logging"
 	"github.com/odysseia-greek/mykenai/archimedes/util"
 	"github.com/spf13/cobra"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -15,87 +14,131 @@ func CreateImagesFromRepo() *cobra.Command {
 	var (
 		tag             string
 		destinationRepo string
-		repoName        string
+		repoPath        string
+		target          string
 	)
 	cmd := &cobra.Command{
-		Use:   "repo",
-		Short: "create all images from a repo",
-		Long: `Allows you to create images for all apis
-- Filepath
-`,
+		Use:   "repo [REPO PATH]",
+		Short: "Create all images from a repo",
+		Long: `This command allows you to create images for all APIs within a specified repository, 
+using a given tag, destination repository, and target.
+If no path to the repository is specified through the "-r" flag or positional argument, 
+the command assumes the current working directory as the repository path`,
+		Example: `  # build images from current directory
+    archimedes images repo -t v0.10.0
+    # or 
+    archimedes images repo -t v0.10.0 .
+  
+    # build images from specified repo path
+    archimedes images repo -t v0.10.0 -r /path/to/repo`,
+		Aliases:                    []string{"r", "re"},
+		SuggestionsMinimumDistance: 2,
 		Run: func(cmd *cobra.Command, args []string) {
-			glg.Green("creating")
+			argPath := ""
+			if len(args) > 0 {
+				argPath = args[0]
+			}
 
-			odysseiaSettings, err := settings.ReadOutConfig()
-			if err != nil {
-				glg.Error(err)
+			if argPath == "." {
+				currentDir, err := os.Getwd()
+				if err != nil {
+					return
+				}
+				argPath = currentDir
+			}
+
+			if repoPath == "" {
+				repoPath = argPath
+			}
+
+			if repoPath == "" {
+				currentDir, err := os.Getwd()
+				if err != nil {
+					return
+				}
+
+				logging.Debug(fmt.Sprintf("rootPath is empty, defaulting to current dir %s", currentDir))
+				repoPath = currentDir
 			}
 
 			if tag == "" {
-				glg.Warn("no tag set for image, using the git short hash")
-				gitTag, err := util.ExecCommandWithReturn(`git rev-parse --short HEAD`, odysseiaSettings.OlympiaPath)
+				logging.Warn("no tag set for image, using the git short hash")
+				gitTag, err := util.ExecCommandWithReturn(`git rev-parse --short HEAD`, repoPath)
 				if err != nil {
-					glg.Fatal(err)
+					logging.Error(err.Error())
+					return
 				}
 
 				tag = gitTag
 			}
 
 			if destinationRepo == "" {
-				glg.Warnf("destination repo empty, default to %s", defaultRepo)
+				logging.Info(fmt.Sprintf("destination repo empty, default to %s", defaultRepo))
 				destinationRepo = defaultRepo
 			}
 
-			if repoName == "" {
-				glg.Fatal("no repo set cannot continue")
+			err := isDockerRunning()
+			if err != nil {
+				return
 			}
 
-			glg.Infof("filepath set to: %s", odysseiaSettings.SourcePath)
-			glg.Infof("working on repo: %s", repoName)
+			logging.Info(fmt.Sprintf("working on repo: %s", repoPath))
 
-			BuildImagesFromRepo(odysseiaSettings.SourcePath, repoName, tag, destinationRepo)
+			err = BuildImagesFromRepo(repoPath, tag, destinationRepo, target)
+			if err != nil {
+				logging.Error(err.Error())
+			}
 		},
+		Args: func(cmd *cobra.Command, args []string) error {
+			targetFlag := cmd.Flag("target")
+			if !targetFlag.Changed {
+				return nil
+			}
+			target := targetFlag.Value.String()
+			for _, validArg := range cmd.ValidArgs {
+				if validArg == target {
+					return nil
+				}
+			}
+			return fmt.Errorf("invalid platform specified: %s", target)
+		},
+		ValidArgs: []string{"debug", "prod"},
 	}
 
-	cmd.PersistentFlags().StringVarP(&repoName, "repo", "r", "", "repo name")
-	cmd.PersistentFlags().StringVarP(&tag, "tag", "t", "", "image tag")
-	cmd.PersistentFlags().StringVarP(&destinationRepo, "dest", "d", "", "destination image repo address")
+	cmd.PersistentFlags().StringVarP(&repoPath, "repo", "r", "", "Path to the repo build. Interprets '.' as current directory. Defaults to current directory when no value or positional argument is provided.")
+	cmd.PersistentFlags().StringVarP(&tag, "tag", "t", "", "The tag for the image, if not set it defaults to the current git commit hash.")
+	cmd.PersistentFlags().StringVarP(&destinationRepo, "dest", "d", "", "The destination image repo address, defaults to predefined DefaultRepo when no value is provided.")
+	cmd.PersistentFlags().StringVarP(&target, "target", "g", "prod", "The target to build for, defaults to 'prod' when no value provided.")
 
 	return cmd
 }
 
-func BuildImagesFromRepo(rootPath, repoName, tag, destRepo string) {
-	directories, err := os.ReadDir(rootPath)
+// BuildImagesFromRepo takes a repository path, tag, destination repository, and platform as input parameters and builds container images from the repository's Dockerfiles.
+// It iterates through the directories in the repository and finds Dockerfiles recursively. For each Dockerfile found, it builds a multi-architecture container image using the build
+func BuildImagesFromRepo(repoPath, tag, destRepo, target string) error {
+	directories, err := os.ReadDir(repoPath)
 	if err != nil {
-		glg.Fatal(err)
+		return err
 	}
 
 	for _, dir := range directories {
 		if dir.IsDir() && !strings.HasPrefix(dir.Name(), ".") {
-			if dir.Name() == repoName {
-				repoPath := filepath.Join(rootPath, dir.Name())
-				innerDirs, err := os.ReadDir(repoPath)
-				if err != nil {
-					glg.Fatal(err)
-				}
+			innerFp := filepath.Join(repoPath, dir.Name())
+			innerFiles, err := os.ReadDir(innerFp)
+			if err != nil {
+				return err
+			}
 
-				for _, innerDir := range innerDirs {
-					if innerDir.IsDir() && !strings.HasPrefix(innerDir.Name(), ".") {
-						innerFp := filepath.Join(rootPath, dir.Name(), innerDir.Name())
-						innerFiles, err := ioutil.ReadDir(innerFp)
-						if err != nil {
-							glg.Fatal(err)
-						}
-
-						for _, innerFile := range innerFiles {
-							if innerFile.Name() == "Dockerfile" {
-								glg.Infof("working on project: %s", innerFp)
-								runImageBuildFlow(innerFp, innerDir.Name(), tag, destRepo)
-							}
-						}
+			for _, innerFile := range innerFiles {
+				if innerFile.Name() == "Dockerfile" {
+					logging.Info(fmt.Sprintf("working on project: %s", innerFp))
+					if err := buildImageMultiArch(innerFp, dir.Name(), tag, destRepo, target); err != nil {
+						return err
 					}
 				}
 			}
 		}
 	}
+
+	return nil
 }

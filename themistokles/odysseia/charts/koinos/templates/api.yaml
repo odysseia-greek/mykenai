@@ -1,0 +1,49 @@
+{{- define "koinos.api" -}}
+{{- println -}}
+- name: "{{ .Values.name }}"
+  {{- if .Values.commonConfig.config.externalRepo | quote }}
+  image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.odysseiaapi.repo }}:{{ .Values.images.odysseiaapi.tag }}
+  {{ else }}
+  image: {{ .Values.images.odysseiaapi.repo }}:{{ .Values.images.odysseiaapi.tag }}
+  {{- end}}
+  imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
+  env:
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    - name: ELASTIC_ACCESS
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.annotations['odysseia-greek/access']
+  envFrom:
+    - configMapRef:
+        name: {{ .Values.name }}
+  volumeMounts:
+    {{- range .Values.commonConfig.tlsConfig.mounts }}
+    - name: {{ .name }}
+      mountPath: {{ .path }}
+      readOnly: true
+    {{- end }}
+  ports:
+    - containerPort: {{ .Values.commonConfig.envVariables.odysseiaapi.port }}
+  livenessProbe:
+    httpGet:
+      path: {{ .Values.livenessPath }}
+      port: {{ .Values.commonConfig.envVariables.odysseiaapi.port }}
+    initialDelaySeconds: {{ .Values.commonConfig.config.initialDelayLiveness }}
+    periodSeconds: {{ .Values.commonConfig.config.periodSeconds }}
+  readinessProbe:
+    httpGet:
+      path: {{ .Values.readinessPath }}
+      port: {{ .Values.commonConfig.envVariables.odysseiaapi.port }}
+    initialDelaySeconds: {{ .Values.commonConfig.config.initialDelayReadiness }}
+    periodSeconds: {{ .Values.commonConfig.config.periodSeconds }}
+  resources:
+    requests:
+      memory: {{ .Values.services.odysseiaapi.requests.memory }}
+      cpu: {{ .Values.services.odysseiaapi.requests.cpu }}
+    limits:
+      memory: {{.Values.services.odysseiaapi.limits.memory}}
+      cpu: {{.Values.services.odysseiaapi.limits.cpu}}
+  {{- end -}}

@@ -1,7 +1,6 @@
 package command
 
 import (
-	"github.com/kpango/glg"
 	"github.com/spf13/cobra"
 )
 
@@ -16,7 +15,6 @@ func SetImageVersion() *cobra.Command {
 - Filepath
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			glg.Green("setting images")
 
 		},
 	}

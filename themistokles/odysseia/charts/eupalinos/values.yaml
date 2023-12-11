@@ -1,27 +1,39 @@
-config:
-    environment: local
-    externalRepo: true
-    initialDelayLiveness: 20
-    initialDelayReadiness: 1
-    kubeVariant: minikube
-    periodSeconds: 20
-    privateImagesInRepo: false
-    pullPolicy: Always
-    replicas:
-        high: 5
-        low: 1
-        medium: 2
-    tls: true
+name: eupalinos
+namespace: odysseia
+replicas: 1
+
+commonConfig:
+    namespace: odysseia
+    config:
+        environment: local
+        externalRepo: true
+        initialDelayLiveness: 20
+        initialDelayReadiness: 1
+        kubeVariant: k3d
+        periodSeconds: 20
+        pullPolicy: Always
+        tls: true
+    images:
+        imageRepo: ghcr.io/odysseia-greek/
+    tlsConfig:
+        elastic:
+            name: elastic-certificate-pem
+            path: /app/config/certs
+            secretName: elastic-certificate-pem
+        mounts:
+            - name: solon-certs
+              path: /etc/certs/solon
+              secretName: solon-tls-certs
+        rootPath: /etc/certs
 envVariables:
     queue:
         port: 50051
 images:
     imageRepo: ghcr.io/odysseia-greek/
-    pullSecret: harbor-images
     stateful:
         repo: eupalinos
         tag: v1.0.2
-namespaceOverride: odysseia
+
 services:
     queue:
         labels:
@@ -29,7 +41,6 @@ services:
         limits:
             cpu: 500m
             memory: 64Mi
-        name: eupalinos
         requests:
             cpu: 250m
             memory: 32Mi

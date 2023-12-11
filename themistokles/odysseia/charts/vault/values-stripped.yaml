@@ -1,0 +1,246 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
+# Available parameters and their default values for the Vault chart.
+
+global:
+  # enabled is the master enabled switch. Setting this to true or false
+  # will enable or disable all the components within this chart by default.
+  enabled: true
+  # Image pull secret to use for registry authentication.
+  # Alternatively, the value may be specified as an array of strings.
+  imagePullSecrets: []
+  # imagePullSecrets:
+  #   - name: image-pull-secret
+
+  # TLS for end-to-end encrypted transport
+  tlsDisable: false
+  # External vault server address for the injector and CSI provider to use.
+  # Setting this will disable deployment of a vault server.
+  externalVaultAddr: ""
+  # If deploying to OpenShift
+  openshift: false
+  # Create PodSecurityPolicy for pods
+  psp:
+    enable: false
+    # Annotation for PodSecurityPolicy.
+    # This is a multi-line templated string map, and can also be set as YAML.
+    annotations: |
+      seccomp.security.alpha.kubernetes.io/allowedProfileNames: docker/default,runtime/default
+      apparmor.security.beta.kubernetes.io/allowedProfileNames: runtime/default
+      seccomp.security.alpha.kubernetes.io/defaultProfileName:  runtime/default
+      apparmor.security.beta.kubernetes.io/defaultProfileName:  runtime/default
+
+  serverTelemetry:
+    # Enable integration with the Prometheus Operator
+    # See the top level serverTelemetry section below before enabling this feature.
+    prometheusOperator: false
+
+server:
+  enabled: true
+  image:
+    repository: "hashicorp/vault"
+    tag: "1.14.0"
+    pullPolicy: IfNotPresent
+  updateStrategyType: "OnDelete"
+  logLevel: "info"
+  logFormat: "standard"
+  resources:
+    requests:
+      memory: 64Mi
+      cpu: 250m
+    limits:
+      memory: 256Mi
+      cpu: 500m
+  authDelegator:
+    enabled: true
+  readinessProbe:
+    enabled: true
+    port: 8200
+    failureThreshold: 2
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    successThreshold: 1
+    timeoutSeconds: 3
+  # Used to enable a livenessProbe for the pods
+  livenessProbe:
+    enabled: false
+    path: "/v1/sys/health?standbyok=true"
+    port: 8200
+    failureThreshold: 2
+    initialDelaySeconds: 60
+    periodSeconds: 5
+    successThreshold: 1
+    timeoutSeconds: 3
+
+  # See: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/
+  terminationGracePeriodSeconds: 10
+
+  # Used to set the sleep time during the preStop step
+  preStopSleepSeconds: 5
+  extraEnvironmentVars:
+    VAULT_CACERT: /vault/userconfig/vault-server-tls/vault.ca
+#    GOOGLE_APPLICATION_CREDENTIALS: /vault/userconfig/unseal/gcpconfig.json
+
+    # extraEnvironmentVars is a list of extra environment variables to set with the stateful set. These could be
+    # used to include variables required for auto-unseal.
+    # GOOGLE_REGION: global
+    # GOOGLE_PROJECT: myproject
+    # GOOGLE_APPLICATION_CREDENTIALS: /vault/userconfig/myproject/myproject-creds.json
+  volumes:
+    - name: userconfig-vault-server-tls
+      secret:
+        defaultMode: 420
+        secretName: vault-server-tls
+#    - name: vaultunsealgcp-secret
+#      secret:
+#        secretName: vaultunsealgcp
+
+  # volumeMounts is a list of volumeMounts for the main server container. These are rendered
+  # via toYaml rather than pre-processed like the extraVolumes value.
+  # The purpose is to make it easy to share volumes between containers.
+  volumeMounts:
+    - mountPath: /vault/userconfig/vault-server-tls
+      name: userconfig-vault-server-tls
+      readOnly: true
+#    - mountPath: /vault/userconfig/unseal
+#      name: vaultunsealgcp-secret
+
+  # Affinity Settings
+  # Commenting out or setting as empty the affinity variable, will allow
+  # deployment to single node services such as Minikube
+  # This should be either a multi-line string or YAML matching the PodSpec's affinity field.
+  affinity: |
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: {{ template "vault.name" . }}
+              app.kubernetes.io/instance: "{{ .Release.Name }}"
+              component: server
+          topologyKey: kubernetes.io/hostname
+
+  # Enables a headless service to be used by the Vault Statefulset
+  service:
+    enabled: true
+    active:
+      enabled: true
+    standby:
+      enabled: true
+    instanceSelector:
+      enabled: true
+    publishNotReadyAddresses: true
+    externalTrafficPolicy: Cluster
+    port: 8200
+    targetPort: 8200
+    annotations: {}
+
+  dataStorage:
+    enabled: true
+    size: 5Gi
+    mountPath: "/vault/data"
+    storageClass: null
+    accessMode: ReadWriteOnce
+    annotations: {}
+
+  # Run Vault in "standalone" mode. This is the default mode that will deploy if
+  # no arguments are given to helm. This requires a PVC for data storage to use
+  # the "file" backend.  This mode is not highly available and should not be scaled
+  # past a single replica.
+  standalone:
+    enabled: true
+    config: |
+      ui = true
+      listener "tcp" {
+        address = "[::]:8200"
+        cluster_address = "[::]:8201"
+        tls_cert_file = "/vault/userconfig/vault-server-tls/vault.crt"
+        tls_key_file  = "/vault/userconfig/vault-server-tls/vault.key"
+        tls_client_ca_file = "/vault/userconfig/vault-server-tls/vault.crt"
+      }
+
+      storage "file" {
+        path = "/vault/data"
+      }
+
+      # Example configuration for enabling Prometheus metrics in your config.
+      #telemetry {
+      #  prometheus_retention_time = "30s"
+      #  disable_hostname = true
+      #}
+
+  ha:
+    enabled: false
+    replicas: 3
+    apiAddr: null
+    clusterAddr: null
+    raft:
+      enabled: true
+      setNodeId: false
+      config: |
+        ui = true
+        listener "tcp" {
+          tls_disable = false
+          address = "[::]:8200"
+          cluster_address = "[::]:8201"
+          tls_cert_file = "/vault/userconfig/vault-server-tls/vault.crt"
+          tls_key_file  = "/vault/userconfig/vault-server-tls/vault.key"
+          tls_client_ca_file = "/vault/userconfig/vault-server-tls/vault.ca"
+          # Enable unauthenticated metrics access (necessary for Prometheus Operator)
+          #telemetry {
+          #  unauthenticated_metrics_access = "true"
+          #}
+        }
+        
+        storage "raft" {
+          path = "/vault/data"
+        }
+
+
+        service_registration "kubernetes" {}
+    config: |
+      ui = true
+      cluster_name  = "vault"
+
+      listener "tcp" {
+        tls_disable = false
+        address = "[::]:8200"
+        cluster_address = "[::]:8201"
+        tls_cert_file = "/vault/userconfig/vault-server-tls/vault.crt"
+        tls_key_file  = "/vault/userconfig/vault-server-tls/vault.key"
+        tls_client_ca_file = "/vault/userconfig/vault-server-tls/vault.ca"
+      }
+      storage "raft" {
+        path = "/vault/data"
+      }
+
+      service_registration "kubernetes" {}
+
+
+      # Example configuration for enabling Prometheus metrics.
+      # If you are using Prometheus Operator you can enable a ServiceMonitor resource below.
+      # You may wish to enable unauthenticated metrics in the listener block above.
+      #telemetry {
+      #  prometheus_retention_time = "30s"
+      #  disable_hostname = true
+      #}
+
+    disruptionBudget:
+      enabled: true
+      maxUnavailable: null
+
+  serviceAccount:
+    create: true
+    name: ""
+    annotations: {}
+    extraLabels: {}
+    serviceDiscovery:
+      enabled: true
+
+  statefulSet:
+    annotations: {}
+    securityContext:
+      pod: {}
+      container: {}
+
+  hostNetwork: false

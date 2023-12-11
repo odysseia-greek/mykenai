@@ -1,5 +1,13 @@
 apiVersion: v2
 appVersion: 0.7.2
-description: One cannot know before one has learned
+description: A dictionary service that completes with words from the quiz within odysseia-greek.
 name: melissos
 version: 0.1.1
+home: https://www.odysseia-greek.com
+sources:
+  - https://github.com/odysseia-greek/olympia
+  - https://github.com/odysseia-greek/olympia/tree/main/melissos
+dependencies:
+  - name: koinos
+    version: ">= 0.1.0"
+    repository: "file://../koinos"

@@ -8,8 +8,10 @@ import (
 func Manager() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "images",
-		Short: "work with images",
-		Long:  `Allows you to create and parse images`,
+		Short: "Work with images",
+		Long: `The 'images' command is used to manage images in your project.
+It supports a variety of operations such as creating images from a repo or creating a single image.
+Use 'archimedes images [command] --help' for more information about a command.`,
 	}
 
 	cmd.AddCommand(

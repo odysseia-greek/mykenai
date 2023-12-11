@@ -1,0 +1,68 @@
+environments:
+  local:
+    values:
+      - values/local.yaml
+  staging:
+    values:
+      - values/staging.yaml
+  production:
+    values:
+      - values/production.yaml
+
+releases:
+  ## Prerequisite ##
+  - name: perikles
+    namespace: odysseia
+    chart: ./charts/perikles
+    version: 0.1.1
+    missingFileHandler: Error
+    labels:
+      tier: prereq
+
+  ## Infrastructure ##
+  - name: elastic
+    namespace: odysseia
+    chart: ./charts/elastic
+    version: 8.8.0
+    missingFileHandler: Error
+    labels:
+      tier: infra
+  - name: solon
+    namespace: odysseia
+    chart: ./charts/solon
+    version: 0.1.1
+    missingFileHandler: Error
+    labels:
+      tier: infra
+    needs:
+      - odysseia/perikles
+      - odysseia/vault
+  - name: vault
+    namespace: odysseia
+    chart: ./charts/vault
+    labels:
+      tier: infra
+    needs:
+      - odysseia/perikles
+  - name: eupalinos
+    namespace: odysseia
+    chart: ./charts/eupalinos
+    version: 0.1.1
+    missingFileHandler: Error
+    labels:
+      tier: infra
+    needs:
+      - odysseia/perikles
+
+      ## APIs ##
+  - name: alexandros
+    namespace: odysseia
+    values:
+      - replicas: 1
+    chart: ./charts/alexandros
+    version: 0.1.1
+    missingFileHandler: Error
+    labels:
+      tier: backend
+    needs:
+      - odysseia/solon

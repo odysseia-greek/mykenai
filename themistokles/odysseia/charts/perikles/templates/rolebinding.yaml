@@ -1,13 +1,13 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  namespace: {{ template "perikles.namespace" . }}
-  name: {{ template "perikles.bindingName" $ }}
+  namespace: {{ .Values.namespace }}
+  name: {{ .Values.name }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: {{ template "perikles.roleName" . }}
+  name: {{ .Values.name }}
 subjects:
   - kind: ServiceAccount
-    name: {{ template "perikles.serviceAccountName" . }}
-    namespace: {{ template "perikles.namespace" . }}
+    namespace: {{ .Values.namespace }}
+    name: {{ .Values.serviceAccountName }}
