@@ -8,8 +8,8 @@ metadata:
     heritage: {{ .Release.Service | quote }}
     release: {{ .Release.Name | quote }}
     chart: "{{ .Chart.Name }}"
-    env: {{ .Values.global.commonConfig.config.environment }}
-    variant: {{ .Values.global.commonConfig.config.kubeVariant }}
+    env: {{ .Values.commonConfig.config.environment }}
+    variant: {{ .Values.commonConfig.config.kubeVariant }}
     app: {{ .Values.name }}
     version: {{ .Values.config.elasticVersion }}
 spec:

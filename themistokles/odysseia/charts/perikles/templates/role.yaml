@@ -1,8 +1,8 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  namespace: {{ template "perikles.namespace" . }}
-  name: {{ template "perikles.roleName" $ }}
+  namespace: {{ .Values.namespace }}
+  name: {{ .Values.name }}
   labels:
     heritage: {{ .Release.Service | quote }}
     release: {{ .Release.Name | quote }}
@@ -16,10 +16,7 @@ rules:
       - '*'
   - apiGroups: [""] # "" indicates the core API group
     resources: ["secrets"]
-    verbs: ["get", "list", "update", "create"]
+    verbs: ["get", "list", "update", "create", "delete"]
   - apiGroups: ["apps"] # "" indicates the core API group
-    resources: ["deployments"]
-    verbs: ["update", "get"]
-  - apiGroups: ["apps"]
-    resources: ["statefulsets"]
-    verbs: ["get", "list"]
+    resources: ["deployments", "statefulsets"]
+    verbs: ["update", "get", "list"]

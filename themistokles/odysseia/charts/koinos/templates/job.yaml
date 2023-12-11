@@ -9,12 +9,12 @@
       containers:
 {{- include "koinos.ambassador" . | indent 8 }}
         - name: "{{ .Values.jobName }}"
-          {{- if .Values.global.commonConfig.config.externalRepo | quote }}
-          image: {{ .Values.global.commonConfig.images.imageRepo}}{{ .Values.images.seeder.repo }}:{{ .Values.images.seeder.tag }}
-          imagePullPolicy: {{ .Values.global.commonConfig.config.pullPolicy }}
+          {{- if .Values.commonConfig.config.externalRepo | quote }}
+          image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.seeder.repo }}:{{ .Values.images.seeder.tag }}
+          imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
           {{ else }}
           image: {{ .Values.images.seeder.repo }}:{{ .Values.images.seeder.tag }}
-          imagePullPolicy: {{ .Values.global.commonConfig.config.pullPolicy }}
+          imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
           {{- end}}
           env:
             - name: POD_NAME
@@ -30,9 +30,9 @@
                 name: {{ .Values.name }}
       restartPolicy: Never
       volumes:
-        - name: {{ .Values.global.commonConfig.tlsConfig.vault.name }}
+        - name: {{ .Values.commonConfig.tlsConfig.vault.name }}
           secret:
-            secretName: {{ .Values.global.commonConfig.tlsConfig.vault.secretName }}
+            secretName: {{ .Values.commonConfig.tlsConfig.vault.secretName }}
         {{- range .Values.tlsConfig.mounts }}
         - name: {{ .name }}
           secret:
