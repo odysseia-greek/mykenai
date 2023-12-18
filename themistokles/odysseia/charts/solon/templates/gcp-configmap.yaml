@@ -1,8 +1,10 @@
-{{- if .Values.envVariables.peisistratos.unsealProvider }}
+{{- if and .Values.envVariables.peisistratos.autoUnseal (eq .Values.envVariables.peisistratos.autoUnsealMethod "gcp") }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: gcpconfig
+  name: {{ .Values.envVariables.peisistratos.configmapName }}
+  annotations:
+    unsealprovider.peisistratos: {{ .Values.envVariables.peisistratos.autoUnsealMethod }}
 data:
   KEY_RING: "autounseal"
   CRYPTO_KEY: "vaultkey"

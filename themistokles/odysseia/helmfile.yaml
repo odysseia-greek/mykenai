@@ -9,6 +9,7 @@ environments:
     values:
       - values/production.yaml
 
+---
 releases:
   ## Prerequisite ##
   - name: perikles
@@ -17,16 +18,42 @@ releases:
     version: 0.1.1
     missingFileHandler: Error
     labels:
-      tier: prereq
+      tier: base
+    values:
+      - values/{{ .Environment.Name }}.yaml
+      - images:
+          imageRepo: ghcr.io/odysseia-greek/
+          odysseiaapi:
+            repo: perikles
+            tag: v0.0.11
+          init:
+            repo: kleisthenes
+            tag: v0.0.11
 
-  ## Infrastructure ##
   - name: elastic
     namespace: odysseia
     chart: ./charts/elastic
     version: 8.8.0
     missingFileHandler: Error
     labels:
+      tier: base
+
+  ## Infrastructure ##
+  - name: vault
+    namespace: odysseia
+    chart: ./charts/vault
+    labels:
       tier: infra
+    needs:
+      - odysseia/perikles
+    values:
+      {{- if eq .Environment.Name "staging" }}
+      - values/vault/standalone-unseal.yaml
+      {{- end }}
+      {{- if eq .Environment.Name "production" }}
+      - values/vault/ha-unseal.yaml
+      {{- end }}
+
   - name: solon
     namespace: odysseia
     chart: ./charts/solon
@@ -37,13 +64,20 @@ releases:
     needs:
       - odysseia/perikles
       - odysseia/vault
-  - name: vault
-    namespace: odysseia
-    chart: ./charts/vault
-    labels:
-      tier: infra
-    needs:
-      - odysseia/perikles
+    values:
+      - values/{{ .Environment.Name }}.yaml
+      - images:
+          imageRepo: ghcr.io/odysseia-greek/
+          init:
+            repo: drakon
+            tag: v0.0.11
+          odysseiaapi:
+            repo: solon
+            tag: v0.0.11
+          initSeeder:
+            repo: peisistratos
+            tag: v0.0.11
+
   - name: eupalinos
     namespace: odysseia
     chart: ./charts/eupalinos
@@ -53,12 +87,17 @@ releases:
       tier: infra
     needs:
       - odysseia/perikles
+    values:
+      - values/{{ .Environment.Name }}.yaml
+      - images:
+          imageRepo: ghcr.io/odysseia-greek/
+          stateful:
+            repo: eupalinos
+            tag: v1.0.2
 
       ## APIs ##
   - name: alexandros
     namespace: odysseia
-    values:
-      - replicas: 1
     chart: ./charts/alexandros
     version: 0.1.1
     missingFileHandler: Error
@@ -66,3 +105,199 @@ releases:
       tier: backend
     needs:
       - odysseia/solon
+    values:
+      - values/{{ .Environment.Name }}.yaml
+      - images:
+          odysseiaapi:
+            repo: alexandros
+            tag: v0.0.11
+          seeder:
+            repo: demokritos
+            tag: v0.0.11
+    set:
+      - name: replicas
+        value: {{ .Values.alexandros.replicas }}
+
+  - name: dionysios
+    namespace: odysseia
+    chart: ./charts/dionysios
+    version: 0.1.1
+    missingFileHandler: Error
+    labels:
+      tier: backend
+    needs:
+      - odysseia/solon
+    values:
+      - values/{{ .Environment.Name }}.yaml
+      - images:
+          odysseiaapi:
+            repo: dionysios
+            tag: v0.0.11
+          seeder:
+            repo: anaximander
+            tag: v0.0.11
+    set:
+      - name: replicas
+        value: {{ .Values.dionysios.replicas }}
+
+  - name: herodotos
+    namespace: odysseia
+    chart: ./charts/herodotos
+    version: 0.1.1
+    missingFileHandler: Error
+    labels:
+      tier: backend
+    needs:
+      - odysseia/solon
+    values:
+      - values/{{ .Environment.Name }}.yaml
+      - images:
+          odysseiaapi:
+            repo: herodotos
+            tag: v0.0.11
+          seeder:
+            repo: herakleitos
+            tag: v0.0.11
+    set:
+      - name: replicas
+        value: {{ .Values.herodotos.replicas }}
+
+  - name: sokrates
+    namespace: odysseia
+    chart: ./charts/sokrates
+    version: 0.1.1
+    missingFileHandler: Error
+    labels:
+      tier: backend
+    needs:
+      - odysseia/solon
+    values:
+      - values/{{ .Environment.Name }}.yaml
+      - images:
+          odysseiaapi:
+            repo: sokrates
+            tag: v0.0.11
+          seeder:
+            repo: parmenides
+            tag: v0.0.11
+    set:
+      - name: replicas
+        value: {{ .Values.sokrates.replicas }}
+
+  - name: melissos
+    namespace: odysseia
+    chart: ./charts/melissos
+    version: 0.1.1
+    missingFileHandler: Error
+    labels:
+      tier: backend
+    needs:
+      - odysseia/solon
+    values:
+      - values/{{ .Environment.Name }}.yaml
+      - images:
+          seeder:
+            repo: melissos
+            tag: v0.0.11
+
+  - name: homeros
+    namespace: odysseia
+    chart: ./charts/homeros
+    version: 0.1.1
+    missingFileHandler: Error
+    labels:
+      tier: backend
+    needs:
+      - odysseia/solon
+    values:
+      - values/{{ .Environment.Name }}.yaml
+      - images:
+          odysseiaapi:
+            repo: homeros
+            tag: v0.0.11
+
+  - name: euripides
+    namespace: odysseia
+    chart: ./charts/euripides
+    version: 0.1.1
+    missingFileHandler: Error
+    labels:
+      tier: backend
+    needs:
+      - odysseia/solon
+    values:
+      - values/{{ .Environment.Name }}.yaml
+      - images:
+          odysseiaapi:
+            repo: euripides
+            tag: v0.0.11
+          seeder:
+            repo: anaximenes
+            tag: v0.0.11
+    set:
+      - name: replicas
+        value: {{ .Values.euripides.replicas }}
+      - name: envVariables.maxAge
+        value: {{ .Values.euripides.envVariables.maxAge }}
+
+    ## Frontend ##
+  - name: pheidias
+    namespace: odysseia
+    chart: ./charts/pheidias
+    version: 0.1.1
+    missingFileHandler: Error
+    labels:
+      tier: frontend
+    needs:
+      - odysseia/alexandros
+      - odysseia/dionysios
+      - odysseia/herodotos
+      - odysseia/sokrates
+    values:
+      - values/{{ .Environment.Name }}.yaml
+      - images:
+          imageRepo: ghcr.io/odysseia-greek/
+          odysseiaapi:
+            repo: pheidias
+            tag: v0.6.2
+
+  - name: ploutarchos
+    namespace: odysseia
+    chart: ./charts/ploutarchos
+    version: 0.1.1
+    missingFileHandler: Error
+    labels:
+      tier: frontend
+    values:
+      - values/{{ .Environment.Name }}.yaml
+      - images:
+          imageRepo: ghcr.io/odysseia-greek/
+          odysseiaapi:
+            repo: ploutarchos
+            tag: v0.6.0
+
+  - name: thermopulai
+    namespace: odysseia
+    chart: ./charts/thermopulai
+    version: 0.1.1
+    missingFileHandler: Error
+    labels:
+      tier: frontend
+    values:
+      - values/{{ .Environment.Name }}.yaml
+
+      ## Tests ##
+  - name: hippokrates
+    namespace: odysseia
+    chart: ./charts/hippokrates
+    version: 0.1.1
+    missingFileHandler: Error
+    labels:
+      tier: tests
+    needs:
+      - odysseia/alexandros
+      - odysseia/dionysios
+      - odysseia/herodotos
+      - odysseia/sokrates
+    values:
+      - values/{{ .Environment.Name }}.yaml

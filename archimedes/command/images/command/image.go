@@ -48,3 +48,26 @@ func buildImageMultiArch(rootPath, projectName, tag, dest, target string) error 
 
 	return nil
 }
+
+func buildImages(rootPath, projectName, tag, dest, target string) error {
+	logging.Info("****** 🖊️ Tagging Container Image 🖊️ ******")
+	imageName := fmt.Sprintf("%s/%s:%s", dest, projectName, tag)
+	logging.Info(fmt.Sprintf("****** 📗 Tagged Image %s 📗 ******", imageName))
+
+	logging.Info("****** 🔨 Building Container Image 🔨 ******")
+	if projectName == hippokrates {
+		projectName = projectName + ".test"
+	}
+
+	buildCommand := fmt.Sprintf("docker build --target=%s --build-arg project_name=%s -t %s . --push", target, projectName, imageName)
+	logging.Info(buildCommand)
+
+	_, err := util.ExecCommandWithReturn(buildCommand, rootPath)
+	if err != nil {
+		return err
+	}
+
+	logging.Info("****** 🔱 Image Done 🔱 ******")
+
+	return nil
+}

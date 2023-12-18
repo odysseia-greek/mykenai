@@ -16,6 +16,7 @@ func CreateImagesFromRepo() *cobra.Command {
 		destinationRepo string
 		repoPath        string
 		target          string
+		multi           bool
 	)
 	cmd := &cobra.Command{
 		Use:   "repo [REPO PATH]",
@@ -36,7 +37,7 @@ the command assumes the current working directory as the repository path`,
 		Run: func(cmd *cobra.Command, args []string) {
 			argPath := ""
 			if len(args) > 0 {
-				argPath = args[0]
+				argPath = args[len(args)-1]
 			}
 
 			if argPath == "." {
@@ -84,7 +85,7 @@ the command assumes the current working directory as the repository path`,
 
 			logging.Info(fmt.Sprintf("working on repo: %s", repoPath))
 
-			err = BuildImagesFromRepo(repoPath, tag, destinationRepo, target)
+			err = BuildImagesFromRepo(repoPath, tag, destinationRepo, target, multi)
 			if err != nil {
 				logging.Error(err.Error())
 			}
@@ -109,13 +110,14 @@ the command assumes the current working directory as the repository path`,
 	cmd.PersistentFlags().StringVarP(&tag, "tag", "t", "", "The tag for the image, if not set it defaults to the current git commit hash.")
 	cmd.PersistentFlags().StringVarP(&destinationRepo, "dest", "d", "", "The destination image repo address, defaults to predefined DefaultRepo when no value is provided.")
 	cmd.PersistentFlags().StringVarP(&target, "target", "g", "prod", "The target to build for, defaults to 'prod' when no value provided.")
+	cmd.PersistentFlags().BoolVarP(&multi, "multi", "m", false, "Build multi arch images - default to false")
 
 	return cmd
 }
 
 // BuildImagesFromRepo takes a repository path, tag, destination repository, and platform as input parameters and builds container images from the repository's Dockerfiles.
 // It iterates through the directories in the repository and finds Dockerfiles recursively. For each Dockerfile found, it builds a multi-architecture container image using the build
-func BuildImagesFromRepo(repoPath, tag, destRepo, target string) error {
+func BuildImagesFromRepo(repoPath, tag, destRepo, target string, multi bool) error {
 	directories, err := os.ReadDir(repoPath)
 	if err != nil {
 		return err
@@ -132,8 +134,14 @@ func BuildImagesFromRepo(repoPath, tag, destRepo, target string) error {
 			for _, innerFile := range innerFiles {
 				if innerFile.Name() == "Dockerfile" {
 					logging.Info(fmt.Sprintf("working on project: %s", innerFp))
-					if err := buildImageMultiArch(innerFp, dir.Name(), tag, destRepo, target); err != nil {
-						return err
+					if multi {
+						if err := buildImageMultiArch(innerFp, dir.Name(), tag, destRepo, target); err != nil {
+							return err
+						}
+					} else {
+						if err := buildImages(innerFp, dir.Name(), tag, destRepo, target); err != nil {
+							return err
+						}
 					}
 				}
 			}

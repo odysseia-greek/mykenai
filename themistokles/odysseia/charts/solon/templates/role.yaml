@@ -20,6 +20,9 @@ rules:
   - apiGroups: [""] # "" indicates the core API group
     resources: ["secrets"]
     verbs: ["get", "list", "update", "create"]
+  - apiGroups: [ "" ]
+    resources: [ "configmaps" ]
+    verbs: [ "get", "list"]
   - apiGroups: ["apps"]
     resources: ["statefulsets"]
     verbs: ["get", "list"]

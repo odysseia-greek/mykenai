@@ -18,7 +18,6 @@ envVariables:
         port: 3000
 images:
     imageRepo: ghcr.io/odysseia-greek/
-    pullSecret: harbor-images
     odysseiaapi:
         repo: pheidias
         tag: v0.6.2

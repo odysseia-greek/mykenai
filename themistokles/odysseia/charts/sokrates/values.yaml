@@ -6,7 +6,7 @@ readinessPath: /sokrates/v1/ping
 replicas: 3
 images:
     odysseiaapi:
-        repo: herodotos
+        repo: sokrates
         tag: v0.8.0
     seeder:
         repo: parmenides

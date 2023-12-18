@@ -2,29 +2,6 @@ name: eupalinos
 namespace: odysseia
 replicas: 1
 
-commonConfig:
-    namespace: odysseia
-    config:
-        environment: local
-        externalRepo: true
-        initialDelayLiveness: 20
-        initialDelayReadiness: 1
-        kubeVariant: k3d
-        periodSeconds: 20
-        pullPolicy: Always
-        tls: true
-    images:
-        imageRepo: ghcr.io/odysseia-greek/
-    tlsConfig:
-        elastic:
-            name: elastic-certificate-pem
-            path: /app/config/certs
-            secretName: elastic-certificate-pem
-        mounts:
-            - name: solon-certs
-              path: /etc/certs/solon
-              secretName: solon-tls-certs
-        rootPath: /etc/certs
 envVariables:
     queue:
         port: 50051

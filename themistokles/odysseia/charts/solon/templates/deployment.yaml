@@ -47,7 +47,7 @@
           {{- if .Values.commonConfig.config.externalRepo | quote }}
           image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.initSeeder.repo }}:{{ .Values.images.initSeeder.tag }}
           {{ else }}
-          image: {{ .Values.images.init.repo }}:{{ .Values.images.initSeeder.tag }}
+          image: {{ .Values.images.initSeeder.repo }}:{{ .Values.images.initSeeder.tag }}
           {{- end}}
           imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
           env:
@@ -64,10 +64,9 @@
           envFrom:
             - configMapRef:
                 name: {{ .Values.name }}
-          {{- if .Values.envVariables.peisistratos.unsealProvider }}
-          envFrom:
+          {{- if .Values.envVariables.peisistratos.autoUnseal }}
             - configMapRef:
-                name: gcpconfig
+                name: {{ .Values.envVariables.peisistratos.configmapName }}
           {{- end }}
           volumeMounts:
             - name: {{ .Values.tlsConfig.vault.name }}
