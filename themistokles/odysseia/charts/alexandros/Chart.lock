@@ -1,0 +1,6 @@
+dependencies:
+- name: koinos
+  repository: file://../koinos
+  version: 0.1.0
+digest: sha256:d3f1def0873318303eba50682ec2210dc259d0a3f788e2dec31e1c4cd49cae34
+generated: "2023-12-08T15:08:21.076718+01:00"

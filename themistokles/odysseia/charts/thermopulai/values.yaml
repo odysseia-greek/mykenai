@@ -12,16 +12,14 @@ envVariables:
   herodotos:
     port: 5000
   solon:
-    port: 5000
+    port: 5443
   homeros:
     port: 8080
   ploutarchos:
     port: 5000
 
-
-config:
-  apis: true
-  host: k3s-odysseia.greek
-  apiHost: k3s-odysseia.api.greek
-  ingress:
-    class: traefik
+apis: true
+host: k3s-odysseia.greek
+apiHost: k3s-odysseia.api.greek
+ingress:
+  class: traefik

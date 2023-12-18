@@ -14,3 +14,4 @@ setup:
 	kubectl create namespace odysseia
 	kubectl -n elastic-system apply -f https://download.elastic.co/downloads/eck/2.10.0/crds.yaml
 	kubectl -n elastic-system apply -f https://download.elastic.co/downloads/eck/2.10.0/operator.yaml
+	kubectl create secret generic vaultunsealgcp --from-file=gcpconfig.json=/Users/joerivrij/Documents/odysseia/gcp/odysseia-sa-gcp.json -n odysseia

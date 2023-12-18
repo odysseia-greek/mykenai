@@ -8,12 +8,6 @@ metadata:
     release: {{ .Release.Name | quote }}
     chart: "{{ .Chart.Name }}"
 rules:
-  - apiGroups:
-      - coordination.k8s.io
-    resources:
-      - leases
-    verbs:
-      - '*'
   - apiGroups: ["batch"] # "" indicates the core API group
     resources: ["jobs"]
     verbs: ["get"]

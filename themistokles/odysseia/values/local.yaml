@@ -1,10 +1,32 @@
+alexandros:
+  replicas: 1
+
+dionysios:
+  replicas: 1
+
+herodotos:
+  replicas: 1
+
+sokrates:
+  replicas: 1
+
+euripides:
+  replicas: 1
+  envVariables:
+    maxAge: 5
+
+thermopulai:
+    - host: k3d-odysseia.greek
+      apiHost: k3d-odysseia.api.greek
+
+
 # Default values for Odysseia.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 commonConfig:
   namespace: odysseia
   config:
-    environment: someotherenv
+    environment: localdev
     externalRepo: true
     initialDelayLiveness: 20
     initialDelayReadiness: 1
@@ -14,6 +36,8 @@ commonConfig:
     tls: true
   envVariables:
     elasticService: https://aristoteles-es-http:9200
+    gateway:
+      port: 8080
     https:
       port: 5443
     odysseiaapi:
@@ -28,13 +52,13 @@ commonConfig:
     imageRepo: ghcr.io/odysseia-greek/
     sidecar:
       repo: ptolemaios
-      tag: v0.5.0
+      tag: v0.0.11
     init:
       repo: periandros
-      tag: v0.4.0
+      tag: v0.0.11
     tracer:
       repo: aristophanes
-      tag: v0.2.1
+      tag: v0.0.11
   services:
     backend:
       labels:

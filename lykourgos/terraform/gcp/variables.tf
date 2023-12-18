@@ -1,5 +1,6 @@
 variable "gcloud-project" {
   description = "Google project name"
+  default = "odysseia"
 }
 
 variable "gcloud-region" {
@@ -12,11 +13,11 @@ variable "gcloud-zone" {
 
 variable "key_ring" {
   description = "Cloud KMS key ring name to create"
-  default     = ""
+  default     = "autounseal"
 }
 
 variable "crypto_key" {
-  default     = ""
+  default     = "vaultkey"
   description = "Crypto key name to create under the key ring"
 }
 

@@ -1,10 +1,10 @@
 provider "google" {
-  project = ""
-  region  = "europe-west1"  # Change to your region if needed
+  project = "odysseia"
+  region  = "europe-west1"
 }
 
 resource "google_service_account" "vault_unseal_sa" {
-  account_id   = ""  # Change to your desired account ID
+  account_id   = "odysseia-329316"
   display_name = "Vault Unseal Service Account"
 }
 

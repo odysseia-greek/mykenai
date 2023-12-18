@@ -1,9 +1,7 @@
 name: euripides
 namespace: odysseia
 jobName: anaximenes
-livenessPath: /euripides/v1/health
-readinessPath: /euripides/v1/ping
-replicas: 2
+replicas: 1
 envVariables:
     maxAge: 14
 images:
@@ -17,11 +15,11 @@ services:
     odysseiaapi:
         access: tracing
         limits:
-            cpu: 600m
+            cpu: 500m
             memory: 128Mi
         name:
         requests:
-            cpu: 300m
+            cpu: 250m
             memory: 64Mi
         role: api
     seeder:

@@ -10,7 +10,7 @@ envVariables:
 images:
     seeder:
         repo: melissos
-        tag: v0.7.2
+        tag: v0.0.11
 services:
     seeder:
         access: dictionary
