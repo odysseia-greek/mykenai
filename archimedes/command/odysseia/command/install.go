@@ -5,25 +5,68 @@ import (
 	"fmt"
 	"github.com/odysseia-greek/agora/plato/logging"
 	"github.com/odysseia-greek/agora/thales"
+	"github.com/odysseia-greek/mykenai/archimedes/util"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
 
 	corev1 "k8s.io/api/core/v1"
+	kuberr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+const (
+	ELASTICVERSION  = "2.10.0"
+	LONGHORNVERSION = "v1.6.0"
+)
+
 func Install() *cobra.Command {
+	var (
+		namespace              string
+		helmFilePath           string
+		autoUnsealPath         string
+		target                 string
+		elasticOperatorVersion string
+		longhornVersion        string
+	)
 
 	cmd := &cobra.Command{
 		Use:   "install",
 		Short: "create everything odysseia",
-		Long: `Allows you to create documentation for all apis
+		Long: `This command lets you create the prereqs for odysseia
 `,
 		Run: func(cmd *cobra.Command, args []string) {
+			argPath := ""
+			if len(args) > 0 {
+				argPath = args[len(args)-1]
+			}
+
+			if argPath == "." {
+				currentDir, err := os.Getwd()
+				if err != nil {
+					return
+				}
+				argPath = currentDir
+			}
+
+			if helmFilePath == "" {
+				helmFilePath = argPath
+			}
+
+			if helmFilePath == "" {
+				currentDir, err := os.Getwd()
+				if err != nil {
+					return
+				}
+
+				logging.Debug(fmt.Sprintf("helmFilePath is empty, defaulting to current dir %s", currentDir))
+				helmFilePath = currentDir
+			}
+
 			kubeconfigPath := filepath.Join(os.Getenv("HOME"), ".kube", "config")
 			data, _ := os.ReadFile(kubeconfigPath)
 			kube, err := thales.NewFromConfig(data)
@@ -31,14 +74,53 @@ func Install() *cobra.Command {
 				logging.Error(errors.Wrap(err, "Failed to create new Kube client").Error())
 				return
 			}
-			logging.Debug(kube.Host())
+
+			err = install(kube, autoUnsealPath, namespace)
+			if err != nil {
+				logging.Error(errors.Wrap(err, "Failed to install").Error())
+				return
+			}
+
+			err = createElasticOperator(elasticOperatorVersion)
+			if err != nil {
+				logging.Error(errors.Wrap(err, "Failed to apply elastic operator").Error())
+				return
+			}
+
+			if target == "production" {
+				if longhornVersion == "" {
+					longhornVersion = LONGHORNVERSION
+				}
+
+				longHornUrl := fmt.Sprintf("https://raw.githubusercontent.com/longhorn/longhorn/%s/deploy/longhorn.yaml", longhornVersion)
+				err := applyManifestFromURL(longHornUrl)
+				if err != nil {
+					logging.Error(errors.Wrap(err, "Failed to apply longhorn operator").Error())
+					return
+				}
+			}
+
+			err = createApps(helmFilePath, target, namespace, kube)
+			if err != nil {
+				logging.Error(errors.Wrap(err, "Failed to apply apps").Error())
+				return
+			}
+
+			logging.System(fmt.Sprintf("Finished creating a fresh install for odysseia for target: %s", target))
 		},
 	}
+
+	cmd.PersistentFlags().StringVarP(&helmFilePath, "themistokles", "t", "", "Where to find the themistokles and by extension all the helmfiles")
+	cmd.PersistentFlags().StringVarP(&namespace, "namespace", "n", "odysseia", "The namespace to use during installs, defaults to 'odysseia' when no value provided.")
+	cmd.PersistentFlags().StringVarP(&target, "target", "g", "local", "The target to build for, defaults to 'local' when no value provided.")
+	cmd.PersistentFlags().StringVarP(&autoUnsealPath, "unseal", "u", "", "Path to an unseal config to enable vault auto unseal")
+	cmd.PersistentFlags().StringVarP(&elasticOperatorVersion, "elasticversion", "e", "", fmt.Sprintf("The elastic version for the operator to use, defaults to '%s' when no value provided.", ELASTICVERSION))
+	cmd.PersistentFlags().StringVarP(&longhornVersion, "longhornversion", "l", "", fmt.Sprintf("The longhorn version for the operator to use, defaults to '%s' when no value provided.", LONGHORNVERSION))
 
 	return cmd
 }
 
-func install(client thales.KubeClient, ns string) error {
+func install(client *thales.KubeClient, autoUnsealPath, ns string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
 
@@ -50,13 +132,112 @@ func install(client thales.KubeClient, ns string) error {
 	}
 	_, err := client.CoreV1().Namespaces().Create(ctx, nsToCreate, metav1.CreateOptions{})
 	if err != nil {
+		if kuberr.IsAlreadyExists(err) {
+			logging.Info("Namespace already exists, proceeding.")
+			return nil // Return nil if the namespace already exists
+		}
 		return err
+	}
+
+	logging.Info(fmt.Sprintf("Created namespace: %s", ns))
+
+	if autoUnsealPath != "" {
+		err := createVaultAutoUnsealConfig(ns, autoUnsealPath, client)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
 }
 
-func createVaultAutounsealConfig(ns, vaultSaPath string, client thales.KubeClient) error {
+func createApps(helmfilePath, target, ns string, client *thales.KubeClient) error {
+	tiers := []string{
+		"base",
+		"infra",
+		"backend",
+		"frontend",
+	}
+
+	if info, err := os.Stat(helmfilePath); err != nil {
+		return err
+	} else if !info.IsDir() {
+		return errors.New(fmt.Sprintf("helmfilePath is not a directory: %s", helmfilePath))
+	}
+
+	helmfileFullPath := filepath.Join(helmfilePath, "helmfile.yaml")
+	if _, err := os.Stat(helmfileFullPath); os.IsNotExist(err) {
+		return errors.New(fmt.Sprintf("helmfile.yaml does not exist in the provided helmfilePath: %s", helmfilePath))
+	}
+
+	for _, tier := range tiers {
+		err := applyHelmfile(target, tier, helmfilePath)
+		if err != nil {
+			return err
+		}
+		err = waitForAllPodsToBeHealthy(client, ns)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func waitForAllPodsToBeHealthy(client *thales.KubeClient, namespace string) error {
+	timeout := 5 * time.Minute
+	pollInterval := 10 * time.Second
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return fmt.Errorf("timeout reached waiting for all pods to be healthy in namespace %s", namespace)
+		case <-time.After(pollInterval):
+			pods, err := client.CoreV1().Pods(namespace).List(ctx, metav1.ListOptions{})
+			if err != nil {
+				return fmt.Errorf("error listing pods: %v", err)
+			}
+
+			allHealthy := true
+			for _, pod := range pods.Items {
+				if !isPodHealthy(&pod) {
+					allHealthy = false
+					logging.Warn(fmt.Sprintf("pod: %s is not healthy", pod.Name))
+					break
+				}
+			}
+
+			if allHealthy {
+				logging.Debug("all current pods are running or have finished")
+				return nil
+			}
+		}
+	}
+}
+
+func isPodHealthy(pod *corev1.Pod) bool {
+	if pod.Status.Phase != corev1.PodRunning && pod.Status.Phase != corev1.PodSucceeded {
+		return false
+	}
+
+	for _, condition := range pod.Status.Conditions {
+		if condition.Type == corev1.PodReady {
+			if condition.Reason == "PodCompleted" {
+				return true
+			}
+			if condition.Status != corev1.ConditionTrue {
+				return false
+			}
+		}
+	}
+
+	return true
+}
+
+func createVaultAutoUnsealConfig(ns, vaultSaPath string, client *thales.KubeClient) error {
 	data, err := os.ReadFile(vaultSaPath)
 	if err != nil {
 		return err
@@ -109,7 +290,25 @@ func createVaultAutounsealConfig(ns, vaultSaPath string, client thales.KubeClien
 		return err
 	}
 
-	logging.Debug(fmt.Sprintf("created new secret: %s", creation.Name))
+	logging.Debug(fmt.Sprintf("created new secret: %s for config: %s", creation.Name, dataKey))
+	return nil
+}
+
+func createElasticOperator(elasticVersion string) error {
+	if elasticVersion == "" {
+		elasticVersion = ELASTICVERSION
+	}
+	manifests := []string{
+		fmt.Sprintf("https://download.elastic.co/downloads/eck/%s/crds.yaml", elasticVersion),
+		fmt.Sprintf("https://download.elastic.co/downloads/eck/%s/operator.yaml", elasticVersion),
+	}
+	for _, url := range manifests {
+		err := applyManifestFromURL(url)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -124,4 +323,30 @@ func determineSecretAttributes(vaultSaPath string) (string, string) {
 	}
 
 	return "", ""
+}
+
+func applyManifestFromURL(url string) error {
+	cmd := exec.Command("kubectl", "apply", "-f", url)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return err
+	}
+
+	logging.Info(fmt.Sprintf("output from apply command: %s", string(output)))
+	return nil
+}
+
+func applyHelmfile(target, tier, helmfilePath string) error {
+	// hack to always set infra to staging
+	if tier == "infra" {
+		target = "staging"
+	}
+	cmd := fmt.Sprintf("helmfile -e %s -l tier=%s apply", target, tier)
+
+	logging.Debug(fmt.Sprintf("creating from helmfile: %s", cmd))
+	output, err := util.ExecCommandWithReturn(cmd, helmfilePath)
+	if output != "" {
+		logging.Debug(output)
+	}
+	return err
 }

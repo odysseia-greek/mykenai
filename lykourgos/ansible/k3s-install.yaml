@@ -1,35 +1,75 @@
 ---
 - name: Install and configure k3s on Raspberry Pi nodes
-  hosts: raspberries
+  hosts: poleis
   become: yes
-
   vars:
-    ansible_ssh_private_key_file: ~/.ssh/id_raspberry
-    k3s_version: "v1.27.3+k3s1"  # Replace with the desired version of k3s
-    k3s_token: ""  # Variable to store the generated token
-    k3s_server_url: ""  # Variable to store the server URL
+    ansible_ssh_private_key_file: ~/.ssh/id_raspie
+    k3s_version: "v1.28.6+k3s2"  # Adjust as needed
 
   tasks:
     - name: Install k3s on the first server and initialize the cluster
-      shell: curl -sfL https://get.k3s.io | sh -s - server --cluster-init
+      shell: curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC='--cluster-init  --disable-network-policy --flannel-backend=none' sh -
       when: inventory_hostname == groups['servers'][0]
-      register: k3s_init_result
-      changed_when: k3s_init_result.stdout is defined
 
-    - name: Set k3s_token variable with the generated token
+    - name: Retrieve k3s token from the first server
+      shell: sudo cat /var/lib/rancher/k3s/server/node-token
+      register: k3s_token_result
+      when: inventory_hostname == groups['servers'][0]
+      changed_when: false
+
+    - name: Set k3s token fact
       set_fact:
-        k3s_token: "{{ k3s_init_result.stdout_lines[-1].split(': ')[1] }}"
-      when: inventory_hostname == groups['servers'][0] and k3s_init_result.stdout is defined
+        k3s_token: "{{ k3s_token_result.stdout }}"
+      when: inventory_hostname == groups['servers'][0]
 
-    - name: Set k3s_server_url variable with the server URL
+    - name: Set k3s server URL fact
       set_fact:
         k3s_server_url: "https://{{ hostvars[groups['servers'][0]]['ansible_host'] }}:6443"
-      when: inventory_hostname == groups['servers'][0] and k3s_init_result.stdout is defined
+      when: inventory_hostname == groups['servers'][0]
 
-    - name: Install k3s on servers (except the first server)
-      shell: curl -sfL https://get.k3s.io | K3S_TOKEN={{ k3s_token }} sh -s - server --server {{ k3s_server_url }}
+    - name: Fetch kubeconfig from the first server
+      fetch:
+        src: /etc/rancher/k3s/k3s.yaml
+        dest: "{{ playbook_dir }}/{{ inventory_hostname }}.yaml"
+        flat: yes
+      when: inventory_hostname == groups['servers'][0]
+      delegate_to: "{{ groups['servers'][0] }}"
+      run_once: true
+
+    - name: Replace IP address with hostname in kubeconfig
+      replace:
+        path: "{{ playbook_dir }}/{{ inventory_hostname }}.yaml"
+        regexp: 'https://127.0.0.1:6443'
+        replace: "https://{{ inventory_hostname }}:6443"
+      when: inventory_hostname == groups['servers'][0]
+      delegate_to: localhost
+      become: no
+      run_once: true
+
+    - name: Merge fetched kubeconfig with main kubeconfig
+      shell: kubectl config view --merge --kubeconfig={{ playbook_dir }}/{{ inventory_hostname }}.yaml
+      register: merge_result
+      changed_when: false
+      when: inventory_hostname == groups['servers'][0]
+      delegate_to: localhost
+      become: no
+      run_once: true
+
+    - name: Install Cilium from local machine
+      shell: export KUBECONFIG=k3s-s-athenai.yaml && cilium install --version 1.15.0
+      delegate_to: localhost
+      become: no
+      run_once: true
+
+    - name: Wait before joining other nodes
+      pause:
+        seconds: 120  # Wait for 2 minutes
+      when: inventory_hostname == groups['servers'][0]
+
+    - name: Install k3s on additional servers
+      shell: curl -sfL https://get.k3s.io | K3S_TOKEN={{ hostvars[groups['servers'][0]]['k3s_token'] }} sh -s - server --server https://{{ hostvars[groups['servers'][0]]['ansible_host'] }}:6443 --disable-network-policy --flannel-backend=none
       when: inventory_hostname in groups['servers'][1:]
 
-    - name: Install k3s on workers
-      shell: curl -sfL https://get.k3s.io | K3S_URL={{ k3s_server_url }} K3S_TOKEN={{ k3s_token }} sh -
+    - name: Install k3s on worker nodes
+      shell: curl -sfL https://get.k3s.io | K3S_TOKEN={{ hostvars[groups['servers'][0]]['k3s_token'] }} sh -s - agent --server https://{{ hostvars[groups['servers'][0]]['ansible_host'] }}:6443
       when: inventory_hostname in groups['workers']

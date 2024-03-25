@@ -16,6 +16,7 @@ func Manager() *cobra.Command {
 		command.ReparseList(),
 		command.ListToWords(),
 		command.SetImageVersion(),
+		command.GroupChapters(),
 	)
 
 	return cmd

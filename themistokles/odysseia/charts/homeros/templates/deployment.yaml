@@ -1,4 +1,4 @@
-{{- include "koinos.base" .}}
+{{- include "koinos.deploymentbase" .}}
     spec:
       containers:
 {{- include "koinos.tracer" . | indent 8 }}
@@ -17,16 +17,16 @@
                 name: {{ .Values.name }}
           ports:
             - name: graphql
-              containerPort: {{ .Values.port }}
+              containerPort: {{ .Values.commonConfig.envVariables.gateway.port }}
               protocol: TCP
           readinessProbe:
             tcpSocket:
-              port: {{ .Values.port }}
+              port: {{ .Values.commonConfig.envVariables.gateway.port }}
             initialDelaySeconds: 5
             periodSeconds: 5
           livenessProbe:
             tcpSocket:
-              port: {{ .Values.port }}
+              port: {{ .Values.commonConfig.envVariables.gateway.port }}
             initialDelaySeconds: 15
             periodSeconds: 15
           resources:

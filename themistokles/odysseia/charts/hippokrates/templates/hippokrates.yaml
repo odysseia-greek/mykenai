@@ -1,16 +1,16 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: "{{ template "system.uname" . }}"
-  namespace: {{ template "namespace" . }}
+  name: {{ .Values.name }}
+  namespace: {{ .Values.commonConfig.namespace }}
   labels:
     heritage: {{ .Release.Service | quote }}
     release: {{ .Release.Name | quote }}
     chart: "{{ .Chart.Name }}"
-    env: {{ .Values.config.environment }}
-    variant: {{ .Values.config.kubeVariant }}
-    app: "{{ template "system.uname" . }}"
-    {{- range $key, $value := .Values.services.tests.labels }}
+    env: {{ .Values.commonConfig.config.environment }}
+    variant: {{ .Values.commonConfig.config.kubeVariant }}
+    app: {{ .Values.name }}
+    {{- range $key, $value := .Values.commonConfig.services.backend.labels }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
 spec:
@@ -18,39 +18,31 @@ spec:
   jobTemplate:
     metadata:
       labels:
-        app: {{ template "system.uname" . }}
+        app: {{ .Values.name }}
         release: {{ .Release.Name }}
-        version: {{ .Values.images.system.tag }}
+        version: {{ .Values.images.odysseiaapi.tag  }}
     spec:
       backoffLimit: 2
       template:
         spec:
-          {{- if .Values.config.externalRepo | quote }}
-          imagePullSecrets:
-            - name: {{ .Values.images.pullSecret}}
-          {{- end}}
           containers:
-            - name: {{ template "system.uname" . }}
-            {{- if .Values.config.externalRepo | quote }}
-              image: {{ .Values.images.imageRepo}}{{ .Values.images.system.repo }}:{{ .Values.images.system.tag }}
-              imagePullPolicy: {{ .Values.config.pullPolicy }}
+            - name: "{{ .Values.name }}"
+            {{- if .Values.commonConfig.config.externalRepo | quote }}
+              image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.odysseiaapi.repo }}:{{ .Values.images.odysseiaapi.tag }}
             {{ else }}
-              image: {{ .Values.images.system.repo }}:{{ .Values.images.system.tag }}
-              imagePullPolicy: {{ .Values.config.pullPolicy }}
+              image: {{ .Values.images.odysseiaapi.repo }}:{{ .Values.images.odysseiaapi.tag }}
             {{- end}}
-              env:
-                - name: ALEXANDROS_SERVICE
-                  value: {{ .Values.envVariables.alexandrosService }}
-                - name: DIONYSIOS_SERVICE
-                  value: {{ .Values.envVariables.dionysiosService }}
-                - name: HERODOTOS_SERVICE
-                  value: {{ .Values.envVariables.herodotosService }}
-                - name: SOKRATES_SERVICE
-                  value: {{ .Values.envVariables.sokratesService }}
-                - name: SOLON_SERVICE
-                  value: {{ .Values.envVariables.solonService }}
-                - name: HOMEROS_SERVICE
-                  value: {{ .Values.envVariables.homerosService }}
+              imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
+              envFrom:
+                - configMapRef:
+                    name: {{ .Values.name }}
+              resources:
+                requests:
+                  memory: {{ .Values.services.system.requests.memory }}
+                  cpu: {{ .Values.services.system.requests.cpu }}
+                limits:
+                  memory: {{.Values.services.system.limits.memory}}
+                  cpu: {{.Values.services.system.limits.cpu}}
           restartPolicy: OnFailure
   successfulJobsHistoryLimit: 2
   failedJobsHistoryLimit: 3

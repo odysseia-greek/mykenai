@@ -2,8 +2,11 @@ name: sokrates
 namespace: odysseia
 jobName: parmenides
 livenessPath: /sokrates/v1/health
-readinessPath: /sokrates/v1/ping
+readinessPath: /sokrates/v1/health
 replicas: 3
+envVariables:
+    herodotosService: http://herodotos:5000
+    alexandrosService: http://alexandros:5000
 images:
     odysseiaapi:
         repo: sokrates
@@ -20,7 +23,7 @@ services:
         requests:
             cpu: 200m
             memory: 64Mi
-        role: api
+        role: hybrid
     seeder:
         access: quiz
         role: seeder

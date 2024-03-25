@@ -9,11 +9,11 @@ data:
       "operationScores": [
         {
           "operation": "dictionary",
-          "score": 30
+          "score": 100
         },
         {
           "operation": "grammar",
-          "score": 50
+          "score": 100
         },
         {
           "operation": "authors",
@@ -21,23 +21,23 @@ data:
         },
         {
           "operation": "sentence",
-          "score": 50
+          "score": 100
         },
         {
           "operation": "text",
-          "score": 50
+          "score": 100
         },
         {
-          "operation": "methods",
+          "operation": "options",
           "score": 100
         },
         {
           "operation": "answer",
-          "score": 20
+          "score": 100
         },
         {
           "operation": "quiz",
-          "score": 20
+          "score": 100
         },
         {
           "operation": "status",

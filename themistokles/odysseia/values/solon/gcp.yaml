@@ -1,0 +1,8 @@
+envVariables:
+  peisistratos:
+    vaultAuthMethod: token
+    autoUnseal: true
+    autoUnsealMethod: gcp
+    configmapName: gcpconfig
+  solon:
+    vaultAuthMethod: kubernetes

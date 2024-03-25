@@ -1,39 +1,39 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: "{{ template "odysseiaapi.uname" . }}"
-  namespace: {{ template "namespace" . }}
+  name: {{ .Values.name }}
+  namespace: {{ .Values.commonConfig.namespace }}
   labels:
     heritage: {{ .Release.Service | quote }}
     release: {{ .Release.Name | quote }}
     chart: "{{ .Chart.Name }}"
-    env: {{ .Values.config.environment }}
-    variant: {{ .Values.config.kubeVariant }}
-    app: "{{ template "odysseiaapi.uname" . }}"
-    {{- range $key, $value := .Values.services.frontend.labels }}
+    env: {{ .Values.commonConfig.config.environment }}
+    variant: {{ .Values.commonConfig.config.kubeVariant }}
+    app: {{ .Values.name }}
+    {{- range $key, $value := .Values.commonConfig.services.backend.labels }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
 spec:
-  replicas: {{ int .Values.config.replicas.low }}
+  replicas: {{ int .Values.commonConfig.replicas.low }}
   selector:
     matchLabels:
-      app: "{{ template "odysseiaapi.uname" . }}"
+      app: "{{ .Values.name }}"
   template:
     metadata:
       labels:
-        app: {{ template "odysseiaapi.uname" . }}
+        app: "{{ .Values.name }}"
         release: {{ .Release.Name }}
         version: {{ .Values.images.tag }}
     spec:
 
       containers:
-        - name: "{{ template "odysseiaapi.uname" . }}"
-          {{- if .Values.config.externalRepo | quote }}
+        - name: "{{ .Values.name }}"
+          {{- if .Values.commonConfig.externalRepo | quote }}
           image: {{ .Values.images.imageRepo}}{{ .Values.images.odysseiaapi.repo }}:{{ .Values.images.odysseiaapi.tag }}
           {{ else }}
           image: {{ .Values.images.odysseiaapi.repo }}:{{ .Values.images.odysseiaapi.tag }}
           {{- end}}
-          imagePullPolicy: {{ .Values.config.pullPolicy }}
+          imagePullPolicy: {{ .Values.commonConfig.pullPolicy }}
           env:
             - name: NODE_ENV
               value: {{ .Values.envVariables.nodeEnv }}

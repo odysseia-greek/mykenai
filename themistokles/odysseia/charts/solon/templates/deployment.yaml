@@ -1,6 +1,6 @@
 {{- include "koinos.deploymentbase" .}}
       annotations:
-        elastic/indices: "dictionary;grammar;text;quiz;tracing"
+        elastic/indices: "dictionary;grammar;text;quiz;tracing;aggregator"
         elastic/roles: "api;seeder;hybrid;creator;alias"
         perikles/hostname: "solon"
         perikles/validity: "365"
@@ -64,8 +64,7 @@
           envFrom:
             - configMapRef:
                 name: {{ .Values.name }}
-          {{- if .Values.envVariables.peisistratos.unsealProvider }}
-          envFrom:
+          {{- if .Values.envVariables.peisistratos.autoUnseal }}
             - configMapRef:
                 name: gcpconfig
           {{- end }}
@@ -74,6 +73,7 @@
               mountPath: {{ .Values.tlsConfig.vault.path }}
               readOnly: true
       containers:
+{{- include "koinos.tracer" . | indent 8 }}
         - name: "{{ .Values.name }}"
           {{- if .Values.commonConfig.config.externalRepo | quote }}
           image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.odysseiaapi.repo }}:{{ .Values.images.odysseiaapi.tag }}

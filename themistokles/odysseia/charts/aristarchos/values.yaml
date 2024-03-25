@@ -1,0 +1,26 @@
+name: aristarchos
+namespace: odysseia
+livenessPath: /alexandros/v1/health
+readinessPath: /alexandros/v1/ping
+replicas: 1
+images:
+    odysseiaapi:
+        repo: aristarchos
+        tag: v0.0.11
+services:
+    odysseiaapi:
+        access: aggregator
+        limits:
+            cpu: 500m
+            memory: 64Mi
+        requests:
+            cpu: 200m
+            memory: 32Mi
+        role: hybrid
+tlsConfig:
+    mounts:
+        - name: solon-certs
+          path: /etc/certs/solon
+          secretName: solon-tls-certs
+    rootPath: /etc/certs
+

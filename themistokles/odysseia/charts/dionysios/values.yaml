@@ -6,6 +6,7 @@ readinessPath: /dionysios/v1/ping
 replicas: 2
 envVariables:
     alexandrosService: http://alexandros:5000
+    dionysiosService: http://dionysios:5000
 images:
     odysseiaapi:
         repo: dionysios

@@ -19,7 +19,6 @@ thermopulai:
     - host: k3d-odysseia.greek
       apiHost: k3d-odysseia.api.greek
 
-
 # Default values for Odysseia.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
@@ -42,6 +41,8 @@ commonConfig:
       port: 5443
     odysseiaapi:
       port: 5000
+    grpc:
+      port: 50053
     sidecar:
       port: 50051
     solonService: https://solon:5443

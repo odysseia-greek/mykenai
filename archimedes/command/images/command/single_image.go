@@ -15,6 +15,7 @@ func CreateSingleImage() *cobra.Command {
 		destinationRepo string
 		rootPath        string
 		target          string
+		multi           bool
 	)
 	cmd := &cobra.Command{
 		Use:   "single [ROOT PATH]",
@@ -34,7 +35,7 @@ If no root path is specified through the "-r" flag or positional argument, the c
 		Run: func(cmd *cobra.Command, args []string) {
 			argPath := ""
 			if len(args) > 0 {
-				argPath = args[0]
+				argPath = args[len(args)-1]
 			}
 
 			if argPath == "." {
@@ -82,7 +83,7 @@ If no root path is specified through the "-r" flag or positional argument, the c
 
 			logging.Info(fmt.Sprintf("working on repo: %s", rootPath))
 
-			if err := BuildImage(rootPath, tag, destinationRepo, target); err != nil {
+			if err := BuildImage(rootPath, tag, destinationRepo, target, multi); err != nil {
 				return
 			}
 		},
@@ -106,11 +107,12 @@ If no root path is specified through the "-r" flag or positional argument, the c
 	cmd.PersistentFlags().StringVarP(&tag, "tag", "t", "", "The tag for the image, if not set it defaults to the current git commit hash.")
 	cmd.PersistentFlags().StringVarP(&destinationRepo, "dest", "d", "", "The destination repository address, defaults to predefined DefaultRepo when no value is provided.")
 	cmd.PersistentFlags().StringVarP(&target, "target", "g", "prod", "The target to build for, defaults to 'prod' when no value provided.")
+	cmd.PersistentFlags().BoolVarP(&multi, "multi", "m", false, "Build multi arch images - default to false")
 
 	return cmd
 }
 
-func BuildImage(rootPath, tag, destRepo, target string) error {
+func BuildImage(rootPath, tag, destRepo, target string, multi bool) error {
 	innerFiles, err := os.ReadDir(rootPath)
 	if err != nil {
 		return err
@@ -121,8 +123,14 @@ func BuildImage(rootPath, tag, destRepo, target string) error {
 	for _, innerFile := range innerFiles {
 		if innerFile.Name() == "Dockerfile" {
 			logging.Info(fmt.Sprintf(fmt.Sprintf("working on project: %s", projectName)))
-			if err := buildImageMultiArch(rootPath, projectName, tag, destRepo, target); err != nil {
-				return err
+			if multi {
+				if err := buildImageMultiArch(rootPath, projectName, tag, destRepo, target); err != nil {
+					return err
+				}
+			} else {
+				if err := buildImages(rootPath, projectName, tag, destRepo, target); err != nil {
+					return err
+				}
 			}
 		}
 	}

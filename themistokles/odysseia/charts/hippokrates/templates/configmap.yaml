@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.commonConfig.namespace }}
+data:
+  ENV: "{{ .Values.commonConfig.config.environment }}"
+  ALEXANDROS_SERVICE: "{{ .Values.envVariables.alexandrosService }}"
+  DIONYSIOS_SERVICE: "{{ .Values.envVariables.dionysiosService }}"
+  HERODOTOS_SERVICE: "{{ .Values.envVariables.herodotosService }}"
+  SOKRATES_SERVICE: "{{ .Values.envVariables.sokratesService }}"
+  SOLON_SERVICE: "{{ .Values.envVariables.solonService }}"
+  HOMEROS_SERVICE: "{{ .Values.envVariables.homerosService }}"
+  ARISTARCHOS_SERVICE: "{{ .Values.envVariables.aristarchosService }}"

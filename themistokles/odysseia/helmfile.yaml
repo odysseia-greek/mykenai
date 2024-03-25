@@ -37,6 +37,8 @@ releases:
     missingFileHandler: Error
     labels:
       tier: base
+    values:
+      - values/{{ .Environment.Name }}.yaml
 
   ## Infrastructure ##
   - name: vault
@@ -77,6 +79,12 @@ releases:
           initSeeder:
             repo: peisistratos
             tag: v0.0.11
+      {{- if eq .Environment.Name "staging" }}
+      - values/solon/gcp.yaml
+      {{- end }}
+      {{- if eq .Environment.Name "production" }}
+      - values/solon/gcp.yaml
+      {{- end }}
 
   - name: eupalinos
     namespace: odysseia
@@ -94,6 +102,30 @@ releases:
           stateful:
             repo: eupalinos
             tag: v1.0.2
+
+  - name: euripides
+    namespace: odysseia
+    chart: ./charts/euripides
+    version: 0.1.1
+    missingFileHandler: Error
+    labels:
+      tier: infra
+    needs:
+      - odysseia/solon
+    values:
+      - values/{{ .Environment.Name }}.yaml
+      - images:
+          odysseiaapi:
+            repo: euripides
+            tag: v0.0.11
+          seeder:
+            repo: anaximenes
+            tag: v0.0.11
+    set:
+      - name: replicas
+        value: {{ .Values.euripides.replicas }}
+      - name: envVariables.maxAge
+        value: {{ .Values.euripides.envVariables.maxAge }}
 
       ## APIs ##
   - name: alexandros
@@ -216,9 +248,9 @@ releases:
             repo: homeros
             tag: v0.0.11
 
-  - name: euripides
+  - name: aristarchos
     namespace: odysseia
-    chart: ./charts/euripides
+    chart: ./charts/aristarchos
     version: 0.1.1
     missingFileHandler: Error
     labels:
@@ -229,16 +261,8 @@ releases:
       - values/{{ .Environment.Name }}.yaml
       - images:
           odysseiaapi:
-            repo: euripides
+            repo: aristarchos
             tag: v0.0.11
-          seeder:
-            repo: anaximenes
-            tag: v0.0.11
-    set:
-      - name: replicas
-        value: {{ .Values.euripides.replicas }}
-      - name: envVariables.maxAge
-        value: {{ .Values.euripides.envVariables.maxAge }}
 
     ## Frontend ##
   - name: pheidias
@@ -259,7 +283,7 @@ releases:
           imageRepo: ghcr.io/odysseia-greek/
           odysseiaapi:
             repo: pheidias
-            tag: v0.6.2
+            tag: v0.0.11
 
   - name: ploutarchos
     namespace: odysseia
@@ -274,7 +298,7 @@ releases:
           imageRepo: ghcr.io/odysseia-greek/
           odysseiaapi:
             repo: ploutarchos
-            tag: v0.6.0
+            tag: v0.0.11
 
   - name: thermopulai
     namespace: odysseia

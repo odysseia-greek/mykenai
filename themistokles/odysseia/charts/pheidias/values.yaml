@@ -1,4 +1,7 @@
-config:
+name: pheidias
+namespace: odysseia
+
+commonConfig:
     environment: local
     externalRepo: true
     initialDelayLiveness: 20

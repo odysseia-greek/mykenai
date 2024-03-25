@@ -1,1 +1,4 @@
 {{- include "koinos.configmap" . -}}
+{{ println}}
+  ALEXANDROS_SERVICE: "{{ .Values.envVariables.alexandrosService }}"
+  HERODOTOS_SERVICE: "{{ .Values.envVariables.herodotosService }}"

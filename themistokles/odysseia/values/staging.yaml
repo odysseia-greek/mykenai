@@ -41,6 +41,8 @@ commonConfig:
       port: 5443
     odysseiaapi:
       port: 5000
+    grpc:
+      port: 50053
     sidecar:
       port: 50051
     solonService: https://solon:5443

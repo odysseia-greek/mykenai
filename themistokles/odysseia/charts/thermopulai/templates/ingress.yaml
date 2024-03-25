@@ -24,6 +24,13 @@ spec:
                 port:
                   number: {{ .Values.envVariables.pheidias.port }}
           - pathType: Prefix
+            path: /homeros/v1
+            backend:
+              service:
+                name: homeros
+                port:
+                  number: {{ .Values.envVariables.homeros.port }}
+          - pathType: Prefix
             path: /graphql
             backend:
               service:
@@ -76,6 +83,13 @@ spec:
                 name: dionysios
                 port:
                   number: {{ .Values.envVariables.dionysios.port }}
+          - pathType: Prefix
+            path: /graphql
+            backend:
+              service:
+                name: euripides
+                port:
+                  number: {{ .Values.envVariables.homeros.port }}
           - pathType: Prefix
             path: /perikles/v1
             backend:

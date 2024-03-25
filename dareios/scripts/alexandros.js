@@ -2,16 +2,23 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 const searchTerms = [
-    'search?word=αγα&lang=greek&mode=fuzzy',
-    'search?word=σκω&lang=greek&mode=fuzzy',
-    'search?word=αθ&lang=greek&mode=fuzzy',
-    'search?word=θήναι&lang=greek&mode=fuzzy',
+    'search?word=αγα&lang=greek&mode=partial',
+    'search?word=σκω&lang=greek&mode=partial',
+    'search?word=αθ&lang=greek&mode=partial',
+    'search?word=θήναι&lang=greek&mode=partial',
+    'search?word=Ἀθῆ&lang=greek&mode=partial',
+    'search?word=ἀγάπ&lang=greek&mode=fuzzy',
+    'search?word=ἀγά&lang=greek&mode=fuzzy',
     'search?word=ἀγάπη&lang=greek&mode=exact',
-    'search?word=ezel&lang=dutch&mode=phrase',
+    'search?word=house&lang=english&mode=extended',
+    'search?word=ezel&lang=dutch&mode=extended',
     'search?word=aanwijzen&lang=dutch&mode=exact',
     'search?word=house&lang=english&mode=exact',
     'search?word=πινύσκω&lang=greek&mode=exact',
-    'search?word=Παναθήναια&lang=greek&mode=exact'
+    'search?word=Παναθήναια&lang=greek&mode=exact',
+    'search?word=Ἀθηναῖος&language=greek&mode=exact&searchInText=true',
+    'search?word=λόγος&language=greek&mode=exact&searchInText=true',
+    'search?word=Λακεδαιμόνιος&language=greek&mode=exact&searchInText=true',
 ]; // Add more terms as needed
 
 export const options = {

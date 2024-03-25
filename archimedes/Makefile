@@ -7,5 +7,5 @@ build:
 
 build-mac:
 	go fmt ./...
-	go build -ldflags "-X main.version=1.0.0" cmd/archimedes.go;
+	go build -ldflags "-X main.version=1.0.1" cmd/archimedes.go;
 	mv archimedes ~/bin/$(project_name)

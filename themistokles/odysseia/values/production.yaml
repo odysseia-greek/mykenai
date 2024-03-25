@@ -16,8 +16,8 @@ euripides:
     maxAge: 30
 
 thermopulai:
-  - host: odysseia-greek.com
-    apiHost: api.odysseia-greek.com
+  host: k3s-s-athenai
+  apiHost: k3s-s-athenai.api
 
 # Default values for Odysseia.
 # This is a YAML-formatted file.
@@ -41,6 +41,8 @@ commonConfig:
       port: 5443
     odysseiaapi:
       port: 5000
+    grpc:
+      port: 50053
     sidecar:
       port: 50051
     solonService: https://solon:5443
