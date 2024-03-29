@@ -16,8 +16,8 @@ euripides:
     maxAge: 14
 
 thermopulai:
-  - host: k3d-odysseia.greek
-    apiHost: k3d-odysseia.api.greek
+  host: k3d-odysseia.greek
+  apiHost: k3d-odysseia.api.greek
 
 # Default values for Odysseia.
 # This is a YAML-formatted file.
@@ -26,7 +26,7 @@ commonConfig:
   namespace: odysseia
   config:
     environment: staging
-    kubeVariant: k3d
+    kubeVariant: k3s
     externalRepo: true
     initialDelayLiveness: 20
     initialDelayReadiness: 1

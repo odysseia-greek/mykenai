@@ -16,8 +16,8 @@ euripides:
     maxAge: 30
 
 thermopulai:
-  host: k3s-s-athenai
-  apiHost: k3s-s-athenai.api
+  host: k3s-odysseia.greek
+  apiHost: k3s-odysseia.api.greek
 
 # Default values for Odysseia.
 # This is a YAML-formatted file.

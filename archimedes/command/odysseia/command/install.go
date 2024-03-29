@@ -32,6 +32,7 @@ func Install() *cobra.Command {
 		target                 string
 		elasticOperatorVersion string
 		longhornVersion        string
+		tests                  bool
 	)
 
 	cmd := &cobra.Command{
@@ -100,7 +101,7 @@ func Install() *cobra.Command {
 				}
 			}
 
-			err = createApps(helmFilePath, target, namespace, kube)
+			err = createApps(helmFilePath, target, namespace, kube, tests)
 			if err != nil {
 				logging.Error(errors.Wrap(err, "Failed to apply apps").Error())
 				return
@@ -116,6 +117,7 @@ func Install() *cobra.Command {
 	cmd.PersistentFlags().StringVarP(&autoUnsealPath, "unseal", "u", "", "Path to an unseal config to enable vault auto unseal")
 	cmd.PersistentFlags().StringVarP(&elasticOperatorVersion, "elasticversion", "e", "", fmt.Sprintf("The elastic version for the operator to use, defaults to '%s' when no value provided.", ELASTICVERSION))
 	cmd.PersistentFlags().StringVarP(&longhornVersion, "longhornversion", "l", "", fmt.Sprintf("The longhorn version for the operator to use, defaults to '%s' when no value provided.", LONGHORNVERSION))
+	cmd.PersistentFlags().BoolVarP(&tests, "tests", "j", true, "include tests in install, defaults to true")
 
 	return cmd
 }
@@ -151,7 +153,7 @@ func install(client *thales.KubeClient, autoUnsealPath, ns string) error {
 	return nil
 }
 
-func createApps(helmfilePath, target, ns string, client *thales.KubeClient) error {
+func createApps(helmfilePath, target, ns string, client *thales.KubeClient, tests bool) error {
 	tiers := []string{
 		"base",
 		"infra",
@@ -175,7 +177,20 @@ func createApps(helmfilePath, target, ns string, client *thales.KubeClient) erro
 		if err != nil {
 			return err
 		}
-		err = waitForAllPodsToBeHealthy(client, ns)
+		if tier == "base" || tier == "infra" {
+			err = waitForAllPodsToBeHealthy(client, ns)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	if tests {
+		err := waitForAllPodsToBeHealthy(client, ns)
+		if err != nil {
+			return err
+		}
+		err = applyHelmfile(target, "tests", helmfilePath)
 		if err != nil {
 			return err
 		}
@@ -337,10 +352,6 @@ func applyManifestFromURL(url string) error {
 }
 
 func applyHelmfile(target, tier, helmfilePath string) error {
-	// hack to always set infra to staging
-	if tier == "infra" {
-		target = "staging"
-	}
 	cmd := fmt.Sprintf("helmfile -e %s -l tier=%s apply", target, tier)
 
 	logging.Debug(fmt.Sprintf("creating from helmfile: %s", cmd))

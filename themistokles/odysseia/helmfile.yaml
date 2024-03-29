@@ -309,6 +309,11 @@ releases:
       tier: frontend
     values:
       - values/{{ .Environment.Name }}.yaml
+    set:
+      - name: host
+        value: {{ .Values.thermopulai.host }}
+      - name: apiHost
+        value: {{ .Values.thermopulai.apiHost }}
 
       ## Tests ##
   - name: hippokrates
@@ -325,3 +330,7 @@ releases:
       - odysseia/sokrates
     values:
       - values/{{ .Environment.Name }}.yaml
+      - images:
+          system:
+            repo: hippokrates
+            tag: v0.0.11

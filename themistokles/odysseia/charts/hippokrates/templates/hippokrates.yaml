@@ -20,7 +20,7 @@ spec:
       labels:
         app: {{ .Values.name }}
         release: {{ .Release.Name }}
-        version: {{ .Values.images.odysseiaapi.tag  }}
+        version: {{ .Values.images.system.tag  }}
     spec:
       backoffLimit: 2
       template:
@@ -28,9 +28,9 @@ spec:
           containers:
             - name: "{{ .Values.name }}"
             {{- if .Values.commonConfig.config.externalRepo | quote }}
-              image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.odysseiaapi.repo }}:{{ .Values.images.odysseiaapi.tag }}
+              image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.system.repo }}:{{ .Values.images.system.tag }}
             {{ else }}
-              image: {{ .Values.images.odysseiaapi.repo }}:{{ .Values.images.odysseiaapi.tag }}
+              image: {{ .Values.images.system.repo }}:{{ .Values.images.system.tag }}
             {{- end}}
               imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
               envFrom:

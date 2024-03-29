@@ -12,7 +12,6 @@ server:
     - name: vaultunsealgcp-secret
       secret:
         secretName: vaultunsealgcp
-
   volumeMounts:
     - mountPath: /vault/userconfig/vault-server-tls
       name: userconfig-vault-server-tls
