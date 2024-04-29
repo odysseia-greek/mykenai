@@ -3,3 +3,4 @@
   MAX_NGRAM: {{ .Values.services.seeder.maxGram | quote }}
   MIN_NGRAM: {{ .Values.services.seeder.minGram | quote }}
   HERODOTOS_SERVICE: "{{ .Values.envVariables.herodotosService }}"
+  GATHER_METRICS: "true"

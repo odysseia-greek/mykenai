@@ -37,16 +37,17 @@ services:
             cpu: 200m
             memory: 64Mi
 tlsConfig:
+    rootPath: /app/config
     elastic:
         name: elastic-internal-tls
         path: /app/config/elastic
         secretName: aristoteles-es-http-certs-public
     mounts:
         - name: solon-certs
-          path: /etc/certs/solon
+          path: /app/config/solon
           secretName: solon-tls-certs
     vault:
         enabled: true
         name: vault-server-tls
-        path: /etc/certs/vault
+        path: /app/config/vault
         secretName: vault-server-tls

@@ -24,6 +24,8 @@ const (
 	LONGHORNVERSION = "v1.6.0"
 )
 
+var corePodsNames = [...]string{"aristoteles", "perikles", "vault", "solon", "eupalinos"}
+
 func Install() *cobra.Command {
 	var (
 		namespace              string
@@ -127,16 +129,22 @@ func install(client *thales.KubeClient, autoUnsealPath, ns string) error {
 	defer cancel()
 
 	nsToCreate := &corev1.Namespace{
-		TypeMeta: metav1.TypeMeta{Kind: "Namespace", APIVersion: "v1"},
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Namespace",
+			APIVersion: "v1",
+		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name: ns,
+			Labels: map[string]string{
+				"name": ns, // name is set the facilitate the admission webhook ns selector
+			},
 		},
 	}
+
 	_, err := client.CoreV1().Namespaces().Create(ctx, nsToCreate, metav1.CreateOptions{})
 	if err != nil {
 		if kuberr.IsAlreadyExists(err) {
 			logging.Info("Namespace already exists, proceeding.")
-			return nil // Return nil if the namespace already exists
 		}
 		return err
 	}
@@ -178,7 +186,7 @@ func createApps(helmfilePath, target, ns string, client *thales.KubeClient, test
 			return err
 		}
 		if tier == "base" || tier == "infra" {
-			err = waitForAllPodsToBeHealthy(client, ns)
+			err = waitForCorePodsToBeRunning(client, ns)
 			if err != nil {
 				return err
 			}
@@ -186,7 +194,7 @@ func createApps(helmfilePath, target, ns string, client *thales.KubeClient, test
 	}
 
 	if tests {
-		err := waitForAllPodsToBeHealthy(client, ns)
+		err := waitForCorePodsToBeRunning(client, ns)
 		if err != nil {
 			return err
 		}
@@ -199,7 +207,7 @@ func createApps(helmfilePath, target, ns string, client *thales.KubeClient, test
 	return nil
 }
 
-func waitForAllPodsToBeHealthy(client *thales.KubeClient, namespace string) error {
+func waitForCorePodsToBeRunning(client *thales.KubeClient, namespace string) error {
 	timeout := 5 * time.Minute
 	pollInterval := 10 * time.Second
 
@@ -218,15 +226,19 @@ func waitForAllPodsToBeHealthy(client *thales.KubeClient, namespace string) erro
 
 			allHealthy := true
 			for _, pod := range pods.Items {
-				if !isPodHealthy(&pod) {
-					allHealthy = false
-					logging.Warn(fmt.Sprintf("pod: %s is not healthy", pod.Name))
-					break
+				for _, corePod := range corePodsNames {
+					if strings.Contains(pod.Name, corePod) {
+						if !isPodHealthy(&pod) {
+							allHealthy = false
+							logging.Warn(fmt.Sprintf("pod: %s is not healthy", pod.Name))
+							break
+						}
+					}
 				}
 			}
 
 			if allHealthy {
-				logging.Debug("all current pods are running or have finished")
+				logging.Debug("all current core pods are running or have finished")
 				return nil
 			}
 		}

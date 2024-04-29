@@ -11,6 +11,7 @@
       containers:
 {{- include "koinos.ambassador" . | indent 8 }}
 {{- include "koinos.tracer" . | indent 8 }}
+{{- include "koinos.metrics" . | indent 8 }}
         - name: "{{ .Values.name }}"
         {{- if .Values.commonConfig.config.externalRepo | quote }}
           image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.odysseiaapi.repo }}:{{ .Values.images.odysseiaapi.tag }}

@@ -5,3 +5,4 @@
   TLS_FILES: /etc/certs
   ELASTIC_USER: elastic
   VAULT_ROLE: solon
+  GATHER_METRICS: "true"

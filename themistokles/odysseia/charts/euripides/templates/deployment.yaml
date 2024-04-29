@@ -9,7 +9,6 @@
       initContainers:
 {{- include "koinos.initContainer" . | indent 8 }}
       containers:
-{{- include "koinos.tracer" . | indent 8 }}
 {{- include "koinos.ambassador" . | indent 8 }}
         - name: {{ .Values.name }}
               {{- if .Values.commonConfig.config.externalRepo | quote }}

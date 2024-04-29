@@ -1,0 +1,27 @@
+name: aiskhylos
+serviceAccountName: aiskhylos-access-sa
+namespace: odysseia
+replicas: 1
+images:
+    imageRepo: ghcr.io/odysseia-greek/
+    pullSecret: harbor-images
+    odysseiaapi:
+        repo: aiskhylos
+        tag: v0.0.11
+services:
+    backend:
+        labels:
+            domain: backend
+    aiskhylos:
+        limits:
+            cpu: 500m
+            memory: 128Mi
+        name: solon
+        requests:
+            cpu: 100m
+            memory: 64Mi
+tlsConfig:
+    elastic:
+        name: elastic-internal-tls
+        path: /app/config/elastic
+        secretName: aristoteles-es-http-certs-public

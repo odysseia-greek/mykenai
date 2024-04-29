@@ -53,7 +53,7 @@ releases:
       - values/vault/standalone-unseal.yaml
       {{- end }}
       {{- if eq .Environment.Name "production" }}
-      - values/vault/ha-unseal.yaml
+      - values/vault/standalone-unseal.yaml
       {{- end }}
 
   - name: solon
@@ -126,6 +126,51 @@ releases:
         value: {{ .Values.euripides.replicas }}
       - name: envVariables.maxAge
         value: {{ .Values.euripides.envVariables.maxAge }}
+
+  - name: praxiteles
+    namespace: odysseia
+    chart: ./charts/praxiteles
+    version: 0.1.1
+    missingFileHandler: Error
+    labels:
+      tier: infra
+    needs:
+      - odysseia/euripides
+    values:
+      - values/{{ .Environment.Name }}.yaml
+      - images:
+          imageRepo: ghcr.io/odysseia-greek/
+          odysseiaapi:
+            repo: praxiteles
+            tag: v0.0.11
+
+  - name: aiskhylos
+    namespace: odysseia
+    chart: ./charts/aiskhylos
+    version: 0.1.1
+    missingFileHandler: Error
+    labels:
+      tier: infra
+    needs:
+      - odysseia/solon
+    values:
+      - values/{{ .Environment.Name }}.yaml
+      - images:
+          odysseiaapi:
+            repo: aiskhylos
+            tag: v0.0.11
+
+  - name: sophokles
+    namespace: odysseia
+    chart: ./charts/sophokles
+    version: 0.1.1
+    missingFileHandler: Error
+    labels:
+      tier: infra
+    needs:
+      - odysseia/solon
+    values:
+      - values/{{ .Environment.Name }}.yaml
 
       ## APIs ##
   - name: alexandros

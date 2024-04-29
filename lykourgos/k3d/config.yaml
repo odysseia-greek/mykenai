@@ -9,7 +9,19 @@ ports:
   - port: 8080:80
     nodeFilters:
       - loadbalancer
+volumes:
+  - volume: ${PWD}/bin/cilium.sh:/bin/k3d-entrypoint-cilium.sh
+    nodeFilters:
+      - all
 options:
   kubeconfig:
     updateDefaultKubeconfig: true
     switchCurrentContext: true
+  k3s:
+    extraArgs:
+      - arg: --flannel-backend=none
+        nodeFilters:
+          - server:*
+      - arg: --disable-network-policy
+        nodeFilters:
+          - server:*

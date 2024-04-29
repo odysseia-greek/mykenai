@@ -2,10 +2,5 @@ project_name='archimedes'
 
 build:
 	go fmt ./...
-	GOOS=linux CGO_ENABLED=0 go build cmd/archimedes.go;
-	sudo mv archimedes /usr/local/bin/$(project_name)
-
-build-mac:
-	go fmt ./...
-	go build -ldflags "-X main.version=1.0.2" cmd/archimedes.go;
+	go build -ldflags "-X main.version=1.0.3" cmd/archimedes.go;
 	mv archimedes ~/bin/$(project_name)

@@ -49,6 +49,13 @@ spec:
       http:
         paths:
           - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: praxiteles
+                port:
+                  number: {{ .Values.envVariables.pheidias.port }}
+          - pathType: Prefix
             path: /solon/v1
             backend:
               service:
@@ -89,7 +96,7 @@ spec:
               service:
                 name: euripides
                 port:
-                  number: {{ .Values.envVariables.homeros.port }}
+                  number: {{ .Values.envVariables.euripdes.port }}
           - pathType: Prefix
             path: /perikles/v1
             backend:

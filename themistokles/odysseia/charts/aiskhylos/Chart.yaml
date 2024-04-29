@@ -1,0 +1,13 @@
+apiVersion: v2
+appVersion: 0.5.0
+description: Gathers metrics on a timer
+name: aiskhylos
+version: 0.1.1
+home: https://www.odysseia-greek.com
+sources:
+  - https://github.com/odysseia-greek/attike
+  - https://github.com/odysseia-greek/attike/tree/main/aiskhylos
+dependencies:
+  - name: koinos
+    version: ">= 0.1.0"
+    repository: "file://../koinos"

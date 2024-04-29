@@ -1,6 +1,6 @@
 {{- include "koinos.deploymentbase" .}}
       annotations:
-        elastic/indices: "dictionary;grammar;text;quiz;tracing;aggregator"
+        elastic/indices: "dictionary;grammar;text;quiz;tracing;metrics;aggregator"
         elastic/roles: "api;seeder;hybrid;creator;alias"
         perikles/hostname: "solon"
         perikles/validity: "365"
@@ -47,7 +47,7 @@
           {{- if .Values.commonConfig.config.externalRepo | quote }}
           image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.initSeeder.repo }}:{{ .Values.images.initSeeder.tag }}
           {{ else }}
-          image: {{ .Values.images.init.repo }}:{{ .Values.images.initSeeder.tag }}
+          image: {{ .Values.images.initSeeder.repo }}:{{ .Values.images.initSeeder.tag }}
           {{- end}}
           imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
           env:
@@ -61,6 +61,8 @@
                   fieldPath: metadata.namespace
             - name: AUTH_METHOD
               value: {{ .Values.envVariables.peisistratos.vaultAuthMethod }}
+            - name: CERT_ROOT
+              value: {{ .Values.tlsConfig.rootPath}}
           envFrom:
             - configMapRef:
                 name: {{ .Values.name }}
@@ -74,6 +76,7 @@
               readOnly: true
       containers:
 {{- include "koinos.tracer" . | indent 8 }}
+{{- include "koinos.metrics" . | indent 8 }}
         - name: "{{ .Values.name }}"
           {{- if .Values.commonConfig.config.externalRepo | quote }}
           image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.odysseiaapi.repo }}:{{ .Values.images.odysseiaapi.tag }}
@@ -88,6 +91,8 @@
                 fieldPath: metadata.namespace
           - name: AUTH_METHOD
             value: {{ .Values.envVariables.solon.vaultAuthMethod }}
+          - name: CERT_ROOT
+            value: {{ .Values.tlsConfig.rootPath}}
           - name: ELASTIC_SEARCH_PASSWORD
             valueFrom:
               secretKeyRef:

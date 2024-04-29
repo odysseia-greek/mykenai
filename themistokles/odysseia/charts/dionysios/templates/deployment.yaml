@@ -1,1 +1,1 @@
-{{- include "koinos.deployment" .}}
+{{- include "koinos.deploymentmetrics" .}}

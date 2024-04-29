@@ -9,35 +9,35 @@ data:
       "operationScores": [
         {
           "operation": "dictionary",
-          "score": 100
+          "score": 10
         },
         {
           "operation": "grammar",
-          "score": 100
+          "score": 10
         },
         {
           "operation": "authors",
-          "score": 100
+          "score": 10
         },
         {
           "operation": "sentence",
-          "score": 100
+          "score": 10
         },
         {
           "operation": "text",
-          "score": 100
+          "score": 10
         },
         {
           "operation": "options",
-          "score": 100
+          "score": 10
         },
         {
           "operation": "answer",
-          "score": 100
+          "score": 10
         },
         {
           "operation": "quiz",
-          "score": 100
+          "score": 10
         },
         {
           "operation": "status",

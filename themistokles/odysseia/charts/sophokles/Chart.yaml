@@ -1,0 +1,9 @@
+apiVersion: v2
+appVersion: 0.5.0
+description: Gathers metrics as a sidecar - this is just the required role for kubernetes access
+name: sophokles
+version: 0.1.1
+home: https://www.odysseia-greek.com
+sources:
+  - https://github.com/odysseia-greek/attike
+  - https://github.com/odysseia-greek/attike/tree/main/sophokles

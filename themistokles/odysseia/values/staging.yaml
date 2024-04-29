@@ -24,6 +24,7 @@ thermopulai:
 # Declare variables to be passed into your templates.
 commonConfig:
   namespace: odysseia
+  metricsServiceAccount: sophokles-access-sa
   config:
     environment: staging
     kubeVariant: k3s
@@ -42,12 +43,14 @@ commonConfig:
     odysseiaapi:
       port: 5000
     grpc:
-      port: 50053
+      port: 50060
     sidecar:
       port: 50051
     solonService: https://solon:5443
     tracer:
       port: 50052
+    metrics:
+      port: 50053
     vaultService: https://vault:8200
   images:
     imageRepo: ghcr.io/odysseia-greek/
@@ -59,6 +62,9 @@ commonConfig:
       tag: v0.0.11
     tracer:
       repo: aristophanes
+      tag: v0.0.11
+    metrics:
+      repo: sophokles
       tag: v0.0.11
   services:
     backend:
@@ -77,6 +83,14 @@ commonConfig:
         cpu: 200m
         memory: 64Mi
       name: aristophanes
+      requests:
+        cpu: 50m
+        memory: 32Mi
+    metrics:
+      limits:
+        cpu: 200m
+        memory: 64Mi
+      name: sophokles
       requests:
         cpu: 50m
         memory: 32Mi
