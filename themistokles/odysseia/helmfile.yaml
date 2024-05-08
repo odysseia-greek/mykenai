@@ -117,7 +117,7 @@ releases:
       - images:
           odysseiaapi:
             repo: euripides
-            tag: v0.0.13
+            tag: v0.0.12
           seeder:
             repo: anaximenes
             tag: v0.0.12
@@ -190,10 +190,10 @@ releases:
       - images:
           odysseiaapi:
             repo: alexandros
-            tag: v0.0.13
+            tag: v0.0.12
           seeder:
             repo: demokritos
-            tag: v0.0.13
+            tag: v0.0.12
     set:
       - name: replicas
         value: {{ .Values.alexandros.replicas }}
@@ -212,10 +212,10 @@ releases:
       - images:
           odysseiaapi:
             repo: dionysios
-            tag: v0.0.13
+            tag: v0.0.12
           seeder:
             repo: anaximander
-            tag: v0.0.13
+            tag: v0.0.12
     set:
       - name: replicas
         value: {{ .Values.dionysios.replicas }}
@@ -234,10 +234,10 @@ releases:
       - images:
           odysseiaapi:
             repo: herodotos
-            tag: v0.0.13
+            tag: v0.0.12
           seeder:
             repo: herakleitos
-            tag: v0.0.13
+            tag: v0.0.12
     set:
       - name: replicas
         value: {{ .Values.herodotos.replicas }}
@@ -256,10 +256,10 @@ releases:
       - images:
           odysseiaapi:
             repo: sokrates
-            tag: v0.0.13
+            tag: v0.0.12
           seeder:
             repo: parmenides
-            tag: v0.0.13
+            tag: v0.0.12
     set:
       - name: replicas
         value: {{ .Values.sokrates.replicas }}
@@ -278,7 +278,7 @@ releases:
       - images:
           seeder:
             repo: melissos
-            tag: v0.0.13
+            tag: v0.0.12
 
   - name: homeros
     namespace: odysseia
@@ -294,7 +294,7 @@ releases:
       - images:
           odysseiaapi:
             repo: homeros
-            tag: v0.0.13
+            tag: v0.0.12
 
   - name: aristarchos
     namespace: odysseia
@@ -310,7 +310,7 @@ releases:
       - images:
           odysseiaapi:
             repo: aristarchos
-            tag: v0.0.13
+            tag: v0.0.12
 
     ## Frontend ##
   - name: pheidias
@@ -331,7 +331,7 @@ releases:
           imageRepo: ghcr.io/odysseia-greek/
           odysseiaapi:
             repo: pheidias
-            tag: v0.0.13
+            tag: v0.0.11
 
   - name: ploutarchos
     namespace: odysseia
@@ -346,7 +346,7 @@ releases:
           imageRepo: ghcr.io/odysseia-greek/
           odysseiaapi:
             repo: ploutarchos
-            tag: v0.0.13
+            tag: v0.0.12
 
   - name: thermopulai
     namespace: odysseia
@@ -381,4 +381,4 @@ releases:
       - images:
           system:
             repo: hippokrates
-            tag: v0.0.13
+            tag: v0.0.12
