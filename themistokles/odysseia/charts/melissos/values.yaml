@@ -19,6 +19,6 @@ services:
 tlsConfig:
     mounts:
         - name: solon-certs
-          path: /etc/certs/solon
+          path: /app/config/solon
           secretName: solon-tls-certs
-    rootPath: /etc/certs
+    rootPath: /app/config

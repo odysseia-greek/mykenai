@@ -26,3 +26,6 @@ rules:
   - apiGroups: ["apps"]
     resources: ["statefulsets"]
     verbs: ["get", "list"]
+  - apiGroups: [ "metrics.k8s.io" ] # for sophokles should be done per pod
+    resources: [ "pods" ]
+    verbs: [ "get", "list" ]

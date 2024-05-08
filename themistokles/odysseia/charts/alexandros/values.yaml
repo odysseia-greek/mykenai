@@ -17,7 +17,7 @@ services:
     odysseiaapi:
         access: dictionary
         limits:
-            cpu: 600m
+            cpu: 1000m
             memory: 128Mi
         requests:
             cpu: 300m
@@ -32,6 +32,6 @@ services:
 tlsConfig:
     mounts:
         - name: solon-certs
-          path: /etc/certs/solon
+          path: /app/config/solon
           secretName: solon-tls-certs
-    rootPath: /etc/certs
+    rootPath: /app/config

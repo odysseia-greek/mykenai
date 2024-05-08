@@ -8,6 +8,7 @@
     spec:
       initContainers:
 {{- include "koinos.initContainer" . | indent 8 }}
+      serviceAccountName: {{ .Values.commonConfig.metricsServiceAccount }}
       containers:
 {{- include "koinos.ambassador" . | indent 8 }}
 {{- include "koinos.tracer" . | indent 8 }}

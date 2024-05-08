@@ -15,7 +15,7 @@
                 fieldRef:
                   fieldPath: metadata.namespace
             - name: WAIT_TIME
-              value: "180"
+              value: {{ .Values.interval | quote }}
             - name: ELASTIC_SEARCH_USER
               valueFrom:
                 secretKeyRef:
@@ -39,7 +39,7 @@
               cpu: {{ .Values.services.aiskhylos.requests.cpu }}
             limits:
               memory: {{.Values.services.aiskhylos.limits.memory}}
-              cpu: {{.Values.services.aiskhylos.limits.memory}}
+              cpu: {{.Values.services.aiskhylos.limits.cpu}}
       volumes:
         - name: {{ .Values.tlsConfig.elastic.name }}
           secret:

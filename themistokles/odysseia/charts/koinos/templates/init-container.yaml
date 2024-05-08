@@ -24,6 +24,8 @@
       valueFrom:
         fieldRef:
           fieldPath: metadata.annotations['odysseia-greek/access']
+    - name: SOLON_SERVICE
+      value: {{ .Values.commonConfig.envVariables.solonService }}
   envFrom:
     - configMapRef:
         name: {{ .Values.name }}
