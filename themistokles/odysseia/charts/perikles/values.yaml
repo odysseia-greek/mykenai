@@ -65,9 +65,9 @@ commonConfig:
             secretName: elastic-certificate-pem
         mounts:
             - name: solon-certs
-              path: /etc/certs/solon
+              path: /app/config/solon
               secretName: solon-tls-certs
-        rootPath: /etc/certs
+        rootPath: /app/config
         tracer:
             name: elastic-internal-tls
             path: /app/config/elastic
@@ -75,7 +75,7 @@ commonConfig:
         vault:
             enabled: true
             name: vault-server-tls
-            path: /etc/certs/vault
+            path: /app/config/vault
             secretName: vault-server-tls
 
 config:
@@ -83,7 +83,7 @@ config:
 
 envVariables:
     odysseiaapi:
-        TLSFiles: /etc/certs
+        TLSFiles: /app/config
         crdName: perikles-mapping
         port: 4443
 images:

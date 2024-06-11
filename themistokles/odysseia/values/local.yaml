@@ -15,6 +15,9 @@ euripides:
   envVariables:
     maxAge: 5
 
+aiskhylos:
+  interval: 300
+
 thermopulai:
   host: k3d-odysseia.greek
   apiHost: k3d-odysseia.api.greek
@@ -56,13 +59,13 @@ commonConfig:
     imageRepo: ghcr.io/odysseia-greek/
     sidecar:
       repo: ptolemaios
-      tag: v0.0.11
+      tag: v0.0.12
     init:
       repo: periandros
-      tag: v0.0.11
+      tag: v0.0.12
     tracer:
       repo: aristophanes
-      tag: v0.0.11
+      tag: v0.0.12
     metrics:
       repo: sophokles
       tag: v0.0.11
@@ -80,7 +83,7 @@ commonConfig:
         memory: 32Mi
     tracer:
       limits:
-        cpu: 200m
+        cpu: 500m
         memory: 64Mi
       name: aristophanes
       requests:
@@ -101,9 +104,9 @@ commonConfig:
       secretName: elastic-certificate-pem
     mounts:
       - name: solon-certs
-        path: /etc/certs/solon
+        path: /app/config/solon
         secretName: solon-tls-certs
-    rootPath: /etc/certs
+    rootPath: /app/config
     tracer:
       name: elastic-internal-tls
       path: /app/config/elastic
@@ -111,5 +114,5 @@ commonConfig:
     vault:
       enabled: true
       name: vault-server-tls
-      path: /etc/certs/vault
+      path: /app/config/vault
       secretName: vault-server-tls

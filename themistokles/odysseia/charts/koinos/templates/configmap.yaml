@@ -9,5 +9,4 @@ data:
   ENV: "{{ .Values.commonConfig.config.environment }}"
   TLS_ENABLED: "{{ .Values.commonConfig.config.tls }}"
   CERT_ROOT: "{{ .Values.commonConfig.tlsConfig.rootPath }}"
-  SOLON_SERVICE: "{{ .Values.commonConfig.envVariables.solonService }}"
 {{- end -}}

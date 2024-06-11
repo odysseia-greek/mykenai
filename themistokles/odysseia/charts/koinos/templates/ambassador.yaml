@@ -11,6 +11,8 @@
       value: {{ .Values.commonConfig.envVariables.vaultService }}
     - name: VAULT_TLS
       value:  {{ .Values.commonConfig.tlsConfig.vault.enabled | quote }}
+    - name: SOLON_SERVICE
+      value: {{ .Values.commonConfig.envVariables.solonService }}
     - name: POD_NAME
       valueFrom:
         fieldRef:

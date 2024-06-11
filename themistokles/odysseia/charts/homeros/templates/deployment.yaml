@@ -1,5 +1,6 @@
 {{- include "koinos.deploymentbase" .}}
     spec:
+      serviceAccountName: {{ .Values.commonConfig.metricsServiceAccount }}
       containers:
 {{- include "koinos.tracer" . | indent 8 }}
 {{- include "koinos.metrics" . | indent 8 }}

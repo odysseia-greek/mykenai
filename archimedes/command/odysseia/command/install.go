@@ -145,8 +145,9 @@ func install(client *thales.KubeClient, autoUnsealPath, ns string) error {
 	if err != nil {
 		if kuberr.IsAlreadyExists(err) {
 			logging.Info("Namespace already exists, proceeding.")
+		} else {
+			return err
 		}
-		return err
 	}
 
 	logging.Info(fmt.Sprintf("Created namespace: %s", ns))

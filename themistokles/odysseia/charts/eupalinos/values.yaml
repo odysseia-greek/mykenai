@@ -22,9 +22,9 @@ commonConfig:
             secretName: elastic-certificate-pem
         mounts:
             - name: solon-certs
-              path: /etc/certs/solon
+              path: /app/config/solon
               secretName: solon-tls-certs
-        rootPath: /etc/certs
+        rootPath: /app/config
 envVariables:
     queue:
         port: 50051
@@ -48,6 +48,6 @@ services:
 tlsConfig:
     mounts:
         - name: eupalinos-certs
-          path: /etc/certs/eupalinos
+          path: /app/config/eupalinos
           secretName: eupalinos-tls-certs
-    rootPath: /etc/certs
+    rootPath: /app/config

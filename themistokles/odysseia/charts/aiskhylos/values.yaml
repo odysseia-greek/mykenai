@@ -2,6 +2,7 @@ name: aiskhylos
 serviceAccountName: aiskhylos-access-sa
 namespace: odysseia
 replicas: 1
+interval: 180
 images:
     imageRepo: ghcr.io/odysseia-greek/
     pullSecret: harbor-images
@@ -16,7 +17,7 @@ services:
         limits:
             cpu: 500m
             memory: 128Mi
-        name: solon
+        name: aiskhylos
         requests:
             cpu: 100m
             memory: 64Mi
