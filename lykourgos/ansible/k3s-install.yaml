@@ -4,7 +4,7 @@
   become: yes
   vars:
     ansible_ssh_private_key_file: ~/.ssh/id_raspie
-    k3s_version: "v1.28.6+k3s2"  # Adjust as needed
+    k3s_version: "v1.29.4-k3s1"  # Adjust as needed
 
   tasks:
     - name: Install k3s on the first server and initialize the cluster
