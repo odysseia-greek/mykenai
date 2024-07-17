@@ -1,8 +1,8 @@
 #!/bin/bash
 
 inventory_file="inventory.ini"
-static_ip_playbook="bootstrap-raspies.yml"
-k3s_playbook="k3s-install.yml"
+static_ip_playbook="bootstrap-raspies.yaml"
+k3s_playbook="k3s-install.yaml"
 
 # Run the playbook to configure static IP, disable password logins, and create authorized SSH key
 ansible-playbook -i "$inventory_file" "$static_ip_playbook"

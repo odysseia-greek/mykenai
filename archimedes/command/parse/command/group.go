@@ -112,11 +112,8 @@ func groupChapters(logoi models.Logos, path string) ([]MultiChoiceQuiz, string) 
 		}
 
 		content = append(content, Content{
-			Translation:     word.Translation,
-			TimesCorrect:    0,
-			TimesIncorrect:  0,
-			AverageAccuracy: 0,
-			Greek:           word.Greek,
+			Translation: word.Translation,
+			Greek:       word.Greek,
 		})
 		chapter = word.Chapter
 
@@ -166,9 +163,6 @@ type MultiChoiceQuiz struct {
 }
 
 type Content struct {
-	Translation     string  `json:"translation"`
-	TimesCorrect    int     `json:"timesCorrect,omitempty"`
-	TimesIncorrect  int     `json:"timesIncorrect,omitempty"`
-	AverageAccuracy float64 `json:"averageAccuracy,omitempty"`
-	Greek           string  `json:"greek,omitempty"`
+	Translation string `json:"translation"`
+	Greek       string `json:"greek,omitempty"`
 }
