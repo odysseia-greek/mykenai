@@ -4,17 +4,13 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/odysseia-greek/agora/archytas"
 	"github.com/odysseia-greek/agora/aristoteles"
 	"github.com/odysseia-greek/agora/aristoteles/models"
 	"github.com/odysseia-greek/agora/plato/config"
 	"github.com/odysseia-greek/agora/plato/logging"
 	"github.com/odysseia-greek/agora/plato/service"
-	aristophanes "github.com/odysseia-greek/attike/aristophanes/comedy"
-	pbar "github.com/odysseia-greek/attike/aristophanes/proto"
 	"github.com/odysseia-greek/delphi/ptolemaios/diplomat"
 	pb "github.com/odysseia-greek/delphi/ptolemaios/proto"
-	aristarchos "github.com/odysseia-greek/olympia/aristarchos/scholar"
 	"google.golang.org/grpc/metadata"
 	"os"
 	"time"
@@ -41,10 +37,10 @@ func CreateNewConfig() (*{{.CapitalizedName}}Handler, error) {
     defer cancel()
     md := metadata.New(map[string]string{service.HeaderKey: traceId})
     ctx = metadata.NewOutgoingContext(context.Background(), md)
-    vaultConfig, err := ambassador.GetSecret(ctx, &pbp.VaultRequest{})
+    vaultConfig, err := ambassador.GetSecret(ctx, &pb.VaultRequest{})
     if err != nil {
         logging.Error(err.Error())
-        return nil, nil, err
+        return nil, err
     }
 
     elasticService := aristoteles.ElasticService(tls)
@@ -58,7 +54,7 @@ func CreateNewConfig() (*{{.CapitalizedName}}Handler, error) {
 
     elastic, err := aristoteles.NewClient(cfg)
     if err != nil {
-        return nil, nil, err
+        return nil, err
     }
 
 	index := config.StringFromEnv(config.EnvIndex, defaultIndex)
