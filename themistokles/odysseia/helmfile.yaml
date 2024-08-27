@@ -25,10 +25,10 @@ releases:
           imageRepo: ghcr.io/odysseia-greek/
           odysseiaapi:
             repo: perikles
-            tag: v0.0.12
+            tag: v0.1.0
           init:
             repo: kleisthenes
-            tag: v0.0.12
+            tag: v0.1.0
 
   - name: elastic
     namespace: odysseia
@@ -72,13 +72,13 @@ releases:
           imageRepo: ghcr.io/odysseia-greek/
           init:
             repo: drakon
-            tag: v0.0.12
+            tag: v0.1.0
           odysseiaapi:
             repo: solon
-            tag: v0.0.12
+            tag: v0.1.0
           initSeeder:
             repo: peisistratos
-            tag: v0.0.12
+            tag: v0.1.0
       {{- if eq .Environment.Name "staging" }}
       - values/solon/gcp.yaml
       {{- end }}
@@ -117,10 +117,10 @@ releases:
       - images:
           odysseiaapi:
             repo: euripides
-            tag: v0.0.13
+            tag: v0.1.0
           seeder:
             repo: anaximenes
-            tag: v0.0.12
+            tag: v0.1.0
     set:
       - name: replicas
         value: {{ .Values.euripides.replicas }}
@@ -142,7 +142,7 @@ releases:
           imageRepo: ghcr.io/odysseia-greek/
           odysseiaapi:
             repo: praxiteles
-            tag: v0.0.12
+            tag: v0.1.0
 
   - name: aiskhylos
     namespace: odysseia
@@ -158,7 +158,7 @@ releases:
       - images:
           odysseiaapi:
             repo: aiskhylos
-            tag: v0.0.12
+            tag: v0.1.0
     set:
       - name: interval
         value: {{ .Values.aiskhylos.interval }}
@@ -190,10 +190,10 @@ releases:
       - images:
           odysseiaapi:
             repo: alexandros
-            tag: v0.0.14
+            tag: v0.1.0
           seeder:
             repo: demokritos
-            tag: v0.0.15
+            tag: v0.1.0
     set:
       - name: replicas
         value: {{ .Values.alexandros.replicas }}
@@ -212,10 +212,10 @@ releases:
       - images:
           odysseiaapi:
             repo: dionysios
-            tag: v0.0.15
+            tag: v0.1.0
           seeder:
             repo: anaximander
-            tag: v0.0.15
+            tag: v0.1.0
     set:
       - name: replicas
         value: {{ .Values.dionysios.replicas }}
@@ -234,10 +234,10 @@ releases:
       - images:
           odysseiaapi:
             repo: herodotos
-            tag: v0.0.14
+            tag: v0.1.0
           seeder:
             repo: herakleitos
-            tag: v0.0.15
+            tag: v0.1.0
     set:
       - name: replicas
         value: {{ .Values.herodotos.replicas }}
@@ -256,10 +256,10 @@ releases:
       - images:
           odysseiaapi:
             repo: sokrates
-            tag: v0.0.15
+            tag: v0.1.0
           seeder:
             repo: parmenides
-            tag: v0.0.15
+            tag: v0.1.0
     set:
       - name: replicas
         value: {{ .Values.sokrates.replicas }}
@@ -278,7 +278,7 @@ releases:
       - images:
           seeder:
             repo: melissos
-            tag: v0.0.14
+            tag: v0.1.0
 
   - name: homeros
     namespace: odysseia
@@ -294,7 +294,7 @@ releases:
       - images:
           odysseiaapi:
             repo: homeros
-            tag: v0.0.15
+            tag: v0.1.0
 
   - name: aristarchos
     namespace: odysseia
@@ -310,7 +310,7 @@ releases:
       - images:
           odysseiaapi:
             repo: aristarchos
-            tag: v0.0.14
+            tag: v0.1.0
 
   - name: protagoras
     namespace: odysseia
@@ -327,7 +327,7 @@ releases:
       - images:
           job:
             repo: protagoras
-            tag: v0.0.14
+            tag: v0.1.0
 
     ## Frontend ##
   - name: pheidias
@@ -348,7 +348,7 @@ releases:
           imageRepo: ghcr.io/odysseia-greek/
           odysseiaapi:
             repo: pheidias
-            tag: v0.0.17
+            tag: v0.1.0
 
   - name: ploutarchos
     namespace: odysseia
@@ -363,7 +363,7 @@ releases:
           imageRepo: ghcr.io/odysseia-greek/
           odysseiaapi:
             repo: ploutarchos
-            tag: v0.0.15
+            tag: v0.1.0
 
   - name: thermopulai
     namespace: odysseia
@@ -398,4 +398,4 @@ releases:
       - images:
           system:
             repo: hippokrates
-            tag: v0.0.15
+            tag: v0.1.0

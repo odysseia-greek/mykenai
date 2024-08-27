@@ -21,14 +21,13 @@ func createScaffoldedService(name, indexName, repoName, destination, embed, port
 		files["templates/api/app/routes.go.tpl"] = "app/routes.go"
 		files["templates/api/app/handlers.go.tpl"] = "app/handlers.go"
 		files["templates/api/app/config.go.tpl"] = "app/config.go"
-		files["templates/api/infra/manifest.yaml.tpl"] = "infra/manifest.yaml"
+		files["templates/api/infra/skaffold.yaml.tpl"] = "infra/skaffold-profile.yaml"
 	} else if templateType == "job" {
 		files["templates/job/main.go.tpl"] = "main.go"
 		files["templates/job/seeder/config.go.tpl"] = "seeder/config.go"
 		files["templates/job/seeder/handler.go.tpl"] = "seeder/handler.go"
 		files["templates/job/seeder/index.go.tpl"] = "seeder/index.go"
 		files["templates/job/seeder/models.go.tpl"] = "seeder/models.go"
-		files["templates/job/infra/manifest.yaml.tpl"] = "infra/manifest.yaml"
 	}
 
 	directoryToCreate := filepath.Join(destination, name)

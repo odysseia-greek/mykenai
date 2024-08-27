@@ -8,3 +8,11 @@ build:
 		echo "Building dependencies for $$dir"; \
 		helm dependency build $$dir; \
 	done
+
+label:
+	kubectl label node k3s-s-athenai esMasterEligible=true
+	kubectl label node k3s-s-syrakousai esMasterEligible=true
+
+	kubectl label node k3s-s-athenai esHotEligible=true
+	kubectl label node k3s-s-syrakousai esHotEligible=true
+	kubectl label node k3s-w-korinth esHotEligible=true

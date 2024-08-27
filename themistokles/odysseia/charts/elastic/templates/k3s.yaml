@@ -15,7 +15,6 @@ metadata:
 spec:
   version: {{ .Values.config.elasticVersion }}
   nodeSets:
-      # Low storage low cpu and low memory
     - name: masters
       count: 1
       config:
@@ -23,15 +22,24 @@ spec:
         node.store.allow_mmap: false
       podTemplate:
         spec:
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: esMasterEligible
+                        operator: In
+                        values:
+                          - "true"
           containers:
             - name: elasticsearch
-          resources:
-            requests:
-              memory: {{ .Values.nodes.memory.requests.high }}
-              cpu: {{ .Values.nodes.cpu.requests.medium }}
-            limits:
-              memory: {{ .Values.nodes.memory.limits.high }}
-              cpu: {{ .Values.nodes.cpu.limits.medium }}
+              resources:
+                requests:
+                  memory: {{ .Values.nodes.memory.requests.high }}
+                  cpu: {{ .Values.nodes.cpu.requests.medium }}
+                limits:
+                  memory: {{ .Values.nodes.memory.limits.high }}
+                  cpu: {{ .Values.nodes.cpu.limits.medium }}
       volumeClaimTemplates:
         - metadata:
             name: elasticsearch-data
@@ -41,7 +49,6 @@ spec:
             resources:
               requests:
                 storage: {{ .Values.nodes.storage.low }}
-    # Low storage high cpu and high memory
     - name: hot
       count: 2
       config:
@@ -49,15 +56,24 @@ spec:
         node.store.allow_mmap: false
       podTemplate:
         spec:
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: esHotEligible
+                        operator: In
+                        values:
+                          - "true"
           containers:
             - name: elasticsearch
-          resources:
-            requests:
-              memory: {{ .Values.nodes.memory.requests.high }}
-              cpu: {{ .Values.nodes.cpu.requests.high }}
-            limits:
-              memory: {{ .Values.nodes.memory.limits.high }}
-              cpu: {{ .Values.nodes.cpu.limits.high }}
+              resources:
+                requests:
+                  memory: {{ .Values.nodes.memory.requests.high }}
+                  cpu: {{ .Values.nodes.cpu.requests.high }}
+                limits:
+                  memory: {{ .Values.nodes.memory.limits.high }}
+                  cpu: {{ .Values.nodes.cpu.limits.high }}
       volumeClaimTemplates:
         - metadata:
             name: elasticsearch-data
@@ -67,7 +83,6 @@ spec:
             resources:
               requests:
                 storage: {{ .Values.nodes.storage.high }}
-    # High storage low cpu and high memory
     - name: warm
       count: 1
       config:
@@ -77,13 +92,13 @@ spec:
         spec:
           containers:
             - name: elasticsearch
-          resources:
-            requests:
-              memory: {{ .Values.nodes.memory.requests.medium }}
-              cpu: {{ .Values.nodes.cpu.requests.medium }}
-            limits:
-              memory: {{ .Values.nodes.memory.limits.medium }}
-              cpu: {{ .Values.nodes.cpu.limits.medium }}
+              resources:
+                requests:
+                  memory: {{ .Values.nodes.memory.requests.medium }}
+                  cpu: {{ .Values.nodes.cpu.requests.medium }}
+                limits:
+                  memory: {{ .Values.nodes.memory.limits.medium }}
+                  cpu: {{ .Values.nodes.cpu.limits.medium }}
       volumeClaimTemplates:
         - metadata:
             name: elasticsearch-data

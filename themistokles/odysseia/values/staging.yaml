@@ -56,16 +56,16 @@ commonConfig:
     imageRepo: ghcr.io/odysseia-greek/
     sidecar:
       repo: ptolemaios
-      tag: v0.0.12
+      tag: v0.1.0
     init:
       repo: periandros
-      tag: v0.0.12
+      tag: v0.1.0
     tracer:
       repo: aristophanes
-      tag: v0.0.12
+      tag: v0.1.0
     metrics:
       repo: sophokles
-      tag: v0.0.11
+      tag: v0.1.0
   services:
     backend:
       labels:

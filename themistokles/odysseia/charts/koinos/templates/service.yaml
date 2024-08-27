@@ -11,4 +11,9 @@ spec:
     - name: "http"
       port: {{ .Values.commonConfig.envVariables.odysseiaapi.port }}
       targetPort: {{ .Values.commonConfig.envVariables.odysseiaapi.port }}
+    {{- if .Values.commonConfig.envVariables.odysseiaapi.delvePort }}
+    - port: {{ .Values.commonConfig.envVariables.odysseiaapi.delvePort }}
+      name: delve
+      targetPort: {{ .Values.commonConfig.envVariables.odysseiaapi.delvePort }}
+    {{- end }}
 {{- end -}}
