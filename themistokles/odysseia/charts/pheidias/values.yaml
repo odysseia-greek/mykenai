@@ -23,7 +23,7 @@ images:
     imageRepo: ghcr.io/odysseia-greek/
     odysseiaapi:
         repo: pheidias
-        tag: v0.6.2
+        tag: v0.0.19
 namespaceOverride: odysseia
 services:
     frontend:

@@ -2,5 +2,5 @@ project_name='archimedes'
 
 build:
 	go fmt ./...
-	go build -ldflags "-X main.version=1.0.4" cmd/archimedes.go;
+	go build -ldflags "-X main.version=1.0.5" cmd/archimedes.go;
 	mv archimedes ~/bin/$(project_name)

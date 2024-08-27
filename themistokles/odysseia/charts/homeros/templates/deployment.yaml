@@ -14,6 +14,8 @@
           env:
             - name: TRACE_CONFIG_PATH
               value: /etc/config/trace-config.json
+            - name: VERSION
+              value: {{ .Values.images.odysseiaapi.tag }}
           envFrom:
             - configMapRef:
                 name: {{ .Values.name }}
@@ -21,6 +23,11 @@
             - name: graphql
               containerPort: {{ .Values.commonConfig.envVariables.gateway.port }}
               protocol: TCP
+          {{- if .Values.commonConfig.envVariables.odysseiaapi.delvePort }}
+            - port: {{ .Values.commonConfig.envVariables.odysseiaapi.delvePort }}
+              name: delve
+              targetPort: {{ .Values.commonConfig.envVariables.odysseiaapi.delvePort }}
+          {{- end }}
           readinessProbe:
             tcpSocket:
               port: {{ .Values.commonConfig.envVariables.gateway.port }}

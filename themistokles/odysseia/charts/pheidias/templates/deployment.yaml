@@ -23,7 +23,7 @@ spec:
       labels:
         app: "{{ .Values.name }}"
         release: {{ .Release.Name }}
-        version: {{ .Values.images.tag }}
+        version: {{ .Values.images.odysseiaapi.tag }}
     spec:
 
       containers:

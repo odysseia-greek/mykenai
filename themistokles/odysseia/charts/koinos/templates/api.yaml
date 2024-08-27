@@ -27,6 +27,11 @@
     {{- end }}
   ports:
     - containerPort: {{ .Values.commonConfig.envVariables.odysseiaapi.port }}
+      name: http
+      {{- if .Values.commonConfig.envVariables.odysseiaapi.delvePort }}
+    - containerPort: {{ .Values.commonConfig.envVariables.odysseiaapi.delvePort }}
+      name: delve
+      {{- end }}
   livenessProbe:
     httpGet:
       path: {{ .Values.livenessPath }}
@@ -39,11 +44,13 @@
       port: {{ .Values.commonConfig.envVariables.odysseiaapi.port }}
     initialDelaySeconds: {{ .Values.commonConfig.config.initialDelayReadiness }}
     periodSeconds: {{ .Values.commonConfig.config.periodSeconds }}
+  {{- if ne .Values.commonConfig.config.environment "k3d-skaffold" }}
   resources:
-    requests:
-      memory: {{ .Values.services.odysseiaapi.requests.memory }}
-      cpu: {{ .Values.services.odysseiaapi.requests.cpu }}
     limits:
-      memory: {{.Values.services.odysseiaapi.limits.memory}}
-      cpu: {{.Values.services.odysseiaapi.limits.cpu}}
+      cpu: {{ .Values.services.odysseiaapi.limits.cpu | default "" }}
+      memory: {{ .Values.services.odysseiaapi.limits.memory | default "" }}
+    requests:
+      cpu: {{ .Values.services.odysseiaapi.requests.cpu | default "" }}
+      memory: {{ .Values.services.odysseiaapi.requests.memory | default "" }}
+  {{- end }}
   {{- end -}}

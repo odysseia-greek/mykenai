@@ -11,4 +11,9 @@ spec:
     - name: "https"
       port: {{ .Values.commonConfig.envVariables.https.port }}
       targetPort: {{ .Values.commonConfig.envVariables.https.port }}
+    {{- if .Values.commonConfig.envVariables.odysseiaapi.delvePort }}
+    - port: {{ .Values.commonConfig.envVariables.odysseiaapi.delvePort }}
+      name: delve
+      targetPort: {{ .Values.commonConfig.envVariables.odysseiaapi.delvePort }}
+    {{- end }}
 {{- end -}}

@@ -34,7 +34,7 @@ func main() {
 		log.Fatal("death has found me")
 	}
 
-	srv := text.InitRoutes(apiConfig)
+	srv := app.InitRoutes(apiConfig)
 
 	logging.Info(fmt.Sprintf("%s : %s", "running on port", port))
 	err = http.ListenAndServe(port, srv)
