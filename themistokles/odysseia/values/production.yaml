@@ -11,7 +11,7 @@ sokrates:
   replicas: 3
 
 diogenes:
-  replicas: 1
+  replicas: 2
 
 euripides:
   replicas: 1

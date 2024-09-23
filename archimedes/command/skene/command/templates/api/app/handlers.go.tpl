@@ -82,23 +82,11 @@ func (a *{{.CapitalizedName}}Handler) exampleEndpoint(w http.ResponseWriter, req
         return
     }
 
-    var agg map[string]interface{}
-    err = json.Unmarshal(elasticResult, &agg)
-    if err != nil {
-        e := models.ValidationError{
-            ErrorModel: models.ErrorModel{UniqueCode: requestId},
-            Messages: []models.ValidationMessages{
-                {
-                    Field:   "unmarshall action failed internally",
-                    Message: err.Error(),
-                },
-            },
-        }
-        middleware.ResponseWithJson(w, e)
-        return
-    }
+	if traceCall {
+		go a.databaseSpan(elasticResult, query, traceID, spanID)
+	}
 
-    middleware.ResponseWithCustomCode(w, http.StatusOK, agg)
+	middleware.ResponseWithCustomCode(w, http.StatusOK, elasticResult)
 }
 
 func (a *{{.CapitalizedName}}Handler) databaseSpan(response *elasticmodels.Response, query map[string]interface{}, traceID, spanID string) {
