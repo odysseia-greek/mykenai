@@ -396,6 +396,6 @@ releases:
     values:
       - values/{{ .Environment.Name }}.yaml
       - images:
-          system:
+          job:
             repo: hippokrates
             tag: v0.1.0
