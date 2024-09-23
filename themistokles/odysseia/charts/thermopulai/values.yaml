@@ -5,6 +5,8 @@ envVariables:
     port: 5000
   dionysios:
     port: 5000
+  diogenes:
+    port: 5000
   euripdes:
     port: 8080
   sokrates:

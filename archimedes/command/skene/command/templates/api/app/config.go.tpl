@@ -13,7 +13,6 @@ import (
 	pbar "github.com/odysseia-greek/attike/aristophanes/proto"
 	"github.com/odysseia-greek/delphi/ptolemaios/diplomat"
 	pb "github.com/odysseia-greek/delphi/ptolemaios/proto"
-	aristarchos "github.com/odysseia-greek/olympia/aristarchos/scholar"
 	"google.golang.org/grpc/metadata"
 	"os"
 	"time"

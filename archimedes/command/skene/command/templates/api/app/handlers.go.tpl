@@ -70,7 +70,7 @@ func (a *{{.CapitalizedName}}Handler) exampleEndpoint(w http.ResponseWriter, req
 
     query := textAggregationQuery()
 
-    elasticResult, err := h.Elastic.Query().MatchRaw(h.Index, query)
+    elasticResult, err := a.Elastic.Query().Match(a.Index, query)
     if err != nil {
         e := models.ElasticSearchError{
             ErrorModel: models.ErrorModel{UniqueCode: requestId},
@@ -99,6 +99,32 @@ func (a *{{.CapitalizedName}}Handler) exampleEndpoint(w http.ResponseWriter, req
     }
 
     middleware.ResponseWithCustomCode(w, http.StatusOK, agg)
+}
+
+func (a *{{.CapitalizedName}}Handler) databaseSpan(response *elasticmodels.Response, query map[string]interface{}, traceID, spanID string) {
+	parsedQuery, _ := json.Marshal(query)
+	hits := int64(0)
+	took := int64(0)
+	if response != nil {
+		hits = response.Hits.Total.Value
+		took = response.Took
+	}
+	dataBaseSpan := &pb.ParabasisRequest{
+		TraceId:      traceID,
+		ParentSpanId: spanID,
+		SpanId:       spanID,
+		RequestType: &pb.ParabasisRequest_DatabaseSpan{DatabaseSpan: &pb.DatabaseSpanRequest{
+			Action:   "search",
+			Query:    string(parsedQuery),
+			Hits:     hits,
+			TimeTook: took,
+		}},
+	}
+
+	err := a.Streamer.Send(dataBaseSpan)
+	if err != nil {
+		logging.Error(fmt.Sprintf("error returned from tracer: %s", err.Error()))
+	}
 }
 
 func textAggregationQuery() map[string]interface{} {

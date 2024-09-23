@@ -16,7 +16,7 @@ commonConfig:
 
 config:
   kibana: true
-  elasticVersion: 8.11.0
+  elasticVersion: 8.14.0
   replicas: 1
 
 name: aristoteles

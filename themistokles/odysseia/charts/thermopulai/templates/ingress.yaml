@@ -91,6 +91,13 @@ spec:
                 port:
                   number: {{ .Values.envVariables.dionysios.port }}
           - pathType: Prefix
+            path: /diogenes/v1
+            backend:
+              service:
+                name: diogenes
+                port:
+                  number: {{ .Values.envVariables.diogenes.port }}
+          - pathType: Prefix
             path: /graphql
             backend:
               service:

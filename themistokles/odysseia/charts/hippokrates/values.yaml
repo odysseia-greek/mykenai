@@ -2,7 +2,7 @@ name: hippokrates
 namespace: odysseia
 replicas: 2
 images:
-    system:
+    job:
         repo: hippokrates
         tag: v0.2.1
 envVariables:
@@ -14,7 +14,7 @@ envVariables:
     solonService: http://solon:5000
     aristarchosService: http://aristarchos:50053
 services:
-    system:
+    job:
         limits:
             cpu: 1000m
             memory: 128Mi

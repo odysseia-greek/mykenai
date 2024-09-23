@@ -22,6 +22,7 @@ func createScaffoldedService(name, indexName, repoName, destination, embed, port
 		files["templates/api/app/handlers.go.tpl"] = "app/handlers.go"
 		files["templates/api/app/config.go.tpl"] = "app/config.go"
 		files["templates/api/infra/skaffold.yaml.tpl"] = "infra/skaffold-profile.yaml"
+		files["templates/api/infra/helmfile.yaml.tpl"] = "infra/helmfile.yaml"
 	} else if templateType == "job" {
 		files["templates/job/main.go.tpl"] = "main.go"
 		files["templates/job/seeder/config.go.tpl"] = "seeder/config.go"

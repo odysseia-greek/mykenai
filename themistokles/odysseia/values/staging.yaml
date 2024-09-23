@@ -10,6 +10,9 @@ herodotos:
 sokrates:
   replicas: 2
 
+diogenes:
+  replicas: 1
+
 euripides:
   replicas: 1
   envVariables:

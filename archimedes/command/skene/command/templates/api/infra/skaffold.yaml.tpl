@@ -13,7 +13,7 @@ profiles:
     deploy:
       helm:
         releases:
-          - name: alexandros
+          - name: {{.Name}}
             chartPath: ../../odysseia-greek/mykenai/themistokles/odysseia/charts/{{.Name}}
             valuesFiles:
               - ../../odysseia-greek/mykenai/themistokles/odysseia/values/local.yaml

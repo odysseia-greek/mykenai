@@ -40,6 +40,10 @@ data:
           "score": 100
         },
         {
+          "operation": "convert",
+          "score": 100
+        },
+        {
           "operation": "status",
           "score": 1
         }

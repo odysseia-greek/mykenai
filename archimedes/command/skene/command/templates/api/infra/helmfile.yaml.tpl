@@ -8,11 +8,11 @@
     needs:
       - odysseia/solon
     values:
-      - values/{{ .Environment.Name }}.yaml
+      - values/{{ "{{" }} .Environment.Name {{ "}}" }}.yaml
       - images:
           odysseiaapi:
             repo: {{.Name}}
             tag: v0.0.14
     set:
       - name: replicas
-        value: {{ .Values.{{.Name}}.replicas }}
+        value: {{ "{{" }} .Values.{{.Name}}.replicas {{ "}}" }}
