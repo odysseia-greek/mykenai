@@ -198,26 +198,6 @@ releases:
       - name: replicas
         value: {{ .Values.alexandros.replicas }}
 
-  - name: diogenes
-    namespace: odysseia
-    chart: ./charts/diogenes
-    version: 0.1.1
-    missingFileHandler: Error
-    labels:
-      tier: backend
-    needs:
-      - odysseia/solon
-    values:
-      - values/{{ .Environment.Name }}.yaml
-      - images:
-          odysseiaapi:
-            repo: diogenes
-            tag: v0.1.0
-    set:
-      - name: replicas
-        value: {{ .Values.diogenes.replicas }}
-
-
   - name: dionysios
     namespace: odysseia
     chart: ./charts/dionysios
@@ -314,8 +294,7 @@ releases:
       - images:
           odysseiaapi:
             repo: homeros
-            tag: v0.1.0
-
+            tag: v0.1.0-edgecase
 
   - name: aristarchos
     namespace: odysseia
@@ -332,6 +311,25 @@ releases:
           odysseiaapi:
             repo: aristarchos
             tag: v0.1.0
+
+  - name: diogenes
+    namespace: odysseia
+    chart: ./charts/diogenes
+    version: 0.1.1
+    missingFileHandler: Error
+    labels:
+      tier: backend
+    needs:
+      - odysseia/solon
+    values:
+      - values/{{ .Environment.Name }}.yaml
+      - images:
+          odysseiaapi:
+            repo: diogenes
+            tag: v0.1.0-edgecase
+    set:
+      - name: replicas
+        value: {{ .Values.diogenes.replicas }}
 
   - name: protagoras
     namespace: odysseia
