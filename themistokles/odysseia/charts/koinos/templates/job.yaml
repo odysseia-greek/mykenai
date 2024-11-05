@@ -1,6 +1,16 @@
 {{- define "koinos.job" -}}
 {{- include "koinos.jobbase" . }}
     spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+                matchExpressions:
+                  - key: preferredForJobs
+                    operator: In
+                    values:
+                      - "true"
     {{- if .Values.serviceAccountName }}
       serviceAccountName: {{ .Values.serviceAccountName }}
     {{- end }}
@@ -16,6 +26,11 @@
           image: {{ .Values.images.seeder.repo }}:{{ .Values.images.seeder.tag }}
           imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
           {{- end}}
+          {{- if .Values.commonConfig.envVariables.odysseiaapi.delvePort }}
+          ports:
+            - containerPort: {{ .Values.commonConfig.envVariables.odysseiaapi.delvePort }}
+              name: delve
+          {{- end }}
           env:
             - name: POD_NAME
               valueFrom:

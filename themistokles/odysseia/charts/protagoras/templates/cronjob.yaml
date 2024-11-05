@@ -14,13 +14,13 @@ metadata:
     {{ $key }}: {{ $value | quote }}
     {{- end }}
 spec:
-  schedule: "*/10 * * * *"
+  schedule: "0 * * * *"
   jobTemplate:
     metadata:
       labels:
         app: {{ .Values.name }}
         release: {{ .Release.Name }}
-        version: {{ .Values.images.system.tag  }}
+        version: {{ .Values.images.job.tag  }}
     spec:
       backoffLimit: 2
       template:
@@ -28,9 +28,9 @@ spec:
           containers:
             - name: "{{ .Values.name }}"
             {{- if .Values.commonConfig.config.externalRepo | quote }}
-              image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.system.repo }}:{{ .Values.images.system.tag }}
+              image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.job.repo }}:{{ .Values.images.job.tag }}
             {{ else }}
-              image: {{ .Values.images.system.repo }}:{{ .Values.images.system.tag }}
+              image: {{ .Values.images.job.repo }}:{{ .Values.images.job.tag }}
             {{- end}}
               imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
               envFrom:
@@ -38,11 +38,11 @@ spec:
                     name: {{ .Values.name }}
               resources:
                 requests:
-                  memory: {{ .Values.services.system.requests.memory }}
-                  cpu: {{ .Values.services.system.requests.cpu }}
+                  memory: {{ .Values.services.job.requests.memory }}
+                  cpu: {{ .Values.services.job.requests.cpu }}
                 limits:
-                  memory: {{.Values.services.system.limits.memory}}
-                  cpu: {{.Values.services.system.limits.cpu}}
+                  memory: {{.Values.services.job.limits.memory}}
+                  cpu: {{.Values.services.job.limits.cpu}}
           restartPolicy: OnFailure
   successfulJobsHistoryLimit: 2
   failedJobsHistoryLimit: 3

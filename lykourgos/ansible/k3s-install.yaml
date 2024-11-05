@@ -4,7 +4,7 @@
   become: yes
   vars:
     ansible_ssh_private_key_file: ~/.ssh/id_raspie
-    k3s_version: "v1.28.6+k3s2"  # Adjust as needed
+    k3s_version: "v1.29.4-k3s1"  # Adjust as needed
 
   tasks:
     - name: Install k3s on the first server and initialize the cluster
@@ -73,3 +73,5 @@
     - name: Install k3s on worker nodes
       shell: curl -sfL https://get.k3s.io | K3S_TOKEN={{ hostvars[groups['servers'][0]]['k3s_token'] }} sh -s - agent --server https://{{ hostvars[groups['servers'][0]]['ansible_host'] }}:6443
       when: inventory_hostname in groups['workers']
+
+  curl -sfL https://get.k3s.io | K3S_TOKEN=K1008d915b6715a329603d3397cc5d39a9bb5a5e8ce1f1c230ec03050b1e07f1414::server:638051b8e01222bb41708a57573f9db0 sh -s - agent --server https://192.168.1.121:6443

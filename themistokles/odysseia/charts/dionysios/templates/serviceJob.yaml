@@ -1,0 +1,14 @@
+{{- if eq .Values.commonConfig.config.environment "k3d-skaffold" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.jobName }}
+  namespace: {{ .Values.commonConfig.namespace }}
+spec:
+  selector:
+    app: {{ .Values.jobName }}
+  ports:
+    - port: {{ .Values.commonConfig.envVariables.odysseiaapi.delvePort }}
+      name: delve
+      targetPort: {{ .Values.commonConfig.envVariables.odysseiaapi.delvePort }}
+{{- end }}

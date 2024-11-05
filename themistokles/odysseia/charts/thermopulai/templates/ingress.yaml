@@ -17,13 +17,6 @@ spec:
       http:
         paths:
           - pathType: Prefix
-            path: /
-            backend:
-              service:
-                name: pheidias
-                port:
-                  number: {{ .Values.envVariables.pheidias.port }}
-          - pathType: Prefix
             path: /homeros/v1
             backend:
               service:
@@ -44,6 +37,13 @@ spec:
                 name: ploutarchos
                 port:
                   number: {{ .Values.envVariables.ploutarchos.port }}
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: pheidias
+                port:
+                  number: {{ .Values.envVariables.pheidias.port }}
 {{ if .Values.apis }}
     - host: {{ .Values.apiHost }}
       http:

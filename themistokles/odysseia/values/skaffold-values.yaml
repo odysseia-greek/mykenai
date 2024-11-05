@@ -1,0 +1,10 @@
+commonConfig:
+  config:
+    environment: k3d-skaffold
+    pullPolicy: IfNotPresent  # Override the pull policy for Skaffold
+  envVariables:
+    odysseiaapi:
+      port: 5000
+      delvePort: 2345
+
+replicas: 1

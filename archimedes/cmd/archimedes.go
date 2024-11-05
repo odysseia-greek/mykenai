@@ -5,6 +5,7 @@ import (
 	"github.com/odysseia-greek/mykenai/archimedes/command/images"
 	"github.com/odysseia-greek/mykenai/archimedes/command/odysseia"
 	"github.com/odysseia-greek/mykenai/archimedes/command/parse"
+	"github.com/odysseia-greek/mykenai/archimedes/command/skene"
 	"github.com/spf13/cobra"
 	"strings"
 )
@@ -47,6 +48,7 @@ work with vault and much more is coming`,
 		images.Manager(),
 		parse.Manager(),
 		odysseia.Manager(),
+		skene.Manager(),
 	)
 
 	err := rootCmd.Execute()
