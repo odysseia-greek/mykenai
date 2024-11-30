@@ -35,6 +35,8 @@
             value: {{ .Values.envVariables.odysseiaapi.TLSFiles }}
           - name: CRD_NAME
             value: {{ .Values.envVariables.odysseiaapi.crdName }}
+          - name: L7_MODE
+            value: {{ .Values.config.l7Mode | quote }}
           - name: NAMESPACE
             valueFrom:
               fieldRef:

@@ -20,3 +20,6 @@ rules:
   - apiGroups: ["apps"] # "" indicates the core API group
     resources: ["deployments", "statefulsets"]
     verbs: ["update", "get", "list"]
+  - apiGroups: ["cilium.io"]
+    resources: ["ciliumnetworkpolicies"]
+    verbs: ["create", "update", "delete", "get", "list", "watch"]

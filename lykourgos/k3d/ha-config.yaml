@@ -1,22 +1,27 @@
-apiVersion: k3d.io/v1alpha5 # this will change in the future as we make everything more stable
-kind: Simple # internally, we also have a Cluster config, which is not yet available externally
+apiVersion: k3d.io/v1alpha5
+kind: Simple
 metadata:
-  name: odysseia # (will still be prefixed with `k3d-`)
-servers: 3
-image: rancher/k3s:v1.28.1-k3s1
+  name: odysseia
+servers: 1
+agents: 2
+image: rancher/k3s:v1.31.2-k3s1
 ports:
-  - port: 8080:80 # same as `--port '8080:80@loadbalancer'`
+  - port: 8080:80
     nodeFilters:
       - loadbalancer
+volumes:
+  - volume: ${PWD}/bin/cilium.sh:/bin/k3d-entrypoint-cilium.sh
+    nodeFilters:
+      - all
 options:
-  k3d: # k3d runtime settings
-    wait: true # wait for cluster to be usable before returining; same as `--wait` (default: true)
-    timeout: "60s" # wait timeout before aborting; same as `--timeout 60s`
-    disableLoadbalancer: false # same as `--no-lb`
-    disableImageVolume: false # same as `--no-image-volume`
-    disableRollback: false # same as `--no-Rollback`
+  kubeconfig:
     updateDefaultKubeconfig: true
     switchCurrentContext: true
-    loadbalancer:
-      configOverrides:
-        - settings.workerConnections=2048
+  k3s:
+    extraArgs:
+      - arg: --flannel-backend=none
+        nodeFilters:
+          - server:*
+      - arg: --disable-network-policy
+        nodeFilters:
+          - server:*

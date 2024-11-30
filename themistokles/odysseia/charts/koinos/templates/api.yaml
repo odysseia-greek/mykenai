@@ -20,7 +20,7 @@
     - configMapRef:
         name: {{ .Values.name }}
   volumeMounts:
-    {{- range .Values.commonConfig.tlsConfig.mounts }}
+    {{- range .Values.tlsConfig.mounts }}
     - name: {{ .name }}
       mountPath: {{ .path }}
       readOnly: true
