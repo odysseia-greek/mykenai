@@ -21,6 +21,8 @@ spec:
         app: {{ .Values.name }}
         release: {{ .Release.Name }}
         version: {{ .Values.images.job.tag  }}
+      annotations:
+        perikles/accesses: "alexandros;dionysios;herodotos;sokrates;homeros;aristarchos"
     spec:
       backoffLimit: 2
       template:
@@ -36,6 +38,12 @@ spec:
               envFrom:
                 - configMapRef:
                     name: {{ .Values.name }}
+              volumeMounts:
+                {{- range .Values.tlsConfig.mounts }}
+                - name: {{ .name }}
+                  mountPath: {{ .path }}
+                  readOnly: true
+                {{- end }}
               resources:
                 requests:
                   memory: {{ .Values.services.job.requests.memory }}
@@ -43,6 +51,15 @@ spec:
                 limits:
                   memory: {{.Values.services.job.limits.memory}}
                   cpu: {{.Values.services.job.limits.cpu}}
+          volumes:
+             {{- range .Values.tlsConfig.mounts }}
+            - name: {{ .name }}
+              secret:
+                secretName: {{ .secretName }}
+                     {{- if .defaultMode }}
+                defaultMode: {{ .defaultMode }}
+                    {{- end }}
+              {{- end }}
           restartPolicy: OnFailure
   successfulJobsHistoryLimit: 2
   failedJobsHistoryLimit: 3

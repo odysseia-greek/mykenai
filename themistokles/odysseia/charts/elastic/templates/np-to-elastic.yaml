@@ -1,7 +1,7 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: allow-all-elasticsearch-access-tracing
+  name: allow-all-elasticsearch-access-kibana
   namespace: {{ .Values.commonConfig.namespace }}
 spec:
   endpointSelector:
@@ -10,7 +10,7 @@ spec:
   ingress:
     - fromEndpoints:
         - matchLabels:
-            app: {{ .Values.name }}
+            kibana.k8s.elastic.co/name: kibana
       toPorts:
         - ports:
             - port: "9200"

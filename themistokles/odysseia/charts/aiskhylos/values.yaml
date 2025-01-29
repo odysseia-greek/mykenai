@@ -14,6 +14,8 @@ services:
         labels:
             domain: backend
     aiskhylos:
+        access: metrics
+        role: creator
         limits:
             cpu: 500m
             memory: 128Mi

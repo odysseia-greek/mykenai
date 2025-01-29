@@ -1,5 +1,5 @@
 alexandros:
-  replicas: 1
+  replicas: 3
 
 dionysios:
   replicas: 1
@@ -59,13 +59,13 @@ commonConfig:
     imageRepo: ghcr.io/odysseia-greek/
     sidecar:
       repo: ptolemaios
-      tag: v0.1.0
+      tag: v0.1.2
     init:
       repo: periandros
-      tag: v0.1.0
+      tag: v0.1.3
     tracer:
       repo: aristophanes
-      tag: v0.1.0
+      tag: v0.1.2
     metrics:
       repo: sophokles
       tag: v0.1.0

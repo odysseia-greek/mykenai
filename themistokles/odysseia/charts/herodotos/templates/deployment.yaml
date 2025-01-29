@@ -1,10 +1,10 @@
 {{- include "koinos.deploymentbase" .}}
       annotations:
-                  {{- if and .Values.services.odysseiaapi.role .Values.services.odysseiaapi.access }}
+        {{- if and .Values.services.odysseiaapi.role .Values.services.odysseiaapi.access }}
         odysseia-greek/role: {{ .Values.services.odysseiaapi.role }}
         odysseia-greek/access: {{ .Values.services.odysseiaapi.access }}
-                  {{- end }}
-        perikles/accesses: solon
+        {{- end }}
+        perikles/accesses: "solon;aristarchos"
         perikles/hostname: "herodotos"
         perikles/validity: "10"
     spec:

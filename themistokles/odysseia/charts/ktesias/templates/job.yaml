@@ -21,9 +21,15 @@ spec:
         release: {{ .Release.Name }}
         version: {{ .Values.images.job.tag  }}
       annotations:
-        perikles/accesses: "herodotos;dionysios"
+        odysseia-greek/role: "api"
+        odysseia-greek/access: "dictionary"
+        perikles/accesses: "solon"
     spec:
+      serviceAccountName: {{ .Values.serviceAccountName }}
+      initContainers:
+      {{- include "koinos.initContainer" . | indent 8 }}
       containers:
+      {{- include "koinos.ambassador" . | indent 8 }}
         - name: "{{ .Values.name }}"
               {{- if .Values.commonConfig.config.externalRepo | quote }}
           image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.job.repo }}:{{ .Values.images.job.tag }}
@@ -32,15 +38,39 @@ spec:
           image: {{ .Values.images.job.repo }}:{{ .Values.images.job.tag }}
           imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
               {{- end}}
+          command:
+            - sh
+            - -c
+            - /app/{{ .Values.name }}
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: ELASTIC_ROLE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/role']
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
           envFrom:
             - configMapRef:
                 name: {{ .Values.name }}
           volumeMounts:
-            {{- range .Values.tlsConfig.mounts }}
+              {{- range .Values.tlsConfig.mounts }}
             - name: {{ .name }}
               mountPath: {{ .path }}
               readOnly: true
-            {{- end }}
+              {{- end }}
+            - name: {{ .Values.commonConfig.tlsConfig.vault.name }}
+              mountPath: {{ .Values.commonConfig.tlsConfig.vault.path }}
+              readOnly: true
           resources:
             requests:
               memory: {{ .Values.services.job.requests.memory }}
@@ -49,7 +79,13 @@ spec:
               memory: {{.Values.services.job.limits.memory}}
               cpu: {{.Values.services.job.limits.cpu}}
       volumes:
-         {{- range .Values.tlsConfig.mounts }}
+        - name: {{ .Values.commonConfig.tlsConfig.vault.name }}
+          secret:
+            secretName: {{ .Values.commonConfig.tlsConfig.vault.secretName }}
+        - name: {{ .Values.commonConfig.tlsConfig.tracer.name }}
+          secret:
+            secretName: {{ .Values.commonConfig.tlsConfig.tracer.secretName }}
+           {{- range .Values.tlsConfig.mounts }}
         - name: {{ .name }}
           secret:
             secretName: {{ .secretName }}
@@ -58,4 +94,4 @@ spec:
                 {{- end }}
           {{- end }}
       restartPolicy: Never
-  backoffLimit: 3
+  backoffLimit: 5

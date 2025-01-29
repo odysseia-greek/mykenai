@@ -17,3 +17,12 @@ services:
         requests:
             cpu: 500m
             memory: 64Mi
+tlsConfig:
+    mounts:
+        - name: herodotos-certs
+          path: /app/config/herodotos
+          secretName: herodotos-tls-certs
+        - name: dionysios-certs
+          path: /app/config/dionysios
+          secretName: dionysios-tls-certs
+    rootPath: /app/config

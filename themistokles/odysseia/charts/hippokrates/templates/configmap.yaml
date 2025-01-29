@@ -9,6 +9,5 @@ data:
   DIONYSIOS_SERVICE: "{{ .Values.envVariables.dionysiosService }}"
   HERODOTOS_SERVICE: "{{ .Values.envVariables.herodotosService }}"
   SOKRATES_SERVICE: "{{ .Values.envVariables.sokratesService }}"
-  SOLON_SERVICE: "{{ .Values.envVariables.solonService }}"
   HOMEROS_SERVICE: "{{ .Values.envVariables.homerosService }}"
   ARISTARCHOS_SERVICE: "{{ .Values.envVariables.aristarchosService }}"

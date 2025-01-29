@@ -1,4 +1,6 @@
 {{- include "koinos.deploymentbase" .}}
+      annotations:
+        perikles/accesses: "alexandros;sokrates;dionysios;herodotos"
     spec:
       serviceAccountName: {{ .Values.commonConfig.metricsServiceAccount }}
       containers:

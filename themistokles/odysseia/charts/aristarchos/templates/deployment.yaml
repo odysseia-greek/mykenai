@@ -5,6 +5,8 @@
         odysseia-greek/access: {{ .Values.services.odysseiaapi.access }}
             {{- end }}
         perikles/accesses: solon
+        perikles/hostname: "aristarchos"
+        perikles/validity: "10"
     spec:
       initContainers:
 {{- include "koinos.initContainer" . | indent 8 }}

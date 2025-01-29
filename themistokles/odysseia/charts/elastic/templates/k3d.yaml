@@ -34,5 +34,4 @@ spec:
               cpu: {{ .Values.nodes.master.requests.cpu }}
             limits:
               memory: {{ .Values.nodes.master.limits.memory}}
-              cpu: {{ .Values.nodes.master.limits.cpu}}
 {{ end }}

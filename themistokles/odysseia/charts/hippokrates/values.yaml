@@ -24,3 +24,22 @@ services:
     tests:
         labels:
             domain: testing
+
+tlsConfig:
+    mounts:
+        - name: sokrates-certs
+          path: /app/config/sokrates
+          secretName: sokrates-tls-certs
+        - name: dionysios-certs
+          path: /app/config/dionysios
+          secretName: dionysios-tls-certs
+        - name: alexandros-certs
+          path: /app/config/alexandros
+          secretName: alexandros-tls-certs
+        - name: herodotos-certs
+          path: /app/config/herodotos
+          secretName: herodotos-tls-certs
+        - name: aristarchos-certs
+          path: /app/config/aristarchos
+          secretName: aristarchos-tls-certs
+    rootPath: /app/config

@@ -14,7 +14,7 @@ metadata:
     {{ $key }}: {{ $value | quote }}
     {{- end }}
 spec:
-  schedule: "0 * * * *"
+  schedule: "0 */2 * * *"
   jobTemplate:
     metadata:
       labels:
@@ -22,12 +22,18 @@ spec:
         release: {{ .Release.Name }}
         version: {{ .Values.images.job.tag  }}
       annotations:
-        perikles/accesses: "herodotos;dionysios"
+        odysseia-greek/role: "api"
+        odysseia-greek/access: "dictionary"
+        perikles/accesses: "solon"
     spec:
       backoffLimit: 2
       template:
         spec:
+          serviceAccountName: {{ .Values.serviceAccountName }}
+          initContainers:
+        {{- include "koinos.initContainer" . | indent 12 }}
           containers:
+        {{- include "koinos.ambassador" . | indent 12 }}
             - name: "{{ .Values.name }}"
             {{- if .Values.commonConfig.config.externalRepo | quote }}
               image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.job.repo }}:{{ .Values.images.job.tag }}
@@ -35,15 +41,39 @@ spec:
               image: {{ .Values.images.job.repo }}:{{ .Values.images.job.tag }}
             {{- end}}
               imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
+              command:
+                - sh
+                - -c
+                - /app/{{ .Values.name }}
+              env:
+                - name: POD_NAME
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.name
+                - name: NAMESPACE
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.namespace
+                - name: ELASTIC_ROLE
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.annotations['odysseia-greek/role']
+                - name: ELASTIC_ACCESS
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.annotations['odysseia-greek/access']
               envFrom:
                 - configMapRef:
                     name: {{ .Values.name }}
               volumeMounts:
-                {{- range .Values.tlsConfig.mounts }}
+                  {{- range .Values.tlsConfig.mounts }}
                 - name: {{ .name }}
                   mountPath: {{ .path }}
                   readOnly: true
-                {{- end }}
+                  {{- end }}
+                - name: {{ .Values.commonConfig.tlsConfig.vault.name }}
+                  mountPath: {{ .Values.commonConfig.tlsConfig.vault.path }}
+                  readOnly: true
               resources:
                 requests:
                   memory: {{ .Values.services.job.requests.memory }}
@@ -51,8 +81,15 @@ spec:
                 limits:
                   memory: {{.Values.services.job.limits.memory}}
                   cpu: {{.Values.services.job.limits.cpu}}
+          restartPolicy: OnFailure
           volumes:
-             {{- range .Values.tlsConfig.mounts }}
+            - name: {{ .Values.commonConfig.tlsConfig.vault.name }}
+              secret:
+                secretName: {{ .Values.commonConfig.tlsConfig.vault.secretName }}
+            - name: {{ .Values.commonConfig.tlsConfig.tracer.name }}
+              secret:
+                secretName: {{ .Values.commonConfig.tlsConfig.tracer.secretName }}
+               {{- range .Values.tlsConfig.mounts }}
             - name: {{ .name }}
               secret:
                 secretName: {{ .secretName }}
@@ -60,6 +97,5 @@ spec:
                 defaultMode: {{ .defaultMode }}
                     {{- end }}
               {{- end }}
-          restartPolicy: OnFailure
   successfulJobsHistoryLimit: 2
   failedJobsHistoryLimit: 3

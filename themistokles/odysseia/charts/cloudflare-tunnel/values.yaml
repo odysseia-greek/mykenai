@@ -9,7 +9,7 @@ cloudflare:
   # The ID of the above tunnel.
   tunnelId: "92f61497-11c5-4a81-8959-1d39e1ea1c0c"
   # The secret for the tunnel.
-  secret: ""
+  secret: "YT"
   # If defined, no secret is created for the credentials, and instead, the secret referenced is used
   secretName: null
   # If true, turn on WARP routing for TCP
