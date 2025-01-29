@@ -1,4 +1,9 @@
 {{- include "koinos.deploymentbase" .}}
+      annotations:
+        {{- if and .Values.services.aiskhylos.role .Values.services.aiskhylos.access }}
+        odysseia-greek/role: {{ .Values.services.aiskhylos.role }}
+        odysseia-greek/access: {{ .Values.services.aiskhylos.access }}
+        {{- end }}
     spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
       containers:

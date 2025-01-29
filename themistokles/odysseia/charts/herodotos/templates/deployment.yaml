@@ -1,1 +1,33 @@
-{{- include "koinos.deploymentmetrics" .}}
+{{- include "koinos.deploymentbase" .}}
+      annotations:
+        {{- if and .Values.services.odysseiaapi.role .Values.services.odysseiaapi.access }}
+        odysseia-greek/role: {{ .Values.services.odysseiaapi.role }}
+        odysseia-greek/access: {{ .Values.services.odysseiaapi.access }}
+        {{- end }}
+        perikles/accesses: "solon;aristarchos"
+        perikles/hostname: "herodotos"
+        perikles/validity: "10"
+    spec:
+      serviceAccountName: {{ .Values.commonConfig.metricsServiceAccount }}
+      initContainers:
+    {{- include "koinos.initContainer" . | indent 8 }}
+      containers:
+    {{- include "koinos.ambassador" . | indent 8 }}
+    {{- include "koinos.tracer" . | indent 8 }}
+    {{- include "koinos.api" . | indent 8 }}
+    {{- include "koinos.metrics" . | indent 8 }}
+      volumes:
+        - name: {{ .Values.commonConfig.tlsConfig.vault.name }}
+          secret:
+            secretName: {{ .Values.commonConfig.tlsConfig.vault.secretName }}
+        - name: {{ .Values.commonConfig.tlsConfig.tracer.name }}
+          secret:
+            secretName: {{ .Values.commonConfig.tlsConfig.tracer.secretName }}
+           {{- range .Values.tlsConfig.mounts }}
+        - name: {{ .name }}
+          secret:
+            secretName: {{ .secretName }}
+                 {{- if .defaultMode }}
+            defaultMode: {{ .defaultMode }}
+                {{- end }}
+          {{- end }}

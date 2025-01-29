@@ -32,6 +32,18 @@ tlsConfig:
         - name: solon-certs
           path: /app/config/solon
           secretName: solon-tls-certs
+        - name: sokrates-certs
+          path: /app/config/sokrates
+          secretName: sokrates-tls-certs
+        - name: dionysios-certs
+          path: /app/config/dionysios
+          secretName: dionysios-tls-certs
+        - name: alexandros-certs
+          path: /app/config/alexandros
+          secretName: alexandros-tls-certs
+        - name: aristarchos-certs
+          path: /app/config/aristarchos
+          secretName: aristarchos-tls-certs
     rootPath: /app/config
 
 

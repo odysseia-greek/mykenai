@@ -35,11 +35,10 @@ spec:
             - name: elasticsearch
               resources:
                 requests:
-                  memory: {{ .Values.nodes.memory.requests.high }}
+                  memory: {{ .Values.nodes.memory.requests.medium }}
                   cpu: {{ .Values.nodes.cpu.requests.medium }}
                 limits:
-                  memory: {{ .Values.nodes.memory.limits.high }}
-                  cpu: {{ .Values.nodes.cpu.limits.medium }}
+                  memory: {{ .Values.nodes.memory.limits.medium }}
       volumeClaimTemplates:
         - metadata:
             name: elasticsearch-data
@@ -50,7 +49,7 @@ spec:
               requests:
                 storage: {{ .Values.nodes.storage.low }}
     - name: hot
-      count: 2
+      count: 1
       config:
         node.roles: ["data_hot", "data_content", "ingest"]
         node.store.allow_mmap: false
@@ -73,7 +72,6 @@ spec:
                   cpu: {{ .Values.nodes.cpu.requests.high }}
                 limits:
                   memory: {{ .Values.nodes.memory.limits.high }}
-                  cpu: {{ .Values.nodes.cpu.limits.high }}
       volumeClaimTemplates:
         - metadata:
             name: elasticsearch-data
@@ -90,6 +88,15 @@ spec:
         node.store.allow_mmap: false
       podTemplate:
         spec:
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: esHotEligible
+                        operator: In
+                        values:
+                          - "true"
           containers:
             - name: elasticsearch
               resources:
@@ -97,8 +104,7 @@ spec:
                   memory: {{ .Values.nodes.memory.requests.medium }}
                   cpu: {{ .Values.nodes.cpu.requests.medium }}
                 limits:
-                  memory: {{ .Values.nodes.memory.limits.medium }}
-                  cpu: {{ .Values.nodes.cpu.limits.medium }}
+                  memory: {{ .Values.nodes.memory.limits.high }}
       volumeClaimTemplates:
         - metadata:
             name: elasticsearch-data

@@ -1,0 +1,35 @@
+name: ktesias
+testMode: true
+namespace: odysseia
+serviceAccountName: ktesiassa
+images:
+    job:
+        repo: ktesias
+        tag: v0.0.1
+services:
+    job:
+        limits:
+            cpu: 1000m
+            memory: 128Mi
+        name: ktesias
+        requests:
+            cpu: 500m
+            memory: 64Mi
+    tests:
+        labels:
+            domain: testing
+
+images:
+    imageRepo: ghcr.io/odysseia-greek/
+    odysseiaapi:
+        repo: ktesias
+        tag: v0.0.1
+
+tlsConfig:
+    mounts:
+        - name: solon-certs
+          path: /app/config/solon
+          secretName: solon-tls-certs
+    rootPath: /app/config
+    vault:
+        enabled: true

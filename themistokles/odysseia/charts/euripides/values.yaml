@@ -31,4 +31,3 @@ tlsConfig:
           path: /app/config/solon
           secretName: solon-tls-certs
     rootPath: /app/config
-

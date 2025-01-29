@@ -15,7 +15,7 @@ releases:
   - name: perikles
     namespace: odysseia
     chart: ./charts/perikles
-    version: 0.1.1
+    version: 0.1.2
     missingFileHandler: Error
     labels:
       tier: base
@@ -25,10 +25,10 @@ releases:
           imageRepo: ghcr.io/odysseia-greek/
           odysseiaapi:
             repo: perikles
-            tag: v0.1.0
+            tag: v0.1.2
           init:
             repo: kleisthenes
-            tag: v0.1.0
+            tag: v0.1.2
 
   - name: elastic
     namespace: odysseia
@@ -59,7 +59,7 @@ releases:
   - name: solon
     namespace: odysseia
     chart: ./charts/solon
-    version: 0.1.1
+    version: 0.1.2
     missingFileHandler: Error
     labels:
       tier: infra
@@ -72,13 +72,13 @@ releases:
           imageRepo: ghcr.io/odysseia-greek/
           init:
             repo: drakon
-            tag: v0.1.0
+            tag: v0.1.2
           odysseiaapi:
             repo: solon
-            tag: v0.1.0
+            tag: v0.1.3
           initSeeder:
             repo: peisistratos
-            tag: v0.1.0
+            tag: v0.1.3
       {{- if eq .Environment.Name "staging" }}
       - values/solon/gcp.yaml
       {{- end }}
@@ -234,10 +234,10 @@ releases:
       - images:
           odysseiaapi:
             repo: herodotos
-            tag: v0.1.0
+            tag: v0.1.1
           seeder:
             repo: herakleitos
-            tag: v0.1.0
+            tag: v0.1.1
     set:
       - name: replicas
         value: {{ .Values.herodotos.replicas }}
@@ -259,7 +259,7 @@ releases:
             tag: v0.1.1
           seeder:
             repo: parmenides
-            tag: v0.1.1
+            tag: v0.1.4
     set:
       - name: replicas
         value: {{ .Values.sokrates.replicas }}
@@ -299,7 +299,7 @@ releases:
   - name: aristarchos
     namespace: odysseia
     chart: ./charts/aristarchos
-    version: 0.1.1
+    version: 0.1.2
     missingFileHandler: Error
     labels:
       tier: backend
@@ -310,7 +310,7 @@ releases:
       - images:
           odysseiaapi:
             repo: aristarchos
-            tag: v0.1.1
+            tag: v0.1.2
 
   - name: protagoras
     namespace: odysseia
@@ -348,7 +348,7 @@ releases:
           imageRepo: ghcr.io/odysseia-greek/
           odysseiaapi:
             repo: pheidias
-            tag: v0.1.1
+            tag: v0.1.2
 
   - name: ploutarchos
     namespace: odysseia
@@ -399,3 +399,19 @@ releases:
           job:
             repo: hippokrates
             tag: v0.1.1
+
+  - name: ktesias
+    namespace: odysseia
+    chart: ./charts/ktesias
+    version: 0.0.1
+    missingFileHandler: Error
+    labels:
+      tier: tests
+    needs:
+      - odysseia/perikles
+    values:
+      - values/{{ .Environment.Name }}.yaml
+      - images:
+          job:
+            repo: ktesias
+            tag: v0.0.1

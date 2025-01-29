@@ -6,6 +6,10 @@
         odysseia-greek/access: {{ .Values.services.odysseiaapi.access }}
             {{- end }}
         perikles/accesses: solon
+            {{- if and .Values.services.odysseiaapi.role .Values.services.odysseiaapi.access }}
+        perikles/hostname: {{ .Values.services.odysseiaapi.hostname }}
+        perikles/validity: {{ .Values.services.odysseiaapi.validity }}
+            {{- end }}
     spec:
       serviceAccountName: {{ .Values.commonConfig.metricsServiceAccount }}
       initContainers:

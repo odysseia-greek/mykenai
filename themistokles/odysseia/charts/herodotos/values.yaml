@@ -14,6 +14,8 @@ images:
 services:
     odysseiaapi:
         access: text
+        validity: 1
+        hostname: herodotos
         limits:
             cpu: 400m
             memory: 128Mi
@@ -29,6 +31,12 @@ tlsConfig:
         - name: solon-certs
           path: /app/config/solon
           secretName: solon-tls-certs
+        - name: herodotos-certs
+          path: /app/config/herodotos
+          secretName: herodotos-tls-certs
+        - name: aristarchos-certs
+          path: /app/config/aristarchos
+          secretName: aristarchos-tls-certs
     rootPath: /app/config
 
 

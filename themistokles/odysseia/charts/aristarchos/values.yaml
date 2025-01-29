@@ -22,5 +22,8 @@ tlsConfig:
         - name: solon-certs
           path: /app/config/solon
           secretName: solon-tls-certs
+        - name: aristarchos-certs
+          path: /app/config/aristarchos
+          secretName: aristarchos-tls-certs
     rootPath: /app/config
 

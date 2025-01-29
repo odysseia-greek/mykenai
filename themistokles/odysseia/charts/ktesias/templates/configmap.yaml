@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.commonConfig.namespace }}
+data:
+  ELASTIC_SEARCH_SERVICE: "{{ .Values.commonConfig.envVariables.elasticService }}"
+  ENV: "{{ .Values.commonConfig.config.environment }}"
+  TLS_ENABLED: "{{ .Values.commonConfig.config.tls }}"
+  SOLON_SERVICE: "{{ .Values.commonConfig.envVariables.solonService }}"
+  VAULT_SERVICE: "{{ .Values.commonConfig.envVariables.vaultService }}"
+  VAULT_TLS: {{ .Values.tlsConfig.vault.enabled | quote }}
+  CERT_ROOT: "{{ .Values.commonConfig.tlsConfig.rootPath }}"

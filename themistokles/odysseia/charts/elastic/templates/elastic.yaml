@@ -1,4 +1,4 @@
-{{ if not (eq .Values.commonConfig.config.environment "production") }}
+{{ if and (not (eq .Values.commonConfig.config.environment "production")) (.Values.config.tls) }}
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:

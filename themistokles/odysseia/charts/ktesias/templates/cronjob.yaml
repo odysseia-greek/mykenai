@@ -1,0 +1,101 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.commonConfig.namespace }}
+  labels:
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: "{{ .Chart.Name }}"
+    env: {{ .Values.commonConfig.config.environment }}
+    variant: {{ .Values.commonConfig.config.kubeVariant }}
+    app: {{ .Values.name }}
+    {{- range $key, $value := .Values.commonConfig.services.backend.labels }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+  schedule: "0 */2 * * *"
+  jobTemplate:
+    metadata:
+      labels:
+        app: {{ .Values.name }}
+        release: {{ .Release.Name }}
+        version: {{ .Values.images.job.tag  }}
+      annotations:
+        odysseia-greek/role: "api"
+        odysseia-greek/access: "dictionary"
+        perikles/accesses: "solon"
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          serviceAccountName: {{ .Values.serviceAccountName }}
+          initContainers:
+        {{- include "koinos.initContainer" . | indent 12 }}
+          containers:
+        {{- include "koinos.ambassador" . | indent 12 }}
+            - name: "{{ .Values.name }}"
+            {{- if .Values.commonConfig.config.externalRepo | quote }}
+              image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.job.repo }}:{{ .Values.images.job.tag }}
+            {{ else }}
+              image: {{ .Values.images.job.repo }}:{{ .Values.images.job.tag }}
+            {{- end}}
+              imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
+              command:
+                - sh
+                - -c
+                - /app/{{ .Values.name }}
+              env:
+                - name: POD_NAME
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.name
+                - name: NAMESPACE
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.namespace
+                - name: ELASTIC_ROLE
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.annotations['odysseia-greek/role']
+                - name: ELASTIC_ACCESS
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.annotations['odysseia-greek/access']
+              envFrom:
+                - configMapRef:
+                    name: {{ .Values.name }}
+              volumeMounts:
+                  {{- range .Values.tlsConfig.mounts }}
+                - name: {{ .name }}
+                  mountPath: {{ .path }}
+                  readOnly: true
+                  {{- end }}
+                - name: {{ .Values.commonConfig.tlsConfig.vault.name }}
+                  mountPath: {{ .Values.commonConfig.tlsConfig.vault.path }}
+                  readOnly: true
+              resources:
+                requests:
+                  memory: {{ .Values.services.job.requests.memory }}
+                  cpu: {{ .Values.services.job.requests.cpu }}
+                limits:
+                  memory: {{.Values.services.job.limits.memory}}
+                  cpu: {{.Values.services.job.limits.cpu}}
+          restartPolicy: OnFailure
+          volumes:
+            - name: {{ .Values.commonConfig.tlsConfig.vault.name }}
+              secret:
+                secretName: {{ .Values.commonConfig.tlsConfig.vault.secretName }}
+            - name: {{ .Values.commonConfig.tlsConfig.tracer.name }}
+              secret:
+                secretName: {{ .Values.commonConfig.tlsConfig.tracer.secretName }}
+               {{- range .Values.tlsConfig.mounts }}
+            - name: {{ .name }}
+              secret:
+                secretName: {{ .secretName }}
+                     {{- if .defaultMode }}
+                defaultMode: {{ .defaultMode }}
+                    {{- end }}
+              {{- end }}
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3

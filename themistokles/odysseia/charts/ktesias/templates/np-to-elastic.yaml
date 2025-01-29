@@ -1,0 +1,17 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-all-elasticsearch-access-ktesias
+  namespace: {{ .Values.commonConfig.namespace }}
+spec:
+  endpointSelector:
+    matchLabels:
+      elasticsearch.k8s.elastic.co/cluster-name: aristoteles
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app: {{ .Values.name }}
+      toPorts:
+        - ports:
+            - port: "9200"
+              protocol: TCP

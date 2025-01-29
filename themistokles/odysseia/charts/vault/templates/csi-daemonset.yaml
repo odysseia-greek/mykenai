@@ -9,7 +9,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: {{ template "vault.fullname" . }}-csi-provider
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ include "vault.namespace" . }}
   labels:
     app.kubernetes.io/name: {{ include "vault.name" . }}-csi-provider
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -43,6 +43,7 @@ spec:
       {{- if .Values.csi.priorityClassName }}
       priorityClassName: {{ .Values.csi.priorityClassName }}
       {{- end }}
+      hostNetwork: {{ .Values.csi.hostNetwork }}
       serviceAccountName: {{ template "vault.fullname" . }}-csi-provider
       {{- template "csi.pod.tolerations" . }}
       {{- template "csi.pod.nodeselector" . }}
@@ -55,7 +56,11 @@ spec:
           imagePullPolicy: {{ .Values.csi.image.pullPolicy }}
           args:
             - --endpoint=/provider/vault.sock
-            - --debug={{ .Values.csi.debug }}
+            {{- if .Values.csi.debug }}
+            - --log-level=debug
+            {{- else }}
+            - --log-level={{ .Values.csi.logLevel }}
+            {{- end }}
             {{- if .Values.csi.hmacSecretName }}
             - --hmac-secret-name={{ .Values.csi.hmacSecretName }}
             {{- else }}
@@ -71,7 +76,7 @@ spec:
             {{- else if .Values.global.externalVaultAddr }}
               value: "{{ .Values.global.externalVaultAddr }}"
             {{- else }}
-              value: {{ include "vault.scheme" . }}://{{ template "vault.fullname" . }}.{{ .Release.Namespace }}.svc:{{ .Values.server.service.port }}
+              value: {{ include "vault.scheme" . }}://{{ template "vault.fullname" . }}.{{ include "vault.namespace" . }}.svc:{{ .Values.server.service.port }}
             {{- end }}
           volumeMounts:
             - name: providervol

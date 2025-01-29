@@ -16,7 +16,8 @@ commonConfig:
 
 config:
   kibana: true
-  elasticVersion: 8.11.0
+  tls: false
+  elasticVersion: 8.14.0
   replicas: 1
 
 name: aristoteles
@@ -44,7 +45,7 @@ nodes:
     limits:
       low: 1Gi
       medium: 2Gi
-      high: 3Gi
+      high: 4Gi
 
   cpu:
     requests:
