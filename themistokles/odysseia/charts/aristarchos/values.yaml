@@ -11,8 +11,7 @@ services:
     odysseiaapi:
         access: aggregator
         limits:
-            cpu: 500m
-            memory: 64Mi
+            memory: 128Mi
         requests:
             cpu: 200m
             memory: 32Mi

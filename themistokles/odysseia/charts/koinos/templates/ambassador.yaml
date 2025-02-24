@@ -35,7 +35,6 @@
   resources:
     requests:
       memory: {{ .Values.commonConfig.services.sidecar.requests.memory }}
-      cpu: {{ .Values.commonConfig.services.sidecar.requests.cpu }}
     limits:
       memory: {{.Values.commonConfig.services.sidecar.limits.memory}}
       cpu: {{.Values.commonConfig.services.sidecar.limits.cpu}}

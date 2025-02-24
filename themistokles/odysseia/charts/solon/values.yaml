@@ -13,9 +13,6 @@ envVariables:
 images:
     imageRepo: ghcr.io/odysseia-greek/
     pullSecret: harbor-images
-    init:
-        repo: drakon
-        tag: v0.0.11
     odysseiaapi:
         repo: solon
         tag: v0.0.11
@@ -26,12 +23,9 @@ services:
     backend:
         labels:
             domain: backend
-    drakon:
-        name: drakon
     solon:
         limits:
-            cpu: 500m
-            memory: 128Mi
+            memory: 256Mi
         name: solon
         requests:
             cpu: 200m

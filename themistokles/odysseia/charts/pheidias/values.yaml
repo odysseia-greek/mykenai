@@ -31,7 +31,6 @@ services:
             domain: frontend
     odysseiaapi:
         limits:
-            cpu: 100m
             memory: 32Mi
         name: pheidias
         requests:

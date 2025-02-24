@@ -17,7 +17,6 @@ services:
         access: metrics
         role: creator
         limits:
-            cpu: 500m
             memory: 128Mi
         name: aiskhylos
         requests:

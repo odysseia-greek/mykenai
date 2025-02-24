@@ -17,7 +17,6 @@ services:
         validity: 1
         hostname: herodotos
         limits:
-            cpu: 400m
             memory: 128Mi
         requests:
             cpu: 200m

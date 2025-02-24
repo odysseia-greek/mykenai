@@ -1,5 +1,6 @@
 name: perikles
 serviceAccountName: periklessa
+configMapName: elastic-roles-and-cnp
 initName: kleisthenes
 namespace: odysseia
 replicas: 1
@@ -19,64 +20,18 @@ commonConfig:
         elasticService: https://aristoteles-es-http:9200
         https:
             port: 5443
-        odysseiaapi:
-            port: 5000
-        sidecar:
-            port: 50051
-        solonService: https://solon:5443
-        tracer:
-            port: 50052
-        vaultService: https://vault:8200
     images:
         imageRepo: ghcr.io/odysseia-greek/
-        sidecar:
-            repo: ptolemaios
-            tag: v0.5.0
-        init:
-            repo: periandros
-            tag: v0.4.0
-        tracer:
-            repo: aristophanes
-            tag: v0.2.1
     services:
         backend:
             labels:
                 domain: backend
-        sidecar:
-            limits:
-                cpu: 100m
-                memory: 64Mi
-            name: ptolemaios
-            requests:
-                cpu: 50m
-                memory: 32Mi
-        tracer:
-            limits:
-                cpu: 200m
-                memory: 64Mi
-            name: aristophanes
-            requests:
-                cpu: 50m
-                memory: 32Mi
-    tlsConfig:
-        elastic:
-            name: elastic-certificate-pem
-            path: /app/config/certs
-            secretName: elastic-certificate-pem
-        mounts:
-            - name: solon-certs
-              path: /app/config/solon
-              secretName: solon-tls-certs
-        rootPath: /app/config
-        tracer:
-            name: elastic-internal-tls
-            path: /app/config/elastic
-            secretName: aristoteles-es-http-certs-public
-        vault:
-            enabled: true
-            name: vault-server-tls
-            path: /app/config/vault
-            secretName: vault-server-tls
+tlsConfig:
+    elastic:
+        name: elastic-internal-tls
+        path: /app/config/elastic
+        secretName: aristoteles-es-http-certs-public
+    rootPath: /app/config
 
 config:
     caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUZUekNDQXplZ0F3SUJBZ0lDQitNd0RRWUpLb1pJaHZjTkFRRUxCUUF3RHpFTk1Bc0dBMVVFQ2hNRWRHVnoKZERBZUZ3MHlNakEyTWpFeE16UTNNRFJhRncwek1qQTJNVGd4TXpRM01EUmFNQTh4RFRBTEJnTlZCQW9UQkhSbApjM1F3Z2dJaU1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQ0R3QXdnZ0lLQW9JQ0FRRGUydTlVZ25jQnlVWksrdTRrCkZnSlRGSSs2Z2JYNjB6ZVA2UVhobTkzRDJQdmlaMklLRUlUS1BPRitJNnkzek4vWXU4enhTWHNDYjhhZXlKbVcKUFdITUt3QjBIQTdVRHh4OEF6V1hEOUt1dzhXVFZXK3hNeHF3M3JaWGtsWmh6QkFqNDJpaWlmZnZrbi96SzY4VgpvcjB0b1pqcFdLdmtRRVdRSEVwdzFZOXFuQXNwdHVQS012NHpPL0U4NkdLL3k4M0RJYWNTOHRjR3ZGbGZpc1RRCmZzTjhGYkVjRWRZS2ZJK2lkYVNzMHVFMjZ5ZUQ5YkVReTRFbWxRNlVLeVo3WDZ4S2UwSDYzY20xNVRhNVkybXcKdXM1VExnK3lneDNkZ1NsTS9xVUdkbFBKRWpMNS8wL2JwNHJ0bkV2UUUxdU9sVkJ5SmtZMEltTktXYnphaGYvawp5TnZSRzg0dUpFN1UraWMyaWpLVDNlSzlKY1hLZGo0ajRvWFFSWFRuQlk1UzZmMGNqbzJ4VnNLdDA1Wi9zd2hrCk11VmZoaG5KQUJFTlc0Q3BGZXBCeGVXQzlOZFJWUzN2VTZXU1FSRGk5SXNtcFdMQ0c4ZE1sTmVGekZ0c2lmVTYKQUVTWXBqdFNkZnNRSkdXbWR5QjdKWk50WUkzcHhpM1dmaytTU0lETmRkOEhOclZPUWNZOEJQMGhmQ0lWa3YwMAptUlZteXFyWTBIRFA3WnFISTNxVk9uZGIzK2l2R2tMMjViODV2NXNWQWcvMFh3WE4xcVFYejFSVHBVSTllTWxVCkRnMFNVYnFzaUZGZElaNmw5d3A5QlFZZmYyYWNhMW5DaTFiTUdFTFdCc0pXU0NUNk9WaXk1Uklxb3NRbkxJODQKU2h3NzNvbTVTUHM1WE9TNm5tMFNSY1ZYUlFJREFRQUJvNEcwTUlHeE1BNEdBMVVkRHdFQi93UUVBd0lIZ0RBZApCZ05WSFNVRUZqQVVCZ2dyQmdFRkJRY0RBZ1lJS3dZQkJRVUhBd0V3REFZRFZSMFRBUUgvQkFJd0FEQU9CZ05WCkhRNEVCd1FGQVFJREJBWXdZZ1lEVlIwUkJGc3dXWUlJY0dWeWFXdHNaWE9DRVhCbGNtbHJiR1Z6TG05a2VYTnoKWldsaGdoVndaWEpwYTJ4bGN5NXZaSGx6YzJWcFlTNXpkbU9DSTNCbGNtbHJiR1Z6TG05a2VYTnpaV2xoTG5OMgpZeTVqYkhWemRHVnlMbXh2WTJGc01BMEdDU3FHU0liM0RRRUJDd1VBQTRJQ0FRQmtpVzdCSmdsRGg5YnNpZUVSCnpYS0lzQnlMa2JIeGt2cDVNakdSR3ArMnNuWThKL0dOYmdBdEk2a3dxMkQ1RmYrelU2YnB3YStibk8wYU9xRE8KN2JjSFhxWW9rOElmWGE0VHJGSnArRGxKYU83SXczMGgwTndzK0xodko4bUszS1YrQThLYW5DMXZLanhpY1FRQwp1VUE3TytzMm9nQVBFSHUvZzU1M3N3SkRnK3E1cG0wMkVIRXNOR1Q4eDBBajMvdXNLc3U3UUFWc1ZrOU1UcHFOClptOE5jNTZCRkd3MkFDb2lYODFDY0NJL0t3SVdCTCtmTTJHeWg0UXd2azdnbmdEMHdRL2h6bHAyMlZFTGVDODUKTVVmWlZ4K1ZadGcvaVE3NlNZOFZHQUQ0bTA5eUtJVGxyUS9EaVk4RFF0V0lDRWZMdnZlQ0R4VW5LdndJcUgxRApIbXN2OWZ4cCtVSHpMWGNIYjd5dURabFpFOWZ1OWxQUXhsSHZuNHFqZWE5aEI3clNPanc3alczVnMvTkdEaW41Cjh5Wk1oK1VOOHhiYnlqYndwNjJUd0ZJRGpDNkpadzU4NjRucEdLNU95ZWdQaGNsVXZVU0xZZ1BITjkySzVDb20KOXVuaSt6SXNhdzMwcjZZN1VKSjhNcUo5UGd3WGRmTkFBSlp6L1Nza2JxWWszV0lxaGFQRlEyaWpFdExVUVhCRgpsdlJrajRKQ0V5RE5BUnZ3VVFWbThPQ2l5bXQyL3dXa1FTbyt3THBxK1phcmFqcWc0Zmd2ZGpWMTE2eCtkZGYzCkh2eFpmdTJBQlNKNWV5TG1kMUR0QUZtUU00RWZITE5FazVPaHNVZTdhTGlGckdaOHppM0dXQ3ZqZVJld2RjWHUKRGRwOUtkK1h1YVFxbzRydGRmSXVFTDAvVkE9PQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0t
@@ -103,9 +58,8 @@ services:
             domain: backend
     perikles:
         limits:
-            cpu: 1000m
             memory: 128Mi
         name: perikles
         requests:
-            cpu: 100m
+            cpu: 250m
             memory: 64Mi

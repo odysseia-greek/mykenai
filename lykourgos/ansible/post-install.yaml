@@ -1,0 +1,59 @@
+- name: Configure Cluster After K3s Installation
+  hosts: servers-prd:servers-acc
+  become: yes  # Required for copying kubeconfig from the remote machine
+
+  tasks:
+    - name: Copy kubeconfig to a temporary location with correct permissions
+      shell: |
+        sudo cp /etc/rancher/k3s/k3s.yaml /tmp/k3s.yaml
+        sudo chmod 644 /tmp/k3s.yaml
+        sudo chown {{ ansible_user }}:{{ ansible_user }} /tmp/k3s.yaml
+      become: yes
+
+    - name: Fetch kubeconfig to local machine
+      fetch:
+        src: /tmp/k3s.yaml
+        dest: "/tmp/k3s_{{ inventory_hostname }}.yaml"
+        flat: yes
+      become: no
+      run_once: true
+
+    - name: Replace server address in kubeconfig
+      replace:
+        path: "/tmp/k3s_{{ inventory_hostname }}.yaml"
+        regexp: "https://127.0.0.1:6443"
+        replace: "https://{{ inventory_hostname }}:6443"
+      delegate_to: localhost
+      become: no
+      run_once: true
+
+    - name: Replace all instances of 'default' with correct context
+      replace:
+        path: "/tmp/k3s_{{ inventory_hostname }}.yaml"
+        regexp: "\\bdefault\\b"
+        replace: "{{ 'k3s-odysseia-prod' if inventory_hostname in groups['servers-prd'] else 'k3s-odysseia-acc' }}"
+      delegate_to: localhost
+      become: no
+      run_once: true
+
+    - name: Merge kubeconfig into main config
+      shell: |
+        KUBECONFIG=/tmp/k3s_{{ inventory_hostname }}.yaml:~/.kube/config kubectl config view --flatten > ~/.kube/config_tmp
+        mv ~/.kube/config_tmp ~/.kube/config
+      delegate_to: localhost
+      become: no
+      run_once: true
+
+    - name: Remove temporary kubeconfig file on remote machine
+      file:
+        path: "/tmp/k3s.yaml"
+        state: absent
+      become: yes
+
+    - name: Remove temporary kubeconfig file on local machine
+      file:
+        path: "/tmp/k3s_{{ inventory_hostname }}.yaml"
+        state: absent
+      delegate_to: localhost
+      become: no
+      run_once: true

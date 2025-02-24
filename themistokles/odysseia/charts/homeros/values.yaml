@@ -20,7 +20,6 @@ services:
             domain: gateway
     odysseiaapi:
         limits:
-            cpu: 1000m
             memory: 256Mi
         requests:
             cpu: 500m
