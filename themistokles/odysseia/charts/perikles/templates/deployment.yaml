@@ -35,8 +35,19 @@
             value: {{ .Values.envVariables.odysseiaapi.TLSFiles }}
           - name: CRD_NAME
             value: {{ .Values.envVariables.odysseiaapi.crdName }}
+          - name: CONFIGMAP_NAME
+            value: {{ .Values.configMapName }}
           - name: L7_MODE
             value: {{ .Values.config.l7Mode | quote }}
+          - name: ELASTIC_SEARCH_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: aristoteles-es-elastic-user
+                key: elastic
+          - name:  ELASTIC_USER
+            value: elastic
+          - name:  ELASTIC_SEARCH_SERVICE
+            value: "{{ .Values.commonConfig.envVariables.elasticService }}"
           - name: NAMESPACE
             valueFrom:
               fieldRef:
@@ -47,6 +58,10 @@
           volumeMounts:
             - name: webhook-certs
               mountPath: {{ .Values.envVariables.odysseiaapi.TLSFiles }}
+              readOnly: true
+
+            - name: {{ .Values.tlsConfig.elastic.name }}
+              mountPath: {{ .Values.tlsConfig.elastic.path }}
               readOnly: true
           livenessProbe:
             httpGet:
@@ -68,8 +83,10 @@
               cpu: {{ .Values.services.perikles.requests.cpu }}
             limits:
               memory: {{.Values.services.perikles.limits.memory}}
-              cpu: {{.Values.services.perikles.limits.cpu}}
       volumes:
         - name: webhook-certs
           secret:
             secretName: perikles-certs
+        - name: {{ .Values.tlsConfig.elastic.name }}
+          secret:
+            secretName: {{ .Values.tlsConfig.elastic.secretName }}

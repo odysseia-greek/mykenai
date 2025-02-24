@@ -18,10 +18,10 @@ rules:
     resources: ["secrets"]
     verbs: ["get", "list", "update", "create", "delete"]
   - apiGroups: [""]
-    resources: [ "services" ]
+    resources: [ "services", "configmaps" ]
     verbs: [ "get", "list", "watch" ]
   - apiGroups: ["apps"] # "" indicates the core API group
-    resources: ["deployments", "statefulsets"]
+    resources: ["deployments", "statefulsets", "replicasets"]
     verbs: ["update", "get", "list"]
   - apiGroups: ["cilium.io"]
     resources: ["ciliumnetworkpolicies"]

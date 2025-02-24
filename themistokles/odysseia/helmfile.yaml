@@ -12,24 +12,6 @@ environments:
 ---
 releases:
   ## Prerequisite ##
-  - name: perikles
-    namespace: odysseia
-    chart: ./charts/perikles
-    version: 0.1.2
-    missingFileHandler: Error
-    labels:
-      tier: base
-    values:
-      - values/{{ .Environment.Name }}.yaml
-      - images:
-          imageRepo: ghcr.io/odysseia-greek/
-          odysseiaapi:
-            repo: perikles
-            tag: v0.1.2
-          init:
-            repo: kleisthenes
-            tag: v0.1.2
-
   - name: elastic
     namespace: odysseia
     chart: ./charts/elastic
@@ -39,6 +21,25 @@ releases:
       tier: base
     values:
       - values/{{ .Environment.Name }}.yaml
+
+  ## webhook ##
+  - name: perikles
+    namespace: odysseia
+    chart: ./charts/perikles
+    version: 0.1.1
+    missingFileHandler: Error
+    labels:
+      tier: webhook
+    values:
+      - values/{{ .Environment.Name }}.yaml
+      - images:
+          imageRepo: ghcr.io/odysseia-greek/
+          odysseiaapi:
+            repo: perikles
+            tag: v0.1.4
+          init:
+            repo: kleisthenes
+            tag: v0.1.2
 
   ## Infrastructure ##
   - name: vault
@@ -70,12 +71,9 @@ releases:
       - values/{{ .Environment.Name }}.yaml
       - images:
           imageRepo: ghcr.io/odysseia-greek/
-          init:
-            repo: drakon
-            tag: v0.1.2
           odysseiaapi:
             repo: solon
-            tag: v0.1.3
+            tag: v0.1.4
           initSeeder:
             repo: peisistratos
             tag: v0.1.3
@@ -193,7 +191,7 @@ releases:
             tag: v0.1.0
           seeder:
             repo: demokritos
-            tag: v0.1.0
+            tag: v0.1.2
     set:
       - name: replicas
         value: {{ .Values.alexandros.replicas }}
@@ -237,7 +235,7 @@ releases:
             tag: v0.1.1
           seeder:
             repo: herakleitos
-            tag: v0.1.1
+            tag: v0.1.2
     set:
       - name: replicas
         value: {{ .Values.herodotos.replicas }}
@@ -259,7 +257,7 @@ releases:
             tag: v0.1.1
           seeder:
             repo: parmenides
-            tag: v0.1.4
+            tag: v0.1.6
     set:
       - name: replicas
         value: {{ .Values.sokrates.replicas }}
@@ -348,7 +346,7 @@ releases:
           imageRepo: ghcr.io/odysseia-greek/
           odysseiaapi:
             repo: pheidias
-            tag: v0.1.2
+            tag: v0.1.3
 
   - name: ploutarchos
     namespace: odysseia
@@ -393,6 +391,7 @@ releases:
       - odysseia/dionysios
       - odysseia/herodotos
       - odysseia/sokrates
+      - odysseia/homeros
     values:
       - values/{{ .Environment.Name }}.yaml
       - images:

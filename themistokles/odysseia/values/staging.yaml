@@ -8,16 +8,19 @@ herodotos:
   replicas: 1
 
 sokrates:
-  replicas: 2
+  replicas: 1
 
 euripides:
   replicas: 1
   envVariables:
     maxAge: 14
 
+aiskhylos:
+  interval: 300
+
 thermopulai:
-  host: k3d-odysseia.greek
-  apiHost: k3d-odysseia.api.greek
+  host: k3s-odysseia-acc.greek
+  apiHost: k3s-odysseia-acc.api.greek
 
 # Default values for Odysseia.
 # This is a YAML-formatted file.
@@ -35,7 +38,7 @@ commonConfig:
     pullPolicy: Always
     tls: true
   envVariables:
-    elasticService: https://aristoteles-es-http:9200
+    elasticService: http://aristoteles-es-http:9200
     gateway:
       port: 8080
     https:
@@ -56,13 +59,13 @@ commonConfig:
     imageRepo: ghcr.io/odysseia-greek/
     sidecar:
       repo: ptolemaios
-      tag: v0.1.0
+      tag: v0.1.2
     init:
       repo: periandros
-      tag: v0.1.0
+      tag: v0.1.3
     tracer:
       repo: aristophanes
-      tag: v0.1.0
+      tag: v0.1.2
     metrics:
       repo: sophokles
       tag: v0.1.0
@@ -72,24 +75,21 @@ commonConfig:
         domain: backend
     sidecar:
       limits:
-        cpu: 100m
-        memory: 64Mi
+        memory: 128Mi
       name: ptolemaios
       requests:
         cpu: 50m
         memory: 32Mi
     tracer:
       limits:
-        cpu: 500m
-        memory: 64Mi
+        memory: 128Mi
       name: aristophanes
       requests:
         cpu: 50m
         memory: 32Mi
     metrics:
       limits:
-        cpu: 200m
-        memory: 64Mi
+        memory: 128Mi
       name: sophokles
       requests:
         cpu: 50m

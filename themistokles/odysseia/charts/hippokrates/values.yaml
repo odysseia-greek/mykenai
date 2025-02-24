@@ -15,7 +15,6 @@ envVariables:
 services:
     job:
         limits:
-            cpu: 1000m
             memory: 128Mi
         name: hippokrates
         requests:

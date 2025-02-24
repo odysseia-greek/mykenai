@@ -9,7 +9,6 @@ images:
 services:
     job:
         limits:
-            cpu: 1000m
             memory: 128Mi
         name: ktesias
         requests:

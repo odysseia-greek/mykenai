@@ -37,7 +37,6 @@
       cpu: {{ .Values.commonConfig.services.tracer.requests.cpu }}
     limits:
       memory: {{.Values.commonConfig.services.tracer.limits.memory}}
-      cpu: {{.Values.commonConfig.services.tracer.limits.cpu}}
   volumeMounts:
     - name: {{ .Values.commonConfig.tlsConfig.tracer.name }}
       mountPath: {{ .Values.commonConfig.tlsConfig.tracer.path }}

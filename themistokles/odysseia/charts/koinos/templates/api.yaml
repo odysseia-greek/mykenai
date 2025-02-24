@@ -47,7 +47,6 @@
   {{- if ne .Values.commonConfig.config.environment "k3d-skaffold" }}
   resources:
     limits:
-      cpu: {{ .Values.services.odysseiaapi.limits.cpu | default "" }}
       memory: {{ .Values.services.odysseiaapi.limits.memory | default "" }}
     requests:
       cpu: {{ .Values.services.odysseiaapi.requests.cpu | default "" }}

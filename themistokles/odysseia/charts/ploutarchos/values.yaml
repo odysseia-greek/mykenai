@@ -14,7 +14,6 @@ services:
             domain: docs
     odysseiaapi:
         limits:
-            cpu: 100m
             memory: 32Mi
         requests:
             cpu: 50m

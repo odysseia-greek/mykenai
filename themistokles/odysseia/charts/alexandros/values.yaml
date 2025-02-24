@@ -17,7 +17,6 @@ services:
     odysseiaapi:
         access: dictionary
         limits:
-            cpu: 1000m
             memory: 128Mi
         requests:
             cpu: 300m

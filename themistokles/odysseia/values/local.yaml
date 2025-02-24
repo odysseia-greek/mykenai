@@ -75,7 +75,6 @@ commonConfig:
         domain: backend
     sidecar:
       limits:
-        cpu: 100m
         memory: 64Mi
       name: ptolemaios
       requests:
@@ -83,7 +82,6 @@ commonConfig:
         memory: 32Mi
     tracer:
       limits:
-        cpu: 500m
         memory: 64Mi
       name: aristophanes
       requests:
@@ -91,7 +89,6 @@ commonConfig:
         memory: 32Mi
     metrics:
       limits:
-        cpu: 200m
         memory: 64Mi
       name: sophokles
       requests:

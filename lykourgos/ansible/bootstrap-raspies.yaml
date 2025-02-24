@@ -1,44 +1,50 @@
 ---
-- name: Modify /boot/cmdline.txt for k3s
-  hosts: poleis
+- name: Bootstrap Raspberry Pis for K3s
+  hosts: poleis-prd:poleis-acc
   become: yes
   serial: 1
 
-  vars:
-    ansible_ssh_private_key_file: ~/.ssh/id_raspie
   tasks:
-    - name: Modify /boot/cmdline.txt
-      replace:
-        path: /boot/cmdline.txt
+    - name: Ensure cgroup parameters exist in the correct cmdline.txt file
+      lineinfile:
+        path: "{{ '/boot/firmware/cmdline.txt' if ansible_facts['distribution'] == 'Debian' else '/boot/cmdline.txt' }}"
+        backrefs: yes
         regexp: '^(.*)$'
-        replace: '\1 cgroup_memory=1 cgroup_enable=memory'
+        line: '\1 cgroup_memory=1 cgroup_enable=memory'
+      register: cmdline_updated
 
-    - name: Update /etc/hosts with cluster nodes
+    - name: Ensure /etc/hosts contains all cluster nodes
       lineinfile:
         path: /etc/hosts
         line: "{{ hostvars[item].ip }} {{ item }}"
         state: present
-      loop: "{{ groups['poleis'] }}"
+      loop: "{{ groups['poleis-prd'] | default([]) + groups['poleis-acc'] | default([]) }}"
 
-    - name: Ensure nfs-common is installed
+    - name: Install required packages for Longhorn
       apt:
-        name: nfs-common
+        name:
+          - nfs-common
+          - open-iscsi
+          - util-linux
         state: present
-      become: true
 
-    - name: Ensure open-iscsi is installed
-      apt:
-        name: open-iscsi
-        state: present
-      become: true
+    - name: Ensure BPF filesystem is mounted
+      mount:
+        path: /sys/fs/bpf
+        src: bpffs
+        fstype: bpf
+        state: mounted
 
-    - name: Ensure util-linux is installed
-      apt:
-        name: util-linux
-        state: present
-      become: true
+    - name: Ensure cgroups v2 is mounted for Cilium
+      mount:
+        path: /run/cilium/cgroupv2
+        src: none
+        fstype: cgroup2
+        opts: "defaults"
+        state: mounted
 
     - name: Reboot nodes
       reboot:
         reboot_timeout: 300
-        pre_reboot_delay: 10
+        post_reboot_delay: 10
+        msg: "Rebooting to apply cgroup settings"

@@ -24,7 +24,7 @@ const (
 	LONGHORNVERSION = "v1.6.0"
 )
 
-var corePodsNames = [...]string{"aristoteles", "perikles", "vault", "solon", "eupalinos"}
+var corePodsNames = [...]string{"aristoteles", "perikles", "solon"}
 
 func Install() *cobra.Command {
 	var (
@@ -165,6 +165,7 @@ func install(client *thales.KubeClient, autoUnsealPath, ns string) error {
 func createApps(helmfilePath, target, ns string, client *thales.KubeClient, tests bool) error {
 	tiers := []string{
 		"base",
+		"webhook",
 		"infra",
 		"backend",
 		"frontend",
@@ -186,7 +187,8 @@ func createApps(helmfilePath, target, ns string, client *thales.KubeClient, test
 		if err != nil {
 			return err
 		}
-		if tier == "base" || tier == "infra" {
+
+		if tier != "frontend" {
 			err = waitForCorePodsToBeRunning(client, ns)
 			if err != nil {
 				return err

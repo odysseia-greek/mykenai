@@ -7,42 +7,6 @@
     spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
       initContainers:
-        - name: drakon
-          {{- if .Values.commonConfig.config.externalRepo | quote }}
-          image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.init.repo }}:{{ .Values.images.init.tag }}
-          {{ else }}
-          image: {{ .Values.images.init.repo }}:{{ .Values.images.init.tag }}
-          {{- end}}
-          imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
-          env:
-          - name: POD_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-          - name: NAMESPACE
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.namespace
-          - name: ELASTIC_INDEXES
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.annotations['elastic/indices']
-          - name: ELASTIC_ROLES
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.annotations['elastic/roles']
-          - name: ELASTIC_SEARCH_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: aristoteles-es-elastic-user
-                key: elastic
-          envFrom:
-            - configMapRef:
-                name: {{ .Values.name }}
-          volumeMounts:
-            - name: {{ .Values.tlsConfig.elastic.name }}
-              mountPath: {{ .Values.tlsConfig.elastic.path }}
-              readOnly: true
         - name: peisistratos
           {{- if .Values.commonConfig.config.externalRepo | quote }}
           image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.initSeeder.repo }}:{{ .Values.images.initSeeder.tag }}
@@ -135,7 +99,6 @@
               cpu: {{ .Values.services.solon.requests.cpu }}
             limits:
               memory: {{.Values.services.solon.limits.memory}}
-              cpu: {{.Values.services.solon.limits.memory}}
       volumes:
         - name: {{ .Values.tlsConfig.vault.name }}
           secret:

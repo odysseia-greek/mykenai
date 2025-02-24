@@ -77,7 +77,6 @@ spec:
               cpu: {{ .Values.services.job.requests.cpu }}
             limits:
               memory: {{.Values.services.job.limits.memory}}
-              cpu: {{.Values.services.job.limits.cpu}}
       volumes:
         - name: {{ .Values.commonConfig.tlsConfig.vault.name }}
           secret:

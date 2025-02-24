@@ -1,0 +1,47 @@
+---
+- name: Install and configure Tailscale on the Tailscale node
+  hosts: tailscale_node
+  become: yes
+  tasks:
+
+    - name: Install curl and other dependencies
+      apt:
+        name:
+          - curl
+          - apt-transport-https
+        state: present
+        update_cache: yes
+
+    - name: Add Tailscale GPG key
+      apt_key:
+        url: https://pkgs.tailscale.com/stable/raspbian/bullseye.noarmor.gpg
+        state: present
+        keyring: /usr/share/keyrings/tailscale-archive-keyring.gpg
+
+    - name: Add Tailscale repository
+      apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/tailscale-archive-keyring.gpg] https://pkgs.tailscale.com/stable/raspbian/bullseye tailscale main"
+        state: present
+
+    - name: Install Tailscale
+      apt:
+        name: tailscale
+        state: present
+
+    - name: Enable IP forwarding for IPv4 and IPv6
+      sysctl:
+        name: "{{ item.name }}"
+        value: "{{ item.value }}"
+        state: present
+        reload: yes
+      loop:
+        - { name: "net.ipv4.ip_forward", value: "1" }
+        - { name: "net.ipv6.conf.all.forwarding", value: "1" }
+
+    - name: Set up Tailscale exit node and advertise routes
+      command: sudo tailscale up --advertise-routes=192.168.1.0/24 --advertise-exit-node
+      when: inventory_hostname == "k3s-w-antioch"
+
+    - name: Print Tailscale setup message
+      debug:
+        msg: "Tailscale has been successfully installed and configured as exit node on {{ inventory_hostname }}"

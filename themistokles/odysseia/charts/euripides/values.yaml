@@ -15,7 +15,6 @@ services:
     odysseiaapi:
         access: tracing;metrics
         limits:
-            cpu: 500m
             memory: 128Mi
         name:
         requests:

@@ -39,7 +39,6 @@ services:
         labels:
             domain: queue
         limits:
-            cpu: 500m
             memory: 64Mi
         requests:
             cpu: 250m

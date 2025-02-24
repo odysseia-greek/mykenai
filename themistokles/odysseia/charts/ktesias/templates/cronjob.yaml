@@ -80,7 +80,6 @@ spec:
                   cpu: {{ .Values.services.job.requests.cpu }}
                 limits:
                   memory: {{.Values.services.job.limits.memory}}
-                  cpu: {{.Values.services.job.limits.cpu}}
           restartPolicy: OnFailure
           volumes:
             - name: {{ .Values.commonConfig.tlsConfig.vault.name }}
@@ -97,5 +96,5 @@ spec:
                 defaultMode: {{ .defaultMode }}
                     {{- end }}
               {{- end }}
-  successfulJobsHistoryLimit: 2
-  failedJobsHistoryLimit: 3
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1

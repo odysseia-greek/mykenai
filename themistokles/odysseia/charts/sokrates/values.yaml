@@ -18,7 +18,6 @@ services:
     odysseiaapi:
         access: quiz
         limits:
-            cpu: 400m
             memory: 128Mi
         requests:
             cpu: 200m
