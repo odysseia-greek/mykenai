@@ -1,5 +1,5 @@
 {{- include "koinos.configmap" . -}}
-{{ println}}
-  ALEXANDROS_SERVICE: "{{ .Values.envVariables.alexandrosService }}"
-  HERODOTOS_SERVICE: "{{ .Values.envVariables.herodotosService }}"
-  GATHER_METRICS: "true"
+{{- range $key, $value := .Values.envVariables }}
+  {{ $key }}: {{ $value | quote }}
+{{- end }}
+  VERSION: {{ .Values.images.odysseiaapi.tag }}

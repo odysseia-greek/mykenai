@@ -1,0 +1,82 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.jobName }}
+  namespace: {{ .Values.commonConfig.namespace }}
+  labels:
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: "{{ .Chart.Name }}"
+    env: {{ .Values.commonConfig.config.environment }}
+    variant: {{ .Values.commonConfig.config.kubeVariant }}
+    app: {{ .Values.jobName }}
+spec:
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.jobName }}
+        release: {{ .Release.Name }}
+        version: {{ .Values.images.seeder.tag }}
+      annotations:
+      {{- if and .Values.services.seeder.role .Values.services.seeder.access }}
+        odysseia-greek/role: {{ .Values.services.seeder.role }}
+        odysseia-greek/access: {{ .Values.services.seeder.access }}
+      {{- end }}
+        perikles/accesses: "solon"
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+                matchExpressions:
+                  - key: preferredForJobs
+                    operator: In
+                    values:
+                      - "true"
+    {{- if .Values.serviceAccountName }}
+      serviceAccountName: {{ .Values.serviceAccountName }}
+    {{- end }}
+      initContainers:
+{{- include "koinos.initContainer" . | indent 8 }}
+      containers:
+{{- include "koinos.ambassador" . | indent 8 }}
+        - name: "{{ .Values.jobName }}"
+          {{- if .Values.commonConfig.config.externalRepo | quote }}
+          image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.seeder.repo }}:{{ .Values.images.seeder.tag }}
+          imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
+          {{ else }}
+          image: {{ .Values.images.seeder.repo }}:{{ .Values.images.seeder.tag }}
+          imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
+          {{- end}}
+          {{- if .Values.commonConfig.envVariables.odysseiaapi.delvePort }}
+          ports:
+            - containerPort: {{ .Values.commonConfig.envVariables.odysseiaapi.delvePort }}
+              name: delve
+          {{- end }}
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.name }}
+      restartPolicy: Never
+      volumes:
+        - name: {{ .Values.commonConfig.tlsConfig.vault.name }}
+          secret:
+            secretName: {{ .Values.commonConfig.tlsConfig.vault.secretName }}
+        {{- range .Values.tlsConfig.mounts }}
+        - name: {{ .name }}
+          secret:
+            secretName: {{ .secretName }}
+            {{- if .defaultMode }}
+            defaultMode: {{ .defaultMode }}
+        {{- end }}
+  {{- end }}
+  backoffLimit: 3

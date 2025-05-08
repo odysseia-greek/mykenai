@@ -5,6 +5,5 @@ commonConfig:
   envVariables:
     odysseiaapi:
       port: 5000
-      delvePort: 2345
 
 replicas: 1

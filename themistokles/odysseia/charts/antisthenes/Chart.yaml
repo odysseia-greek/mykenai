@@ -1,0 +1,13 @@
+apiVersion: v2
+appVersion: 0.0.1
+description: The grammar component for sokrates
+name: antisthenes
+version: 0.1.1
+home: https://www.odysseia-greek.com
+sources:
+  - https://github.com/odysseia-greek/apologia
+  - https://github.com/odysseia-greek/apologia/tree/main/antisthenes
+dependencies:
+  - name: koinos
+    version: ">= 0.1.0"
+    repository: "file://../koinos"

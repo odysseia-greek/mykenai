@@ -5,7 +5,7 @@ metadata:
   namespace: {{ .Values.commonConfig.namespace }}
 data:
   api: |
-    indices: ["quiz", "dictionary", "grammar", "text", "tracing", "metrics"]
+    indices: ["media-quiz", "multiple-choice-quiz", "author-based-quiz", "dialogue-quiz", "journey-quiz", "grammar-quiz", "dictionary", "grammar", "text", "tracing", "metrics"]
     role:
       privileges:
         - "read"
@@ -16,7 +16,7 @@ data:
         path: "^/_search/scroll(\\?.*)?$"
 
   seeder: |
-    indices: ["quiz", "dictionary", "grammar", "text"]
+    indices: ["media-quiz", "multiple-choice-quiz", "author-based-quiz", "dialogue-quiz", "journey-quiz", "grammar-quiz", "dictionary", "grammar", "text"]
     role:
       privileges:
         - "create_index"
@@ -37,7 +37,7 @@ data:
         path: "^/%%index%%/_doc(\\?.*)?$"
 
   hybrid: |
-    indices: ["quiz", "aggregator", "dictionary"]
+    indices: ["aggregator", "dictionary"]
     role:
       privileges:
         - "read"

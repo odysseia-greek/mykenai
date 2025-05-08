@@ -1,0 +1,4 @@
+{{- include "koinos.configmap" . -}}
+{{ println}}
+  GATHER_METRICS: "true"
+  VERSION: {{ .Values.images.odysseiaapi.tag }}

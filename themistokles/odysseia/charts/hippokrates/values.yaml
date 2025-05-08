@@ -11,7 +11,7 @@ envVariables:
     sokratesService: http://sokrates:5000
     homerosService: http://homeros:8080
     solonService: http://solon:5000
-    aristarchosService: http://aristarchos:50053
+    aristarchosService: http://aristarchos:50060
 services:
     job:
         limits:

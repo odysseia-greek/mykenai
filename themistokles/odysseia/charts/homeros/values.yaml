@@ -7,7 +7,7 @@ envVariables:
     ALEXANDROS_SERVICE: http://alexandros:5000
     DIONYSIOS_SERVICE: http://dionysios:5000
     HERODOTOS_SERVICE: http://herodotos:5000
-    SOKRATES_SERVICE: http://sokrates:5000
+    SOKRATES_GRAPHQL_ADDRESS: http://sokrates:8080/sokrates/graphql
     GATHER_METRICS: "true"
 images:
     imageRepo: ghcr.io/odysseia-greek/

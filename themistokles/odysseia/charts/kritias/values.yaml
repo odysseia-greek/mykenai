@@ -1,0 +1,31 @@
+name: kritias
+namespace: odysseia
+jobName: parmenides-kritias
+replicas: 1
+images:
+    odysseiaapi:
+        repo: kritias
+        tag: v0.0.1
+    seeder:
+        repo: parmenides
+        tag: v0.7.4
+services:
+    odysseiaapi:
+        access: multiple-choice-quiz
+        limits:
+            memory: 128Mi
+        requests:
+            cpu: 200m
+            memory: 32Mi
+        role: api
+    seeder:
+        access: multiple-choice-quiz
+        role: seeder
+tlsConfig:
+    mounts:
+        - name: solon-certs
+          path: /app/config/solon
+          secretName: solon-tls-certs
+    rootPath: /app/config
+
+

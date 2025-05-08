@@ -1,1 +1,1 @@
-{{- include "koinos.service" . -}}
+{{- include "koinos.gatewayservice" . -}}

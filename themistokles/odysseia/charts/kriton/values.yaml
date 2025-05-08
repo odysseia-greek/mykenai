@@ -1,0 +1,31 @@
+name: kriton
+namespace: odysseia
+jobName: parmenides-kriton
+replicas: 1
+images:
+    odysseiaapi:
+        repo: kriton
+        tag: v0.0.1
+    seeder:
+        repo: parmenides
+        tag: v0.1.8
+services:
+    odysseiaapi:
+        access: dialogue-quiz
+        limits:
+            memory: 128Mi
+        requests:
+            cpu: 200m
+            memory: 32Mi
+        role: api
+    seeder:
+        access: dialogue-quiz
+        role: seeder
+tlsConfig:
+    mounts:
+        - name: solon-certs
+          path: /app/config/solon
+          secretName: solon-tls-certs
+    rootPath: /app/config
+
+

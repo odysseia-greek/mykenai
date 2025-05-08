@@ -1,33 +1,53 @@
 {{- include "koinos.deploymentbase" .}}
       annotations:
-              {{- if and .Values.services.odysseiaapi.role .Values.services.odysseiaapi.access }}
-        odysseia-greek/role: {{ .Values.services.odysseiaapi.role }}
-        odysseia-greek/access: {{ .Values.services.odysseiaapi.access }}
-              {{- end }}
-        perikles/accesses: "solon;alexandros;dionysios;aristarchos;herodotos"
+        perikles/accesses: "aristippos;xenofon;kriton;kritias;alkibiades;antisthenes"
         perikles/hostname: "sokrates"
         perikles/validity: "10"
     spec:
       serviceAccountName: {{ .Values.commonConfig.metricsServiceAccount }}
-      initContainers:
-        {{- include "koinos.initContainer" . | indent 8 }}
       containers:
-        {{- include "koinos.ambassador" . | indent 8 }}
-        {{- include "koinos.tracer" . | indent 8 }}
-        {{- include "koinos.api" . | indent 8 }}
-        {{- include "koinos.metrics" . | indent 8 }}
+{{- include "koinos.tracer" . | indent 8 }}
+{{- include "koinos.metrics" . | indent 8 }}
+        - name: {{ .Values.name }}
+          {{- if .Values.commonConfig.config.externalRepo | quote }}
+          image: {{ .Values.commonConfig.images.imageRepo}}{{ .Values.images.odysseiaapi.repo }}:{{ .Values.images.odysseiaapi.tag }}
+          {{ else }}
+          image: {{ .Values.images.odysseiaapi.repo }}:{{ .Values.images.odysseiaapi.tag }}
+          {{- end}}
+          imagePullPolicy: {{ .Values.commonConfig.config.pullPolicy }}
+          env:
+            - name: VERSION
+              value: {{ .Values.images.odysseiaapi.tag }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.name }}
+          ports:
+            - name: graphql
+              containerPort: {{ .Values.commonConfig.envVariables.gateway.port }}
+              protocol: TCP
+          {{- if .Values.commonConfig.envVariables.odysseiaapi.delvePort }}
+            - port: {{ .Values.commonConfig.envVariables.odysseiaapi.delvePort }}
+              name: delve
+              targetPort: {{ .Values.commonConfig.envVariables.odysseiaapi.delvePort }}
+          {{- end }}
+          resources:
+            requests:
+              memory: {{ .Values.services.odysseiaapi.requests.memory }}
+              cpu: {{ .Values.services.odysseiaapi.requests.cpu }}
+            limits:
+              memory: {{.Values.services.odysseiaapi.limits.memory}}
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.commonConfig.envVariables.gateway.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.livenessPath }}
+              port: {{ .Values.commonConfig.envVariables.gateway.port }}
+            initialDelaySeconds: {{ .Values.commonConfig.config.initialDelayLiveness }}
+            periodSeconds: {{ .Values.commonConfig.config.periodSeconds }}
       volumes:
-        - name: {{ .Values.commonConfig.tlsConfig.vault.name }}
-          secret:
-            secretName: {{ .Values.commonConfig.tlsConfig.vault.secretName }}
         - name: {{ .Values.commonConfig.tlsConfig.tracer.name }}
           secret:
             secretName: {{ .Values.commonConfig.tlsConfig.tracer.secretName }}
-               {{- range .Values.tlsConfig.mounts }}
-        - name: {{ .name }}
-          secret:
-            secretName: {{ .secretName }}
-                     {{- if .defaultMode }}
-            defaultMode: {{ .defaultMode }}
-                    {{- end }}
-              {{- end }}
