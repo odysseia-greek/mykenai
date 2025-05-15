@@ -1,0 +1,22 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: elastic-operator
+---
+apiVersion: source.toolkut.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: elastic-operator
+  namespace: elastic-operator
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: eck-operator
+      version: "2.16.1"
+      sourceRef:
+        kind: HelmRepository
+        name: elastic-operator
+        namespace: elastic-operator
+      interval: 12h

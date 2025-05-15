@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  # Application components
+  - alexandros
+  - dionysios
+  - herodotos
+  - melissos
+  - aristarchos
+  - protagoras
+  - sokrates
+  - alkibiades
+  - antisthenes
+  - aristippos
+  - kritias
+  - kriton
+  - xenofon
+  - meletos
+  - pheidias
+  - ploutarchos

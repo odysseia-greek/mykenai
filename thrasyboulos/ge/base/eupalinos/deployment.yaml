@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eupalinos
+  namespace: odysseia
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eupalinos
+  template:
+    metadata:
+      labels:
+        app: eupalinos
+    spec:
+      containers:
+      - name: eupalinos
+        image: ghcr.io/odysseia-greek/eupalinos:v1.0.2
+        ports:
+        - containerPort: 8080
+        env:
+        - name: LOG_LEVEL
+          value: "info"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"

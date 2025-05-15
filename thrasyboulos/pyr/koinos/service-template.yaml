@@ -1,0 +1,20 @@
+# Service Template Component for Kustomize
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: service-template-component
+  namespace: odysseia
+data:
+  service-template.yaml: |
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: app-service
+      namespace: odysseia
+    spec:
+      selector:
+        app: app-name
+      ports:
+        - name: "http"
+          port: 8080
+          targetPort: 8080

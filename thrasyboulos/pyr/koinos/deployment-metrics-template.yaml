@@ -1,0 +1,61 @@
+# Deployment with Metrics Template Component for Kustomize
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: deployment-metrics-template-component
+  namespace: odysseia
+data:
+  deployment-metrics-template.yaml: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: app-deployment-metrics
+      namespace: odysseia
+      labels:
+        app: app-name
+        env: local
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app: app-name
+      template:
+        metadata:
+          labels:
+            app: app-name
+          annotations:
+            odysseia-greek/role: read
+            odysseia-greek/access: elastic
+            perikles/accesses: solon
+            perikles/hostname: app.odysseia.io
+            perikles/validity: "365"
+        spec:
+          serviceAccountName: metrics-service-account
+          initContainers:
+          - name: init-container
+            image: ghcr.io/odysseia-greek/kleisthenes:v0.1.2
+            # Additional init container configuration from initcontainer.yaml
+          containers:
+          - name: ambassador
+            image: ghcr.io/odysseia-greek/ambassador:v0.1.0
+            # Additional sidecar container configuration from sidecar.yaml
+          - name: tracer
+            image: ghcr.io/odysseia-greek/tracer:v0.1.0
+            # Additional tracer container configuration from tracer.yaml
+          - name: api
+            image: ghcr.io/odysseia-greek/api:v0.1.0
+            # Additional API container configuration from api.yaml
+          - name: metrics
+            image: ghcr.io/odysseia-greek/metrics:v0.1.0
+            # Additional metrics container configuration from metrics.yaml
+          volumes:
+          - name: vault-tls
+            secret:
+              secretName: vault-tls
+          - name: tracer-tls
+            secret:
+              secretName: tracer-tls
+          - name: tls-certs
+            secret:
+              secretName: tls-certs
+              defaultMode: 0400

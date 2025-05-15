@@ -1,0 +1,68 @@
+# Job Template Component for Kustomize
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: job-template-component
+  namespace: odysseia
+data:
+  job-template.yaml: |
+    apiVersion: batch/v1
+    kind: Job
+    metadata:
+      name: app-job
+      namespace: odysseia
+      labels:
+        app: app-job
+        env: local
+    spec:
+      template:
+        metadata:
+          labels:
+            app: app-job
+          annotations:
+            odysseia-greek/role: read
+            odysseia-greek/access: elastic
+            perikles/accesses: solon
+        spec:
+          affinity:
+            nodeAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 1
+                  preference:
+                    matchExpressions:
+                      - key: preferredForJobs
+                        operator: In
+                        values:
+                          - "true"
+          initContainers:
+          - name: init-container
+            image: ghcr.io/odysseia-greek/kleisthenes:v0.1.2
+            # Additional init container configuration from initcontainer.yaml
+          containers:
+          - name: ambassador
+            image: ghcr.io/odysseia-greek/ambassador:v0.1.0
+            # Additional sidecar container configuration from sidecar.yaml
+          - name: job-container
+            image: ghcr.io/odysseia-greek/job:v0.1.0
+            env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+            envFrom:
+            - configMapRef:
+                name: app-config
+          restartPolicy: Never
+          volumes:
+          - name: vault-tls
+            secret:
+              secretName: vault-tls
+          - name: tls-certs
+            secret:
+              secretName: tls-certs
+              defaultMode: 0400
+      backoffLimit: 3

@@ -1,0 +1,48 @@
+# API Container Component for Kustomize
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-container-component
+  namespace: odysseia
+data:
+  api.yaml: |
+    name: api
+    image: ghcr.io/odysseia-greek/api:v0.1.0
+    imagePullPolicy: IfNotPresent
+    env:
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    - name: ELASTIC_ACCESS
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.annotations['odysseia-greek/access']
+    envFrom:
+    - configMapRef:
+        name: app-config
+    volumeMounts:
+    - name: tls-certs
+      mountPath: /etc/tls
+      readOnly: true
+    ports:
+    - containerPort: 8080
+      name: http
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: 8080
+      initialDelaySeconds: 30
+      periodSeconds: 10
+    readinessProbe:
+      httpGet:
+        path: /ready
+        port: 8080
+      initialDelaySeconds: 15
+      periodSeconds: 10
+    resources:
+      limits:
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi

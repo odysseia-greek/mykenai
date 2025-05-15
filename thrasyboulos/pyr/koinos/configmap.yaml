@@ -1,0 +1,18 @@
+# Common ConfigMap Component for Kustomize
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-config-component
+  namespace: odysseia
+data:
+  configmap.yaml: |
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: app-config
+      namespace: odysseia
+    data:
+      ELASTIC_SEARCH_SERVICE: "elastic.odysseia.svc.cluster.local"
+      ENV: "local"
+      TLS_ENABLED: "true"
+      CERT_ROOT: "/etc/tls"

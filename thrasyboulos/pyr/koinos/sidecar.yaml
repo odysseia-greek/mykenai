@@ -1,0 +1,40 @@
+# Sidecar (Ambassador) Container Component for Kustomize
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sidecar-container-component
+  namespace: odysseia
+data:
+  sidecar.yaml: |
+    name: ambassador
+    image: ghcr.io/odysseia-greek/ambassador:v0.1.0
+    imagePullPolicy: IfNotPresent
+    env:
+    - name: VAULT_SERVICE
+      value: vault.odysseia.svc.cluster.local
+    - name: VAULT_TLS
+      value: "true"
+    - name: SOLON_SERVICE
+      value: solon.odysseia.svc.cluster.local
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    envFrom:
+    - configMapRef:
+        name: app-config
+    ports:
+    - containerPort: 8080
+    volumeMounts:
+    - name: vault-tls
+      mountPath: /etc/vault/tls
+      readOnly: true
+    - name: tls-certs
+      mountPath: /etc/tls
+      readOnly: true
+    resources:
+      requests:
+        memory: 128Mi
+      limits:
+        memory: 256Mi
+        cpu: 200m
