@@ -27,7 +27,7 @@ spec:
     singular: gitrepository
   scope: Namespaced
   versions:
-  - name: v1beta2
+  - name: v1
     served: true
     storage: true
     schema:
