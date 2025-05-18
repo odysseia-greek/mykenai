@@ -48,3 +48,9 @@ spec:
               value: {{ .Values.replicas | quote }}
             - name: CERT_ROOT
               value: "{{ .Values.commonConfig.tlsConfig.rootPath }}"
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "100m"
+            limits:
+              memory: "64Mi"
