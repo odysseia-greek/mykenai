@@ -10,6 +10,15 @@ metadata:
   name: elastic-operator
   namespace: aristoteles-operator
 spec:
+  interval: 24h
+  url: https://helm.elastic.co
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: elastic-operator
+  namespace: aristoteles-operator
+spec:
   interval: 30m
   chart:
     spec:
