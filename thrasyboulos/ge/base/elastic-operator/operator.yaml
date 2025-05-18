@@ -8,7 +8,7 @@ apiVersion: source.toolkut.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: elastic-operator
-  namespace: elastic-operator
+  namespace: aristoteles-operator
 spec:
   interval: 30m
   chart:
@@ -18,5 +18,5 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: elastic-operator
-        namespace: elastic-operator
+        namespace: aristoteles-operator
       interval: 12h

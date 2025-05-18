@@ -1,0 +1,129 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: flux-system
+  labels:
+    app.kubernetes.io/instance: flux-system
+    app.kubernetes.io/part-of: flux
+    app.kubernetes.io/version: v0.41.2
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: gitrepositories.source.toolkit.fluxcd.io
+  labels:
+    app.kubernetes.io/instance: flux-system
+    app.kubernetes.io/part-of: flux
+    app.kubernetes.io/version: v0.41.2
+spec:
+  group: source.toolkit.fluxcd.io
+  names:
+    kind: GitRepository
+    listKind: GitRepositoryList
+    plural: gitrepositories
+    shortNames:
+    - gitrepo
+    singular: gitrepository
+  scope: Namespaced
+  versions:
+  - name: v1beta2
+    served: true
+    storage: true
+    schema:
+      openAPIV3Schema:
+        type: object
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: kustomizations.kustomize.toolkit.fluxcd.io
+  labels:
+    app.kubernetes.io/instance: flux-system
+    app.kubernetes.io/part-of: flux
+    app.kubernetes.io/version: v0.41.2
+spec:
+  group: kustomize.toolkit.fluxcd.io
+  names:
+    kind: Kustomization
+    listKind: KustomizationList
+    plural: kustomizations
+    shortNames:
+    - ks
+    singular: kustomization
+  scope: Namespaced
+  versions:
+  - name: v1beta2
+    served: true
+    storage: true
+    schema:
+      openAPIV3Schema:
+        type: object
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: source-controller
+  namespace: flux-system
+  labels:
+    app.kubernetes.io/instance: flux-system
+    app.kubernetes.io/part-of: flux
+    app.kubernetes.io/version: v0.41.2
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kustomize-controller
+  namespace: flux-system
+  labels:
+    app.kubernetes.io/instance: flux-system
+    app.kubernetes.io/part-of: flux
+    app.kubernetes.io/version: v0.41.2
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: source-controller
+  namespace: flux-system
+  labels:
+    app.kubernetes.io/instance: flux-system
+    app.kubernetes.io/part-of: flux
+    app.kubernetes.io/version: v0.41.2
+    control-plane: controller
+spec:
+  selector:
+    matchLabels:
+      app: source-controller
+  template:
+    metadata:
+      labels:
+        app: source-controller
+    spec:
+      serviceAccountName: source-controller
+      containers:
+      - name: manager
+        image: ghcr.io/fluxcd/source-controller:v0.41.2
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kustomize-controller
+  namespace: flux-system
+  labels:
+    app.kubernetes.io/instance: flux-system
+    app.kubernetes.io/part-of: flux
+    app.kubernetes.io/version: v0.41.2
+    control-plane: controller
+spec:
+  selector:
+    matchLabels:
+      app: kustomize-controller
+  template:
+    metadata:
+      labels:
+        app: kustomize-controller
+    spec:
+      serviceAccountName: kustomize-controller
+      containers:
+      - name: manager
+        image: ghcr.io/fluxcd/kustomize-controller:v0.41.2

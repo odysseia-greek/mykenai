@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: perikles
+  namespace: odysseia
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: perikles
+  template:
+    metadata:
+      labels:
+        app: perikles
+    spec:
+      containers:
+      - name: perikles
+        image: ghcr.io/odysseia-greek/perikles:v0.1.5
+        ports:
+        - containerPort: 8080
+          name: webhook-tcp
+        env:
+        - name: LOG_LEVEL
+          value: "info"
+        - name: ENV
+          value: "local"
+        - name: PORT
+          value: "8080"
+        - name: TLS_FILES
+          value: "/etc/webhook/certs"
+        - name: CRD_NAME
+          value: "odysseia.odysseia-greek.io"
+        - name: CONFIGMAP_NAME
+          value: "perikles-config"
+        - name: ELASTIC_USER
+          value: "elastic"
+        - name: ELASTIC_SEARCH_SERVICE
+          value: "aristoteles-es-http"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"

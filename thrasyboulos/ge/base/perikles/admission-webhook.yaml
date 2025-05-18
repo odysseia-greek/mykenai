@@ -1,0 +1,32 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: perikles-webhook
+webhooks:
+  - name: "deployment-policy.odysseia.com"
+    rules:
+      # Rule for Deployments and StatefulSets
+      - apiGroups:   ["apps"]
+        apiVersions: ["v1"]
+        operations:  ["CREATE", "UPDATE"]
+        resources:   ["deployments", "statefulsets"]
+        scope:       "Namespaced"
+      # Rule for Jobs
+      - apiGroups:   ["batch"]
+        apiVersions: ["v1"]
+        operations:  ["CREATE", "UPDATE"]
+        resources:   ["jobs"]
+        scope:       "Namespaced"
+    clientConfig:
+      service:
+        name: perikles
+        namespace: odysseia
+        path: "/perikles/v1/validate"
+        port: 443
+      caBundle: ""
+    admissionReviewVersions: ["v1", "v1beta1"]
+    sideEffects: None
+    timeoutSeconds: 30
+    namespaceSelector:
+      matchLabels:
+        name: odysseia
