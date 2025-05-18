@@ -1,48 +1,29 @@
 name: sokrates
 namespace: odysseia
-jobName: parmenides
-livenessPath: /sokrates/v1/health
-readinessPath: /sokrates/v1/health
-replicas: 3
+livenessPath: /healthz
+replicas: 1
 envVariables:
-    herodotosService: http://herodotos:5000
-    alexandrosService: http://alexandros:5000
+    ARISTIPPOS_SERVICE: aristippos:50060
+    KRITIAS_SERVICE: kritias:50060
+    KRITON_SERVICE: kriton:50060
+    XENOFON_SERVICE: xenofon:50060
+    ANTISTHENES_SERVICE: antisthenes:50060
 images:
     odysseiaapi:
         repo: sokrates
         tag: v0.8.0
-    seeder:
-        repo: parmenides
-        tag: v0.7.3
 services:
     odysseiaapi:
-        access: quiz
         limits:
             memory: 128Mi
         requests:
             cpu: 200m
             memory: 64Mi
-        role: hybrid
-    seeder:
-        access: quiz
-        role: seeder
 tlsConfig:
     mounts:
         - name: solon-certs
           path: /app/config/solon
           secretName: solon-tls-certs
-        - name: sokrates-certs
-          path: /app/config/sokrates
-          secretName: sokrates-tls-certs
-        - name: dionysios-certs
-          path: /app/config/dionysios
-          secretName: dionysios-tls-certs
-        - name: alexandros-certs
-          path: /app/config/alexandros
-          secretName: alexandros-tls-certs
-        - name: aristarchos-certs
-          path: /app/config/aristarchos
-          secretName: aristarchos-tls-certs
     rootPath: /app/config
 
 

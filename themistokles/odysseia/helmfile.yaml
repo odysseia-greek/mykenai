@@ -36,7 +36,7 @@ releases:
           imageRepo: ghcr.io/odysseia-greek/
           odysseiaapi:
             repo: perikles
-            tag: v0.1.4
+            tag: v0.1.5
           init:
             repo: kleisthenes
             tag: v0.1.2
@@ -188,10 +188,10 @@ releases:
       - images:
           odysseiaapi:
             repo: alexandros
-            tag: v0.1.0
+            tag: v0.2.0
           seeder:
             repo: demokritos
-            tag: v0.1.2
+            tag: v0.2.0
     set:
       - name: replicas
         value: {{ .Values.alexandros.replicas }}
@@ -210,10 +210,10 @@ releases:
       - images:
           odysseiaapi:
             repo: dionysios
-            tag: v0.1.1
+            tag: v0.2.0
           seeder:
             repo: anaximander
-            tag: v0.1.0
+            tag: v0.2.0
     set:
       - name: replicas
         value: {{ .Values.dionysios.replicas }}
@@ -232,35 +232,13 @@ releases:
       - images:
           odysseiaapi:
             repo: herodotos
-            tag: v0.1.1
+            tag: v0.2.0
           seeder:
             repo: herakleitos
-            tag: v0.1.2
+            tag: v0.2.0
     set:
       - name: replicas
         value: {{ .Values.herodotos.replicas }}
-
-  - name: sokrates
-    namespace: odysseia
-    chart: ./charts/sokrates
-    version: 0.1.1
-    missingFileHandler: Error
-    labels:
-      tier: backend
-    needs:
-      - odysseia/solon
-    values:
-      - values/{{ .Environment.Name }}.yaml
-      - images:
-          odysseiaapi:
-            repo: sokrates
-            tag: v0.1.1
-          seeder:
-            repo: parmenides
-            tag: v0.1.6
-    set:
-      - name: replicas
-        value: {{ .Values.sokrates.replicas }}
 
   - name: melissos
     namespace: odysseia
@@ -276,7 +254,7 @@ releases:
       - images:
           seeder:
             repo: melissos
-            tag: v0.1.0
+            tag: v0.2.0
 
   - name: homeros
     namespace: odysseia
@@ -284,7 +262,7 @@ releases:
     version: 0.1.1
     missingFileHandler: Error
     labels:
-      tier: backend
+      tier: gateway
     needs:
       - odysseia/solon
     values:
@@ -292,7 +270,7 @@ releases:
       - images:
           odysseiaapi:
             repo: homeros
-            tag: v0.1.1
+            tag: v0.2.0
 
   - name: aristarchos
     namespace: odysseia
@@ -308,7 +286,7 @@ releases:
       - images:
           odysseiaapi:
             repo: aristarchos
-            tag: v0.1.2
+            tag: v0.2.0
 
   - name: protagoras
     namespace: odysseia
@@ -325,7 +303,157 @@ releases:
       - images:
           job:
             repo: protagoras
-            tag: v0.1.0
+            tag: v0.2.0
+  ## Quiz
+  - name: sokrates
+    namespace: odysseia
+    chart: ./charts/sokrates
+    version: 0.1.1
+    missingFileHandler: Error
+    labels:
+      tier: quiz
+    needs:
+      - odysseia/solon
+    values:
+      - values/{{ .Environment.Name }}.yaml
+      - images:
+          odysseiaapi:
+            repo: sokrates
+            tag: v0.2.0
+    set:
+      - name: replicas
+        value: {{ .Values.sokrates.replicas }}
+
+  - name: alkibiades
+    namespace: odysseia
+    chart: ./charts/alkibiades
+    version: 0.0.1
+    missingFileHandler: Error
+    labels:
+      tier: quiz
+    needs:
+      - odysseia/solon
+    values:
+      - values/{{ .Environment.Name }}.yaml
+      - images:
+          odysseiaapi:
+            repo: alkibiades
+            tag: v0.0.1
+          seeder:
+            repo: parmenides
+            tag: v0.1.8
+
+  - name: antisthenes
+    namespace: odysseia
+    chart: ./charts/antisthenes
+    version: 0.0.1
+    missingFileHandler: Error
+    labels:
+      tier: quiz
+    needs:
+      - odysseia/solon
+    values:
+      - values/{{ .Environment.Name }}.yaml
+      - images:
+          odysseiaapi:
+            repo: antisthenes
+            tag: v0.0.1
+          seeder:
+            repo: parmenides
+            tag: v0.1.8
+
+  - name: aristippos
+    namespace: odysseia
+    chart: ./charts/aristippos
+    version: 0.0.1
+    missingFileHandler: Error
+    labels:
+      tier: quiz
+    needs:
+      - odysseia/solon
+    values:
+      - values/{{ .Environment.Name }}.yaml
+      - images:
+          odysseiaapi:
+            repo: aristippos
+            tag: v0.0.1
+          seeder:
+            repo: parmenides
+            tag: v0.1.8
+
+  - name: kritias
+    namespace: odysseia
+    chart: ./charts/kritias
+    version: 0.0.1
+    missingFileHandler: Error
+    labels:
+      tier: quiz
+    needs:
+      - odysseia/solon
+    values:
+      - values/{{ .Environment.Name }}.yaml
+      - images:
+          odysseiaapi:
+            repo: kritias
+            tag: v0.0.1
+          seeder:
+            repo: parmenides
+            tag: v0.1.8
+
+  - name: kriton
+    namespace: odysseia
+    chart: ./charts/kriton
+    version: 0.0.1
+    missingFileHandler: Error
+    labels:
+      tier: quiz
+    needs:
+      - odysseia/solon
+    values:
+      - values/{{ .Environment.Name }}.yaml
+      - images:
+          odysseiaapi:
+            repo: kriton
+            tag: v0.0.1
+          seeder:
+            repo: parmenides
+            tag: v0.1.8
+
+  - name: xenofon
+    namespace: odysseia
+    chart: ./charts/xenofon
+    version: 0.0.1
+    missingFileHandler: Error
+    labels:
+      tier: quiz
+    needs:
+      - odysseia/solon
+    values:
+      - values/{{ .Environment.Name }}.yaml
+      - images:
+          odysseiaapi:
+            repo: xenofon
+            tag: v0.0.1
+          seeder:
+            repo: parmenides
+            tag: v0.1.8
+
+  - name: meletos
+    namespace: odysseia
+    chart: ./charts/meletos
+    version: 0.0.1
+    missingFileHandler: Error
+    labels:
+      tier: quiz
+    needs:
+      - odysseia/solon
+    values:
+      - values/{{ .Environment.Name }}.yaml
+      - images:
+          job:
+            repo: meletos
+            tag: v0.0.1
+
 
     ## Frontend ##
   - name: pheidias
@@ -390,7 +518,6 @@ releases:
       - odysseia/alexandros
       - odysseia/dionysios
       - odysseia/herodotos
-      - odysseia/sokrates
       - odysseia/homeros
     values:
       - values/{{ .Environment.Name }}.yaml
@@ -413,4 +540,4 @@ releases:
       - images:
           job:
             repo: ktesias
-            tag: v0.0.1
+            tag: v0.0.2

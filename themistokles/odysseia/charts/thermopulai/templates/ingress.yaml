@@ -31,6 +31,20 @@ spec:
                 port:
                   number: {{ .Values.envVariables.homeros.port }}
           - pathType: Prefix
+            path: /sokrates/graphql
+            backend:
+              service:
+                name: sokrates
+                port:
+                  number: {{ .Values.envVariables.sokrates.port }}
+          - pathType: Prefix
+            path: /sokrates/v1
+            backend:
+              service:
+                name: sokrates
+                port:
+                  number: {{ .Values.envVariables.homeros.port }}
+          - pathType: Prefix
             path: /ploutarchos/
             backend:
               service:
@@ -62,13 +76,6 @@ spec:
                 name: solon
                 port:
                   number: {{ .Values.envVariables.solon.port }}
-          - pathType: Prefix
-            path: /sokrates/v1
-            backend:
-              service:
-                name: sokrates
-                port:
-                  number: {{ .Values.envVariables.sokrates.port }}
           - pathType: Prefix
             path: /herodotos/v1
             backend:

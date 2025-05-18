@@ -1,0 +1,6 @@
+{{- include "koinos.configmap" . -}}
+{{ println}}
+  GATHER_METRICS: "true"
+  ALEXANDROS_SERVICE: http://alexandros:5000
+  HERODOTOS_SERVICE: http://herodotos:5000
+  VERSION: {{ .Values.images.odysseiaapi.tag }}

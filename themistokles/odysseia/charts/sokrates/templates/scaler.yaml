@@ -5,7 +5,7 @@ spec:
     kind: Deployment
     name: {{ .Values.name }}
   minReplicas: 1
-  maxReplicas: 5
+  maxReplicas: 7
   metrics:
     - type: Resource
       resource:
