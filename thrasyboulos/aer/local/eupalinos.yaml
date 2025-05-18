@@ -11,6 +11,6 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ../../ge/local/eupalinos
+  path: thrasyboulos/ge/local/eupalinos
   prune: true
   wait: true

@@ -11,7 +11,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ../../ge/local/elastic
+  path: thrasyboulos/ge/local/elastic
   prune: true
   wait: true
   dependsOn:
