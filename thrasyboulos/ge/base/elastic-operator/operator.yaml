@@ -13,7 +13,7 @@ spec:
   interval: 24h
   url: https://helm.elastic.co
 ---
-apiVersion: helm.toolkit.fluxcd.io/v1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: elastic-operator
