@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: perikles
+  namespace: odysseia
   labels:
     env: k3d
     variant: k3d
@@ -23,6 +24,7 @@ spec:
       initContainers:
         - name: kleisthenes
           image: ghcr.io/odysseia-greek/kleisthenes:v0.1.2
+
           imagePullPolicy: Always
           env:
             - name: ENV
@@ -36,6 +38,7 @@ spec:
       containers:
         - name: perikles
           image: ghcr.io/odysseia-greek/perikles:v0.1.5
+
           imagePullPolicy: Always
           env:
             - name: ENV
@@ -58,7 +61,7 @@ spec:
             - name:  ELASTIC_USER
               value: elastic
             - name:  ELASTIC_SEARCH_SERVICE
-              value: "http://aristoteles-es-http.aristoteles.svc.cluster.local:9200"
+              value: "http://aristoteles-es-http:9200"
             - name: NAMESPACE
               valueFrom:
                 fieldRef:
@@ -70,6 +73,7 @@ spec:
             - name: webhook-certs
               mountPath: /app/config
               readOnly: true
+
             - name: elastic-internal-tls
               mountPath: /app/config/elastic
               readOnly: true
