@@ -1,0 +1,16 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-all-elasticsearch-access-solon
+spec:
+  endpointSelector:
+    matchLabels:
+      elasticsearch.k8s.elastic.co/cluster-name: aristoteles
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app: solon
+      toPorts:
+        - ports:
+            - port: "9200"
+              protocol: TCP
