@@ -1,32 +1,66 @@
-apiVersion: apps/v1
-kind: Deployment
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
 metadata:
-  name: elastic
-  namespace: odysseia
+  name: allow-all-elasticsearch-access-kibana
 spec:
-  replicas: 1
-  selector:
+  endpointSelector:
     matchLabels:
-      app: elastic
-  template:
-    metadata:
-      labels:
-        app: elastic
-    spec:
-      containers:
-      - name: elastic
-        image: docker.elastic.co/elasticsearch/elasticsearch:8.8.0
-        ports:
-        - containerPort: 9200
-        env:
-        - name: discovery.type
-          value: single-node
-        - name: ES_JAVA_OPTS
-          value: "-Xms512m -Xmx512m"
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "500m"
-          limits:
-            memory: "2Gi"
-            cpu: "1000m"
+      elasticsearch.k8s.elastic.co/cluster-name: aristoteles
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            kibana.k8s.elastic.co/name: kibana
+      toPorts:
+        - ports:
+            - port: "9200"
+              protocol: TCP
+---
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: aristoteles
+  labels:
+    env: k3d
+    variant: k3d
+    app: aristoteles
+    version: 8.14.0
+spec:
+  version: 8.14.0
+  http:
+    tls:
+      selfSignedCertificate:
+        disabled: true
+  nodeSets:
+    - name: worker
+      count: 1
+      config:
+        node.store.allow_mmap: false
+        xpack.security.http.ssl.enabled: false
+      podTemplate:
+        spec:
+          containers:
+            - name: elasticsearch
+          resources:
+            requests:
+              memory: 2Gi
+              cpu: 1000m
+            limits:
+              memory: 3Gi
+---
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kibana
+  labels:
+    env: k3d
+    variant: k3d
+    app: aristoteles
+    version: 8.14.0
+spec:
+  version: 8.14.0
+  count: 1
+  elasticsearchRef:
+    name: aristoteles
+    namespace: aristoteles
+
