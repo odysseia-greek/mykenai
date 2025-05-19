@@ -70,7 +70,6 @@ spec:
             - name: webhook-certs
               mountPath: /app/config
               readOnly: true
-
             - name: elastic-internal-tls
               mountPath: /app/config/elastic
               readOnly: true
