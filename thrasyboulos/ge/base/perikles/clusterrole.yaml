@@ -3,9 +3,7 @@ kind: ClusterRole
 metadata:
   name: perikles
   labels:
-    heritage: "Helm"
-    release: "perikles"
-    chart: "perikles"
+    app: "perikles"
 rules:
   - apiGroups:
       - coordination.k8s.io

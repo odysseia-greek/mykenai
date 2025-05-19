@@ -52,6 +52,16 @@ flux-status:
 .PHONY: all
 all: bootstrap-flux
 
+# Copy Elasticsearch secret from aristoteles to odysseia namespace
+.PHONY: copy-es-secret
+copy-es-secret:
+	@echo "Copying aristoteles-es-elastic-user secret from aristoteles to odysseia namespace..."
+	@kubectl get secret aristoteles-es-elastic-user -n aristoteles -o jsonpath='{.data.elastic}' > elastic.base64
+	@kubectl create secret generic aristoteles-es-elastic-user --from-file=elastic=elastic.base64 -n odysseia --dry-run=client -o yaml > secret.yaml
+	@kubectl apply -f secret.yaml
+	@rm elastic.base64
+	@rm secret.yaml
+
 # Help
 .PHONY: help
 help:
@@ -61,4 +71,5 @@ help:
 	@echo "  bootstrap-flux    - Bootstrap Flux manually"
 	@echo "  bootstrap-flux-git - Bootstrap Flux using the git command"
 	@echo "  flux-status       - Check Flux status"
+	@echo "  copy-es-secret    - Copy aristoteles-es-elastic-user secret from aristoteles to odysseia namespace"
 	@echo "  help              - Show this help message"
