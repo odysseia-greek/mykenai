@@ -1,6 +1,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: odysseia-infra
+namespace: odysseia
 
 resources:
   - ../../base/eupalinos
