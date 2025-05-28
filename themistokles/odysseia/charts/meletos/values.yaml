@@ -9,11 +9,11 @@ envVariables:
 services:
     job:
         limits:
-            memory: 128Mi
+            memory: 256Mi
         name: meletos
         requests:
             cpu: 500m
-            memory: 64Mi
+            memory: 128Mi
     tests:
         labels:
             domain: testing
