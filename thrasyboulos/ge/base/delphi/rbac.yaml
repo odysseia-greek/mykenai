@@ -7,6 +7,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: provider-k8s-role
+  namespace: agora
 rules:
   - apiGroups: [""]
     resources:
@@ -26,7 +27,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: provider-k8s-binding
-  namespace: delphi
+  namespace: agora
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
