@@ -26,6 +26,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: provider-k8s-binding
+  namespace: delphi
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -33,3 +34,4 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: provider-k8s
+    namespace: delphi
