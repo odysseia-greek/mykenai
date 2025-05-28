@@ -6,4 +6,4 @@ resources:
   - ns.yaml
   - rbac.yaml
   - store.yaml
-  -
+  - external-secrets.yaml
