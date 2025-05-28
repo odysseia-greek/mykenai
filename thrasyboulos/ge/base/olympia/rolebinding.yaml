@@ -8,5 +8,5 @@ roleRef:
   name: perikles
 subjects:
   - kind: ServiceAccount
-    namespace: odysseia
+    namespace: delphi
     name: periklessa

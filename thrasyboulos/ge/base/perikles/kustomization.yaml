@@ -8,8 +8,6 @@ resources:
   - configmap.yaml
   - deployment.yaml
   - np-to-elastic.yaml
-  - role.yaml
-  - rolebinding.yaml
   - secret.yaml
   - service.yaml
   - serviceaccount.yaml

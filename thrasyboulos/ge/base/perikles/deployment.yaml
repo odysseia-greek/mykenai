@@ -62,9 +62,7 @@ spec:
             - name:  ELASTIC_SEARCH_SERVICE
               value: "http://aristoteles-es-http.agora.svc:9200"
             - name: NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
+              value: olympia
           ports:
             - containerPort: 4443
               name: webhook-tcp
