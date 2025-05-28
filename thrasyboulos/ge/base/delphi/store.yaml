@@ -14,3 +14,4 @@ spec:
       auth:
         serviceAccount:
           name: provider-k8s
+          namespace: delphi
