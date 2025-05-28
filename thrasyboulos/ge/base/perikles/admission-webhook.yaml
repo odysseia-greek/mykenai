@@ -20,7 +20,7 @@ webhooks:
     clientConfig:
       service:
         name: perikles
-        namespace: odysseia
+        namespace: olympia
         path: "/perikles/v1/validate"
         port: 443
       caBundle: ""
@@ -29,4 +29,4 @@ webhooks:
     timeoutSeconds: 30
     namespaceSelector:
       matchLabels:
-        name: odysseia
+        name: olympia
