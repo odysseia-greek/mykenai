@@ -52,6 +52,13 @@ flux-status:
 .PHONY: all
 all: bootstrap-flux
 
+# Copy Elasticsearch secret from aristoteles to odysseia namespace
+.PHONY: copy-es-secret
+copy-es-secret:
+	@echo "Copying aristoteles-es-elastic-user secret from aristoteles to odysseia namespace..."
+	@kubectl get secret aristoteles-es-elastic-user -n agora -o jsonpath='{.data.elastic}' | \
+		awk 'BEGIN {print "apiVersion: v1\ndata:\n  elastic: {print $0}"}  END {print "kind: Secret\nmetadata:\n  name: aristoteles-es-elastic-user\n  namespace: delphi\ntype: Opaque"}' > secret.yaml
+
 # Help
 .PHONY: help
 help:
