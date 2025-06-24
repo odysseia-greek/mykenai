@@ -12,7 +12,6 @@ spec:
     kind: GitRepository
     name: flux-system
   path: thrasyboulos/ge/base/delphi
-
   prune: true
   wait: true
   dependsOn:
