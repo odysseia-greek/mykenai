@@ -3,9 +3,7 @@ kind: Role
 metadata:
   name: solon
   labels:
-    heritage: "Helm"
     release: "solon"
-    chart: "solon"
 rules:
   - apiGroups: [""] # "" indicates the core API group
     resources: ["pods"]
