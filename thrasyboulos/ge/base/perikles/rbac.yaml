@@ -10,10 +10,6 @@ kind: Role
 metadata:
   name: perikles
   namespace: delphi
-  labels:
-    heritage: "Helm"
-    release: "perikles"
-    chart: "perikles"
 rules:
   - apiGroups:
       - coordination.k8s.io

@@ -1,0 +1,35 @@
+apiVersion: external-secrets.io/v1
+kind: SecretStore
+metadata:
+  name: from-delphi
+spec:
+  provider:
+    kubernetes:
+      remoteNamespace: delphi
+      server:
+        caProvider:
+          type: ConfigMap
+          name: kube-root-ca.crt
+          key: ca.crt
+      auth:
+        serviceAccount:
+          name: provider-k8s
+          namespace: olympia
+---
+apiVersion: external-secrets.io/v1
+kind: SecretStore
+metadata:
+  name: from-elastic
+spec:
+  provider:
+    kubernetes:
+      remoteNamespace: agora
+      server:
+        caProvider:
+          type: ConfigMap
+          name: kube-root-ca.crt
+          key: ca.crt
+      auth:
+        serviceAccount:
+          name: provider-k8s
+          namespace: olympia
