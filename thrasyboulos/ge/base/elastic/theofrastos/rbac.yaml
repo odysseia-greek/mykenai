@@ -1,0 +1,43 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: theofrastossa
+  namespace: odysseia
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: odysseia
+  name: theofrastos
+  labels:
+    heritage: "Helm"
+    release: "theofrastos"
+    chart: "theofrates"
+rules:
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      - leases
+    verbs:
+      - '*'
+  - apiGroups: [""] # "" indicates the core API group
+    resources: ["secrets"]
+    verbs: ["get", "list", "update", "create", "delete"]
+  - apiGroups: [""]
+    resources: [ "configmaps" ]
+    verbs: [ "get", "list", "watch" ]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: odysseia
+  name: theofrastos
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: theofrastos
+subjects:
+  - kind: ServiceAccount
+    namespace: odysseia
+    name: theofrastossa

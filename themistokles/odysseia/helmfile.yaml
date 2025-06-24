@@ -22,6 +22,16 @@ releases:
     values:
       - values/{{ .Environment.Name }}.yaml
 
+  - name: theofrastos
+    namespace: odysseia
+    chart: ./charts/theofrastos
+    version: 0.0.1
+    missingFileHandler: Error
+    labels:
+      tier: theofrastos
+    values:
+      - values/{{ .Environment.Name }}.yaml
+
   ## webhook ##
   - name: perikles
     namespace: odysseia

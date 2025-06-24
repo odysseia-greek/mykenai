@@ -1,0 +1,106 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configMapName }}
+  namespace: {{ .Values.commonConfig.namespace }}
+data:
+  roles: |
+    api:
+      indices:
+        - media-quiz
+        - multiple-choice-quiz
+        - author-based-quiz
+        - dialogue-quiz
+        - journey-quiz
+        - grammar-quiz
+        - dictionary
+        - grammar
+        - text
+        - tracing
+        - metrics
+      role:
+        privileges:
+          - read
+        cluster:
+          - monitor
+
+    seeder:
+      indices:
+        - media-quiz
+        - multiple-choice-quiz
+        - author-based-quiz
+        - dialogue-quiz
+        - journey-quiz
+        - grammar-quiz
+        - dictionary
+        - grammar
+        - text
+      role:
+        privileges:
+          - create_index
+          - delete_index
+          - create
+        cluster:
+          - monitor
+
+    hybrid:
+      indices:
+        - aggregator
+        - dictionary
+      role:
+        privileges:
+          - read
+          - create
+          - index
+          - create_index
+        cluster:
+          - monitor
+
+    alias:
+      indices:
+        - tracing
+        - metrics
+      role:
+        privileges:
+          - create_index
+          - delete_index
+          - manage
+          - all
+        cluster:
+          - monitor
+
+    creator:
+      indices:
+        - metrics
+        - tracing
+      role:
+        privileges:
+          - create
+          - index
+        cluster:
+          - monitor
+
+    user_admin:
+      indices:
+        - ""
+      role:
+        privileges: []
+        cluster:
+          - manage_security
+
+  users: |
+    solon:
+      role: user_admin
+    eumetros:
+      role: creator
+    agreus:
+      role: creator
+
+  policies: |
+    hot:
+      default: true
+      rollover:
+        - name: hot_30d
+          max_age: "30"
+        - name: hot_plain
+          max_age: ""
