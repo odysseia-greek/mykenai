@@ -10,4 +10,4 @@ spec:
     name: https-webhook
     port: 443
     protocol: TCP
-    targetPort: 8080
+    targetPort: 4443

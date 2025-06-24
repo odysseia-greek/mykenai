@@ -55,7 +55,9 @@ spec:
             - name: L7_MODE
               value: "true"
             - name: NAMESPACE
-              value: olympia
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
           ports:
             - containerPort: 4443
               name: webhook-tcp
