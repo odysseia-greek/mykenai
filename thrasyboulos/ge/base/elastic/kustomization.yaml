@@ -3,4 +3,5 @@ kind: Kustomization
 namespace: agora
 resources:
   - ns.yaml
+  - cnp-solon.yaml
   - ./theofrastos

@@ -8,5 +8,4 @@ resources:
   - role.yaml
   - rolebinding.yaml
   - service.yaml
-  - np-to-elastic.yaml
   - np-to-vault.yaml
