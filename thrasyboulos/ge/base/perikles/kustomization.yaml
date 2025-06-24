@@ -8,6 +8,4 @@ resources:
   - configmap.yaml
   - secret.yaml
   - service.yaml
-  - serviceaccount.yaml
-  - role.yaml
-  - binding.yaml
+  - rbac.yaml

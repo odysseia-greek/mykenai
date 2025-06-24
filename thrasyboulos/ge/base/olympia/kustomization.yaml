@@ -3,5 +3,3 @@ kind: Kustomization
 namespace: olympia
 resources:
   - ns.yaml
-  - role.yaml
-  - rolebinding.yaml
