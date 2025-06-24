@@ -81,12 +81,12 @@ data:
           - monitor
 
     user_admin:
-      indices:
-        - ""
+      indices: []
       role:
         privileges: []
         cluster:
           - manage_security
+          - monitor
 
   users: |
     solon:
