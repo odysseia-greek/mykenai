@@ -28,5 +28,7 @@ webhooks:
     sideEffects: None
     timeoutSeconds: 30
     namespaceSelector:
-      matchLabels:
-        name: olympia
+      matchExpressions:
+        - key: name
+          operator: In
+          values: ["olympia", "delphi"]
