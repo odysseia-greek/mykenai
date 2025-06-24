@@ -48,3 +48,5 @@ spec:
           cpu: "200m"
     ui:
       enabled: true
+    injector:
+      enabled: false
