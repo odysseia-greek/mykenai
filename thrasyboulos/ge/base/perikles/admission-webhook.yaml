@@ -20,7 +20,7 @@ webhooks:
     clientConfig:
       service:
         name: perikles
-        namespace: olympia
+        namespace: delphi
         path: "/perikles/v1/validate"
         port: 443
       caBundle: ""
@@ -31,4 +31,4 @@ webhooks:
       matchExpressions:
         - key: name
           operator: In
-          values: ["olympia", "delphi"]
+          values: ["delphi", "olympia"]
