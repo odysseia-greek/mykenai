@@ -14,3 +14,5 @@ spec:
   path: thrasyboulos/ge/local/perikles
   prune: true
   wait: true
+  dependsOn:
+    - name: delphi
