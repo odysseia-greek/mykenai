@@ -1,0 +1,20 @@
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: elastic-volume-transformer
+patch: |
+  - op: add
+    path: /spec/template/spec/volumes/-
+    value:
+      name: elastic-internal-tls
+      secret:
+        secretName: aristoteles-es-http-certs-public
+  - op: add
+    path: /spec/template/spec/containers/0/volumeMounts/-
+    value:
+      name: elastic-internal-tls
+      mountPath: /app/config/elastic
+      readOnly: true
+target:
+  kind: Deployment
+  annotationSelector: "volumes.odysseia.io/elastic=true"

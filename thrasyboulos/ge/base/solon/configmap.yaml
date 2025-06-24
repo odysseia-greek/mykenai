@@ -3,14 +3,12 @@ kind: ConfigMap
 metadata:
   name: solon
 data:
-  ELASTIC_SEARCH_SERVICE: "http://aristoteles-es-http:9200"
+  ELASTIC_SEARCH_SERVICE: "http://aristoteles-es-http.aristoteles,svc:9200"
   ENV: "k3d"
   TLS_ENABLED: "true"
   CERT_ROOT: "/app/config"
-
   VAULT_TLS: "true"
   VAULT_SERVICE: "https://vault:8200"
   TLS_FILES: "/app/config"
-  ELASTIC_USER: "elastic"
   VAULT_ROLE: "solon"
   GATHER_METRICS: "true"
