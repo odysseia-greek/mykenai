@@ -36,7 +36,7 @@ spec:
                   fieldPath: metadata.namespace
       containers:
         - name: perikles
-          image: ghcr.io/odysseia-greek/perikles:v0.1.5
+          image: ghcr.io/odysseia-greek/perikles:v0.1.6
 
           imagePullPolicy: Always
           env:
@@ -52,15 +52,6 @@ spec:
               value: elastic-roles-and-cnp
             - name: L7_MODE
               value: "true"
-            - name: ELASTIC_SEARCH_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: aristoteles-es-elastic-user
-                  key: elastic
-            - name:  ELASTIC_USER
-              value: elastic
-            - name:  ELASTIC_SEARCH_SERVICE
-              value: "http://aristoteles-es-http.agora.svc:9200"
             - name: NAMESPACE
               value: olympia
           ports:
@@ -98,6 +89,3 @@ spec:
         - name: webhook-certs
           secret:
             secretName: perikles-certs
-        - name: elastic-internal-tls
-          secret:
-            secretName: aristoteles-es-http-certs-public

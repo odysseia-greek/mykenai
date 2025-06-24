@@ -5,10 +5,6 @@ metadata:
   namespace: {{ .Values.commonConfig.namespace }}
 data:
   api: |
-    indices: ["media-quiz", "multiple-choice-quiz", "author-based-quiz", "dialogue-quiz", "journey-quiz", "grammar-quiz", "dictionary", "grammar", "text", "tracing", "metrics"]
-    role:
-      privileges:
-        - "read"
     cnp_rules:
       - method: "^POST$"
         path: "^/%%index%%/_search(\\?.*)?$"
@@ -16,12 +12,6 @@ data:
         path: "^/_search/scroll(\\?.*)?$"
 
   seeder: |
-    indices: ["media-quiz", "multiple-choice-quiz", "author-based-quiz", "dialogue-quiz", "journey-quiz", "grammar-quiz", "dictionary", "grammar", "text"]
-    role:
-      privileges:
-        - "create_index"
-        - "delete_index"
-        - "create"
     cnp_rules:
       - method: "^DELETE$"
         path: "^/%%index%%$"
@@ -37,13 +27,6 @@ data:
         path: "^/%%index%%/_doc(\\?.*)?$"
 
   hybrid: |
-    indices: ["aggregator", "dictionary"]
-    role:
-      privileges:
-        - "read"
-        - "create"
-        - "index"
-        - "create_index"
     cnp_rules:
       - method: "^DELETE$"
         path: "^/%%index%%$"
@@ -65,13 +48,6 @@ data:
         path: "^/_search/scroll(\\?.*)?$"
 
   alias: |
-    indices: ["tracing", "metrics"]
-    role:
-      privileges:
-        - "create_index"
-        - "delete_index"
-        - "manage"
-        - "all"
     cnp_rules:
       - method: "^DELETE$"
         path: "^/%%index%%$"
@@ -89,11 +65,6 @@ data:
         path: "^/%%index%%/_bulk$"
 
   creator: |
-    indices: ["metrics", "tracing"]
-    role:
-      privileges:
-        - "create"
-        - "index"
     cnp_rules:
       - method: "^PUT$"
         path: "^/%%index%%/_create/.*$"

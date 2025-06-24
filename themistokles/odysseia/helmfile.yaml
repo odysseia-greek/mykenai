@@ -46,7 +46,7 @@ releases:
           imageRepo: ghcr.io/odysseia-greek/
           odysseiaapi:
             repo: perikles
-            tag: v0.1.5
+            tag: v0.1.6
           init:
             repo: kleisthenes
             tag: v0.1.2
