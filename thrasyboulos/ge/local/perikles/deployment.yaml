@@ -7,6 +7,8 @@ metadata:
     variant: k3d
     app: perikles
     domain: "backend"
+  annotations:
+    volumes.odysseia.io/elastic: "true"
 spec:
   replicas: 1
   selector:
@@ -61,10 +63,6 @@ spec:
             - name: webhook-certs
               mountPath: /app/config
               readOnly: true
-
-            - name: elastic-internal-tls
-              mountPath: /app/config/elastic
-              readOnly: true
           livenessProbe:
             httpGet:
               scheme: HTTPS
@@ -79,12 +77,6 @@ spec:
               port: 4443
             initialDelaySeconds: 1
             periodSeconds: 20
-          resources:
-            requests:
-              memory: 64Mi
-              cpu: 250m
-            limits:
-              memory: 128Mi
       volumes:
         - name: webhook-certs
           secret:
