@@ -53,14 +53,12 @@ kind: Kibana
 metadata:
   name: kibana
   labels:
-    env: k3d
-    variant: k3d
-    app: aristoteles
+    app: kibana
     version: 8.14.0
 spec:
   version: 8.14.0
   count: 1
   elasticsearchRef:
     name: aristoteles
-    namespace: aristoteles
+    namespace: agora
 
