@@ -6,7 +6,6 @@ resources:
   - clusterrole.yaml
   - clusterrolebinding.yaml
   - configmap.yaml
-  - np-to-elastic.yaml
   - secret.yaml
   - service.yaml
   - serviceaccount.yaml
