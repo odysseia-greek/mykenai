@@ -10,6 +10,8 @@ spec:
     - fromEndpoints:
         - matchLabels:
             app: solon
+          matchLabels:
+            k8s:io.kubernetes.pod.namespace: delphi
       toPorts:
         - ports:
             - port: "9200"
