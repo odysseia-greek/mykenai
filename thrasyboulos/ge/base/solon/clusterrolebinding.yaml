@@ -9,4 +9,4 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: solon-access-sa
-    namespace: odysseia
+    namespace: delphi
