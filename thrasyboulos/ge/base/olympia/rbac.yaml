@@ -2,11 +2,12 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: provider-k8s
+  namespace: olympia
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: provider-k8s-binding-2
+  name: provider-k8s-binding-olympia
   namespace: agora
 roleRef:
   apiGroup: rbac.authorization.k8s.io

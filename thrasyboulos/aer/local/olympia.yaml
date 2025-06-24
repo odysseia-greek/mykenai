@@ -15,5 +15,4 @@ spec:
   prune: true
   wait: true
   dependsOn:
-    - name: elastic
-    - name: perikles
+    - name: solon

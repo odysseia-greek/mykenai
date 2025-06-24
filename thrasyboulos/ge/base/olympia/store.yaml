@@ -2,6 +2,7 @@ apiVersion: external-secrets.io/v1
 kind: SecretStore
 metadata:
   name: from-delphi
+  namespace: olympia
 spec:
   provider:
     kubernetes:
@@ -20,6 +21,7 @@ apiVersion: external-secrets.io/v1
 kind: SecretStore
 metadata:
   name: from-elastic
+  namespace: olympia
 spec:
   provider:
     kubernetes:
