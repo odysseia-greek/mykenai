@@ -30,4 +30,4 @@ spec:
         namespace: external-secrets
       interval: 12h
   values:
-    - installCRDs: true
+    installCRDs: true
