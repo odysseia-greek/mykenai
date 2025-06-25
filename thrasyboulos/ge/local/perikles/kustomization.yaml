@@ -8,4 +8,5 @@ resources:
 
 components:
   - ../../../pyr/koinos/resources/local/mid
-  - ../../../pyr/koinos/transformers
+  - ../../../pyr/koinos/transformers/volumes
+  - ../../../pyr/koinos/transformers/mounts

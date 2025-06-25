@@ -9,6 +9,7 @@ metadata:
     domain: "backend"
   annotations:
     volumes.odysseia.io/elastic: "true"
+    mount.odysseia.io/elastic: "true"
 spec:
   replicas: 1
   selector:
@@ -25,7 +26,6 @@ spec:
       initContainers:
         - name: kleisthenes
           image: ghcr.io/odysseia-greek/kleisthenes:v0.1.2
-
           imagePullPolicy: Always
           env:
             - name: ENV
@@ -39,7 +39,6 @@ spec:
       containers:
         - name: perikles
           image: ghcr.io/odysseia-greek/perikles:v0.1.6
-
           imagePullPolicy: Always
           env:
             - name: ENV
