@@ -132,7 +132,7 @@ releases:
     version: 0.1.1
     missingFileHandler: Error
     labels:
-      tier: infra
+      tier: euripides
     needs:
       - odysseia/solon
     values:

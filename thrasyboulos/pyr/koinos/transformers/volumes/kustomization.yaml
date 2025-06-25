@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+transformers:
+  - init.yaml
+  - vault.yaml
+  - solon.yaml
+  - elastic.yaml

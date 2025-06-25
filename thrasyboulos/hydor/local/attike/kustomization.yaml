@@ -2,4 +2,13 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - ../../base/euripides
+  - euripides
+  - praxiteles
+
+labels:
+  - pairs:
+      environment: "k3d"
+      variant: "k3d"
+      domain: "backend"
+    includeSelectors: false
+    includeTemplates: true

@@ -6,9 +6,6 @@ patch: |
   - op: add
     path: /spec/template/spec/volumes
     value: []
-  - op: add
-    path: /spec/template/spec/containers/0/volumeMounts
-    value: []
 target:
   kind: Deployment
   annotationSelector: "volumes.odysseia.io/init=true"

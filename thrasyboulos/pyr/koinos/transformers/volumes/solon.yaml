@@ -9,12 +9,6 @@ patch: |
       name: solon-certs
       secret:
         secretName: solon-tls-certs
-  - op: add
-    path: /spec/template/spec/containers/0/volumeMounts/-
-    value:
-      name: solon-certs
-      mountPath: /app/config/solon
-      readOnly: true
 target:
   kind: Deployment
   annotationSelector: "volumes.odysseia.io/solon=true"

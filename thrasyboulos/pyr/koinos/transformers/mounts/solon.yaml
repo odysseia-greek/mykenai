@@ -1,0 +1,14 @@
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: solon-mount-transformer
+patch: |
+  - op: add
+    path: /spec/template/spec/containers/0/volumeMounts/-
+    value:
+      name: solon-certs
+      mountPath: /app/config/solon
+      readOnly: true
+target:
+  kind: Deployment
+  annotationSelector: "mount.odysseia.io/solon=true"

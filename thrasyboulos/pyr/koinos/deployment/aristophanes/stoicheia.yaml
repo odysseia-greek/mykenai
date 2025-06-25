@@ -23,9 +23,6 @@
                 secretKeyRef:
                     name: agreus-elastic
                     key: password
-      envFrom:
-          - configMapRef:
-                name: solon
       ports:
           - containerPort: 50052
       imagePullPolicy: Always

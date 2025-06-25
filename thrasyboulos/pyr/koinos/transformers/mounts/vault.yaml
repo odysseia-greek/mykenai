@@ -1,14 +1,8 @@
 apiVersion: builtin
 kind: PatchTransformer
 metadata:
-  name: vault-volume-transformer
+  name: vault-mount-transformer
 patch: |
-  - op: add
-    path: /spec/template/spec/volumes/-
-    value:
-      name: vault-server-tls
-      secret:
-        secretName: vault-server-tls
   - op: add
     path: /spec/template/spec/containers/0/volumeMounts/-
     value:
@@ -17,4 +11,4 @@ patch: |
       readOnly: true
 target:
   kind: Deployment
-  annotationSelector: "volumes.odysseia.io/vault=true"
+  annotationSelector: "mount.odysseia.io/vault=true"

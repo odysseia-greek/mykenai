@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: anaximenes
+  labels:
+    app: anaximenes
+  annotations:
+    volumes.odysseia.io/combined: "true"
+spec:
+  template:
+    metadata:
+      labels:
+        app: anaximenes
+        version: v0.1.0
+      annotations:
+        odysseia-greek/role: alias
+        odysseia-greek/access: tracing;metrics
+        perikles/accesses: solon
+    spec:
+      containers:
+        - name: "anaximenes"
+          image: ghcr.io/odysseia-greek/anaximenes:v0.1.0
+          imagePullPolicy: Always
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom:
+            - configMapRef:
+                name: euripides
+      restartPolicy: Never
+  backoffLimit: 3
+

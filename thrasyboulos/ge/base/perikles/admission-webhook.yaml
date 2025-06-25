@@ -31,5 +31,4 @@ webhooks:
       matchExpressions:
         - key: name
           operator: In
-          values: ["delphi", "olympia"]
-
+          values: ["delphi", "olympia", "attike", "apologia"]
