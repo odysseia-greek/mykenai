@@ -23,6 +23,8 @@
                 secretKeyRef:
                     name: agreus-elastic
                     key: password
+          - name: ELASTIC_SEARCH_SERVICE
+            value: "http://aristoteles-es-http.agora.svc:9200"
       ports:
           - containerPort: 50052
       imagePullPolicy: Always
