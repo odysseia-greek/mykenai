@@ -4,5 +4,3 @@ namespace: attike
 resources:
   - external-secrets.yaml
   - ns.yaml
-  - euripides
-  - praxiteles
