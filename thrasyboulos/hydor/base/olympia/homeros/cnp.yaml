@@ -1,0 +1,15 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-all-to-homeros
+  namespace: olympia
+spec:
+  endpointSelector:
+    matchLabels:
+      app: homeros
+  ingress:
+    - fromEntities:
+        - all
+  egress:
+    - toEntities:
+        - all

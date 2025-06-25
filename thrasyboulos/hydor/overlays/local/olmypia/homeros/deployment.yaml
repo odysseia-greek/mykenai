@@ -1,0 +1,60 @@
+
+# Source: homeros/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homeros
+  namespace: odysseia
+  labels:
+    app: homeros
+  annotations:
+    volumes.odysseia.io/elastic: "true"
+    mount.odysseia.io/elastic: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: homeros
+  template:
+    metadata:
+      labels:
+        app: homeros
+        release: homeros
+        version: v0.2.0
+      annotations:
+        perikles/accesses: "alexandros;sokrates;dionysios;herodotos"
+    spec:
+      serviceAccountName: sophokles-access-sa
+      containers:
+        - name: homeros
+          image: ghcr.io/odysseia-greek/homeros:v0.2.0
+          imagePullPolicy: Always
+          env:
+            - name: TRACE_CONFIG_PATH
+              value: /etc/config/trace-config.json
+            - name: VERSION
+              value: v0.2.0
+          envFrom:
+            - configMapRef:
+                name: homeros
+          ports:
+            - name: graphql
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 15
+          volumeMounts:
+            - name: trace-config-volume
+              mountPath: /etc/config
+      volumes:
+        - name: trace-config-volume
+          configMap:
+            name: homeros-trace-config

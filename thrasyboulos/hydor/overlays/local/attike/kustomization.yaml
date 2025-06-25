@@ -10,6 +10,6 @@ labels:
   - pairs:
       environment: "k3d"
       variant: "k3d"
-      domain: "backend"
+      domain: "tracing"
     includeSelectors: false
     includeTemplates: true
