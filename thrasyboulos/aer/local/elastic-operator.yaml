@@ -11,6 +11,6 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: thrasyboulos/ge/local/elastic-operator
+  path: thrasyboulos/ge/overlays/local/elastic-operator
   prune: true
   wait: true

@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../../base/apologia/alkibiades
+  - ../../../base/apologia/antisthenes
+  - ../../../base/apologia/aristippos
+  - ../../../base/apologia/kritias
+  - ../../../base/apologia/kriton
+  - ../../../base/apologia/xenofon
+  - ../../../base/apologia/sokrates
+  - ../../../base/apologia/meletos

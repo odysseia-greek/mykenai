@@ -11,6 +11,6 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: thrasyboulos/ge/local/cluster-config
+  path: thrasyboulos/ge/overlays/local/cluster-config
   prune: true
   wait: true
