@@ -11,7 +11,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: thrasyboulos/ge/base/attike
+  path: thrasyboulos/hydor/local/attike
   prune: true
   wait: true
   dependsOn:

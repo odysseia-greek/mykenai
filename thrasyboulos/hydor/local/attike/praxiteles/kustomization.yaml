@@ -3,3 +3,4 @@ kind: Kustomization
 namespace: attike
 resources:
   - deployment.yaml
+  - ../../../base/attike/praxiteles
