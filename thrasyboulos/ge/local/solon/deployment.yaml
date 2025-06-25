@@ -48,7 +48,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: user
-                  name: solon-elastic
+                  name: solon-user
             - name: ELASTIC_SEARCH_PASSWORD
               valueFrom:
                 secretKeyRef:
