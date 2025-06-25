@@ -24,6 +24,12 @@
                 fieldPath: metadata.annotations['odysseia-greek/access']
           - name: SOLON_SERVICE
             value: https://solon.delphi.svc:5443
+          - name: ENV
+            value: "k3d"
+          - name: TLS_ENABLED
+            value: "true"
+          - name: CERT_ROOT
+            value: "/app/config"
         volumeMounts:
           - name: solon-certs
             mountPath: /app/config/solon
