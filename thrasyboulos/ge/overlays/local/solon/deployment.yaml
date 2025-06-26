@@ -27,6 +27,7 @@ spec:
         elastic/roles: "api;seeder;hybrid;creator;alias"
         perikles/hostname: "solon"
         perikles/validity: "365"
+        solon/namespaces: "attike;olympia"
     spec:
       serviceAccountName: solon-access-sa
       initContainers:
@@ -55,13 +56,17 @@ spec:
               readOnly: true
       containers:
         - name: "solon"
-          image: ghcr.io/odysseia-greek/solon:v0.1.4
+          image: ghcr.io/odysseia-greek/solon:v0.2.0
           imagePullPolicy: Always
           env:
             - name: NAMESPACE
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+            - name: SOLON_MANAGED_NAMESPACES
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['solon/namespaces']
             - name: AUTH_METHOD
               value: kubernetes
             - name: ELASTIC_SEARCH_USER
