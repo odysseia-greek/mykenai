@@ -1,7 +1,7 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: allow-all-elasticsearch-access-solon
+  name: allow-all-elasticsearch-access-euripides
 spec:
   endpointSelector:
     matchLabels:
