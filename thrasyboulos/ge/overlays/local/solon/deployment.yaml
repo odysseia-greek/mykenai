@@ -64,8 +64,6 @@ spec:
                   fieldPath: metadata.namespace
             - name: AUTH_METHOD
               value: kubernetes
-            - name: CERT_ROOT
-              value: /app/config
             - name: ELASTIC_SEARCH_USER
               valueFrom:
                 secretKeyRef:
