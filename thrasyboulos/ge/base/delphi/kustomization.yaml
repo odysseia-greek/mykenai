@@ -5,6 +5,7 @@ resources:
   - ns.yaml
   - external-secrets.yaml
   - secrets
+  - metrics-rbac.yaml
 
 components:
   - ../../../pyr/koinos/common-env/overlays/local

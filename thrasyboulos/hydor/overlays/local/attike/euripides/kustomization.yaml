@@ -11,6 +11,7 @@ components:
   - ../../../../../pyr/koinos/deployment/periandros
   - ../../../../../pyr/koinos/deployment/sophokles
   - ../../../../../pyr/koinos/deployment/aristides
+  - ../../../../../pyr/koinos/deployment/serviceaccount
   - ../../../../../pyr/koinos/resources/local/low
   - ../../../../../pyr/koinos/resources/local/job
   - ../../../../../pyr/koinos/transformers/volumes/combined

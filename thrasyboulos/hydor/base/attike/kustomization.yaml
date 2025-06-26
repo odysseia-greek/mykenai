@@ -4,6 +4,7 @@ namespace: attike
 resources:
   - external-secrets.yaml
   - ns.yaml
+  - metrics-rbac.yaml
 
 components:
   - ../../../pyr/koinos/common-env/overlays/local

@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - ns.yaml
   - external-secrets.yaml
+  - metrics-rbac.yaml

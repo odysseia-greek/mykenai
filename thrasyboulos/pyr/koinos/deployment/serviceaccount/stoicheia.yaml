@@ -1,0 +1,3 @@
+- op: add
+  path: /spec/template/metadata/annotations/serviceAccount.sophokles
+  value: "sophokles-access"
