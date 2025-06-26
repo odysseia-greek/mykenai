@@ -5,6 +5,7 @@ resources:
   - ../../../base/attike
   - euripides
   - praxiteles
+  - aiskhylos
 
 labels:
   - pairs:

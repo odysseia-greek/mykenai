@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aiskhylos
+  labels:
+    app: aiskhylos
+  annotations:
+    volumes.odysseia.io/init: "true"
+    volumes.odysseia.io/elastic: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aiskhylos
+  template:
+    metadata:
+      labels:
+        app: aiskhylos
+        release: aiskhylos
+        version: v0.1.0
+      annotations:
+        odysseia-greek/role: creator
+        odysseia-greek/access: metrics
+    spec:
+      serviceAccountName: aiskhylos-access-sa
+      containers:
+        - name: "aiskhylos"
+          image: ghcr.io/odysseia-greek/aiskhylos:v0.1.0
+          imagePullPolicy: Always
+          env:
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: WAIT_TIME
+              value: "300"
+            - name: ELASTIC_SEARCH_USER
+              valueFrom:
+                secretKeyRef:
+                  name: eumetros-elastic
+                  key: user
+            - name: ELASTIC_SEARCH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: eumetros-elastic
+                  key: password
+          envFrom:
+            - configMapRef:
+                name: aiskhylos

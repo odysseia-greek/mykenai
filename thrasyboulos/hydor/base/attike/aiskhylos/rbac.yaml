@@ -1,0 +1,30 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: aiskhylos-access-sa
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: aiskhylos
+rules:
+  - apiGroups: [ "" ]
+    resources: [ "nodes" ]
+    verbs: [ "get" ]
+  - apiGroups: [ "metrics.k8s.io" ]
+    resources: [ "nodes", "pods" ]
+    verbs: [ "get", "list" ]
+---
+sapiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: aiskhylos
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: aiskhylos
+subjects:
+  - kind: ServiceAccount
+    name: aiskhylos-access-sa
+    namespace: attike

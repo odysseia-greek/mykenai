@@ -28,7 +28,7 @@ releases:
     version: 0.0.1
     missingFileHandler: Error
     labels:
-      tier: theofrastos
+      tier: base
     values:
       - values/{{ .Environment.Name }}.yaml
 
@@ -88,7 +88,7 @@ releases:
     version: 0.1.2
     missingFileHandler: Error
     labels:
-      tier: solon
+      tier: infra
     needs:
       - odysseia/perikles
       - odysseia/vault
@@ -173,7 +173,7 @@ releases:
     version: 0.1.1
     missingFileHandler: Error
     labels:
-      tier: infra
+      tier: aiskhylos
     needs:
       - odysseia/solon
     values:
