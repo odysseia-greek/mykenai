@@ -4,3 +4,6 @@ namespace: olympia
 resources:
   - external-secrets.yaml
   - ns.yaml
+
+components:
+  - ../../../pyr/koinos/common-env/overlays/local

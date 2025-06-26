@@ -14,8 +14,8 @@
                 fieldRef:
                     fieldPath: metadata.namespace
       envFrom:
-          - configMapRef:
-                name: solon
+        - configMapRef:
+            name: odysseia-common-env
       ports:
           - containerPort: 50053
       imagePullPolicy: Always

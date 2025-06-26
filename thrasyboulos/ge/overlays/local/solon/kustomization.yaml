@@ -12,3 +12,4 @@ components:
   - ../../../../pyr/koinos/resources/local/mid
   - ../../../../pyr/koinos/transformers/volumes/combined
   - ../../../../pyr/koinos/transformers/mounts/combined
+  - ../../../../pyr/koinos/common-env/overlays/local

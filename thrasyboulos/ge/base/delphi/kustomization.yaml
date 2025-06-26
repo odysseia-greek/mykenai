@@ -4,3 +4,6 @@ resources:
   - ns.yaml
   - external-secrets.yaml
   - secrets
+
+components:
+  - ../../../pyr/koinos/common-env/overlays/local

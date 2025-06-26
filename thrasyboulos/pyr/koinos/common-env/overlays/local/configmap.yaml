@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: odysseia-common-env
+data:
+  SOLON_SERVICE: "https://solon.delphi.svc:5443"
+  ENV: "k3d"
+  TLS_ENABLED: "true"
+  CERT_ROOT: "/app/config"
+  ELASTIC_SEARCH_SERVICE: "http://aristoteles-es-http.agora.svc:9200"
+  VAULT_SERVICE: "https://vault.delphi.svc:8200"
+  VAULT_TLS: "true"
+  GATHER_METRICS: "true"
+  TLS_FILES: "/app/config"

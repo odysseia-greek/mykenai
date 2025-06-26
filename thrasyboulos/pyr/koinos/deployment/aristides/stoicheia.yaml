@@ -5,19 +5,13 @@
       name: "aristides"
       image: ghcr.io/odysseia-greek/aristides:v0.0.1
       env:
-        - name: VAULT_SERVICE
-          value: https://vault.delphi.svc:8200
-        - name: VAULT_TLS
-          value:  "true"
-        - name: SOLON_SERVICE
-          value: https://solon.delphi.svc:5443
         - name: POD_NAME
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
       envFrom:
         - configMapRef:
-            name: euripides
+            name: odysseia-common-env
       ports:
         - containerPort: 50051
       volumeMounts:

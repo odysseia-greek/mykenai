@@ -13,3 +13,4 @@ components:
   - ../../../../../pyr/koinos/resources/local/mid
   - ../../../../../pyr/koinos/transformers/volumes
   - ../../../../../pyr/koinos/transformers/mounts
+  - ../../../../../pyr/koinos/common-env/base/deploy
