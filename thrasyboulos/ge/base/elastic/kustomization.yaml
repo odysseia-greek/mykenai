@@ -6,4 +6,6 @@ resources:
   - cnp-solon.yaml
   - cnp-homeros.yaml
   - cnp-operator.yaml
+  - cnp-anaximenes.yaml
+  - cnp-euripides.yaml
   - ./theofrastos
