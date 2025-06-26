@@ -6,10 +6,9 @@ metadata:
 ---
 # role.yaml
 apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
+kind: ClusterRole
 metadata:
-  name: perikles
-  namespace: delphi
+  name: perikles-watcher
 rules:
   - apiGroups:
       - coordination.k8s.io
@@ -32,14 +31,13 @@ rules:
 ---
 # rolebinding.yaml
 apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
+kind: ClusterRoleBinding
 metadata:
-  name: perikles
-  namespace: delphi
+  name: perikles-watcher-binding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: perikles
+  kind: ClusterRole
+  name: perikles-watcher
 subjects:
   - kind: ServiceAccount
     name: periklessa
