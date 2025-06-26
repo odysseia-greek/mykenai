@@ -44,11 +44,11 @@ spec:
                   fieldPath: metadata.namespace
             - name: AUTH_METHOD
               value: token
-            - name: CERT_ROOT
-              value: /app/config
           envFrom:
             - configMapRef:
                 name: solon
+            - configMapRef:
+                name: odysseia-common-env
           volumeMounts:
             - name: vault-server-tls
               mountPath: /app/config/vault
