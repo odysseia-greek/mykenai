@@ -29,6 +29,6 @@ webhooks:
     timeoutSeconds: 30
     namespaceSelector:
       matchExpressions:
-        - key: name
+        - key: kubernetes.io/metadata.name
           operator: In
           values: ["makedonia", "olympia", "attike", "delphi"]
