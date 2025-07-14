@@ -43,6 +43,7 @@ data:
           - create
         cluster:
           - monitor
+          - manage
 
     hybrid:
       indices:
@@ -78,8 +79,12 @@ data:
         privileges:
           - create
           - index
+          - create_index
         cluster:
           - monitor
+          - manage
+          - manage_index_templates
+          - manage_aliases
 
     user_admin:
       indices: []
