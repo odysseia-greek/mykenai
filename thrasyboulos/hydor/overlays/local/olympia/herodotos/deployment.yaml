@@ -5,7 +5,8 @@ metadata:
   labels:
     app: herodotos
   annotations:
-    volumes.odysseia.io/combined: "true"
+    volumes.odysseia.io/existing: "true"
+    mounts.odysseia.io/existing: "true"
 spec:
   replicas: 1
   selector:
