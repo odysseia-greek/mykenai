@@ -1,0 +1,6 @@
+- op: replace
+  path: /spec/ports
+  value:
+    - name: "grpc"
+      port: 50060
+      targetPort: 50060
