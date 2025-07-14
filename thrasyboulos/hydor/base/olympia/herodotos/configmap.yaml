@@ -1,0 +1,8 @@
+---
+# Source: herodotos/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: herodotos
+data:
+  ALEXANDROS_SERVICE: "http://alexandros:5000"

@@ -249,7 +249,7 @@ releases:
     version: 0.1.1
     missingFileHandler: Error
     labels:
-      tier: backend
+      tier: herodotos
     needs:
       - odysseia/solon
     values:

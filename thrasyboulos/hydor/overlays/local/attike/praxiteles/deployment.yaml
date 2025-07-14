@@ -2,15 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: praxiteles
-  namespace: odysseia
-  labels:
-    heritage: "Helm"
-    release: "praxiteles"
-    chart: "praxiteles"
-    env: k3d
-    variant: k3d
-    app: praxiteles
-    domain: "backend"
 spec:
   replicas: 1
   selector:
@@ -26,7 +17,6 @@ spec:
       containers:
         - name: "praxiteles"
           image: ghcr.io/odysseia-greek/praxiteles:v0.1.0
-
           imagePullPolicy: Always
           env:
             - name: ENV

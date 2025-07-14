@@ -3,4 +3,18 @@ kind: Kustomization
 namespace: attike
 resources:
   - deployment.yaml
-  - ../../../../base/attike/praxiteles
+
+components:
+  - ../../../../../pyr/koinos/services/frontend
+
+patches:
+  - target:
+      version: v1
+      kind: Service
+    patch: |-
+      - op: replace
+        path: /metadata/name
+        value: praxiteles
+      - op: replace
+        path: /spec/selector/app
+        value: praxiteles

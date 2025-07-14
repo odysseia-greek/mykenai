@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - ../../../base/olympia
   - homeros
+  - herodotos
 
 labels:
   - pairs:

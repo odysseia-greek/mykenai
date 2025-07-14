@@ -1,10 +1,11 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: attike
+namespace: olympia
+
 resources:
-  - job.yaml
   - deployment.yaml
-  - ../../../../base/attike/euripides
+  - job.yaml
+  - scaler.yaml
 
 components:
   - ../../../../../pyr/koinos/deployment/aristophanes
@@ -12,7 +13,7 @@ components:
   - ../../../../../pyr/koinos/deployment/sophokles
   - ../../../../../pyr/koinos/deployment/aristides
   - ../../../../../pyr/koinos/deployment/serviceaccount
-  - ../../../../../pyr/koinos/services/graphql
+  - ../../../../../pyr/koinos/services/http
   - ../../../../../pyr/koinos/resources/local/low
   - ../../../../../pyr/koinos/resources/local/job
   - ../../../../../pyr/koinos/transformers/volumes/combined
@@ -26,7 +27,7 @@ patches:
     patch: |-
       - op: replace
         path: /metadata/name
-        value: euripides
+        value: herodotos
       - op: replace
         path: /spec/selector/app
-        value: euripides
+        value: herodotos

@@ -3,7 +3,7 @@ kind: Role
 metadata:
   name: sophokles
   labels:
-    release: "solon"
+    release: "sophokles"
 rules:
   - apiGroups: [ "metrics.k8s.io" ] # for sophokles should be done per pod
     resources: [ "pods" ]

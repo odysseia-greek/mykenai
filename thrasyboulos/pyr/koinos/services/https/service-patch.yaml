@@ -1,0 +1,6 @@
+- op: replace
+  path: /spec/ports
+  value:
+    - name: "https"
+      port: 5443
+      targetPort: 5443
