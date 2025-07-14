@@ -14,6 +14,7 @@ components:
   - ../../../../../pyr/koinos/services/graphql
   - ../../../../../pyr/koinos/resources/local/low
   - ../../../../../pyr/koinos/transformers/volumes/combined
+  - ../../../../../pyr/koinos/common-env/base/init
   - ../../../../../pyr/koinos/common-env/base/deploy
 
 patches:
