@@ -40,6 +40,9 @@ spec:
         - name: perikles
           image: ghcr.io/odysseia-greek/perikles:v0.1.6
           imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: perikles
           env:
             - name: ENV
               value: "k3d"
@@ -49,8 +52,6 @@ spec:
               value: /app/config
             - name: CRD_NAME
               value: perikles-mapping
-            - name: CONFIGMAP_NAME
-              value: elastic-roles-and-cnp
             - name: L7_MODE
               value: "true"
             - name: NAMESPACE
