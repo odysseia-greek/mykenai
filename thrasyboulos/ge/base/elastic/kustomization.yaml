@@ -3,13 +3,6 @@ kind: Kustomization
 namespace: agora
 resources:
   - ns.yaml
-  - cnp-solon.yaml
   - cnp-homeros.yaml
   - cnp-operator.yaml
-  - cnp-anaximenes.yaml
-  - cnp-euripides.yaml
-  - cnp-alexandros.yaml
-  - cnp-demokritos.yaml
-  - cnp-herakleitos.yaml
-  - cnp-herodotos.yaml
   - ./theofrastos

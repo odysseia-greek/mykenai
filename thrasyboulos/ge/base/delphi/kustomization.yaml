@@ -6,12 +6,6 @@ resources:
   - external-secrets.yaml
   - secrets
   - metrics-rbac.yaml
-  - cnp-herodotos.yaml
-  - cnp-herakleitos.yaml
-  - cnp-demokritos.yaml
-  - cnp-alexandros.yaml
-  - cnp-euripides.yaml
-  - cnp-anaximenes.yaml
 
 components:
   - ../../../pyr/koinos/common-env/overlays/local
