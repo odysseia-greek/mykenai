@@ -13,7 +13,10 @@ components:
   - ../../../../../pyr/koinos/deployment/serviceaccount
   - ../../../../../pyr/koinos/services/graphql
   - ../../../../../pyr/koinos/resources/local/low
+  - ../../../../../pyr/koinos/transformers/volumes/existing
+  - ../../../../../pyr/koinos/transformers/mounts/existing
   - ../../../../../pyr/koinos/transformers/volumes/combined
+  - ../../../../../pyr/koinos/transformers/mounts/combined
   - ../../../../../pyr/koinos/common-env/base/init
   - ../../../../../pyr/koinos/common-env/base/deploy
 
