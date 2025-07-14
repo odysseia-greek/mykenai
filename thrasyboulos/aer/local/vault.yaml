@@ -15,4 +15,4 @@ spec:
   prune: true
   wait: true
   dependsOn:
-    - name: perikles
+    - name: delphi
