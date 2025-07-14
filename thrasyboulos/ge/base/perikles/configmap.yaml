@@ -5,3 +5,4 @@ metadata:
 data:
   VAULT_NAMESPACE: "delphi"
   ELASTIC_NAMESPACE: "agora"
+  WATCHED_NAMESPACES: "attike;olympia;apologia;makedonia"
