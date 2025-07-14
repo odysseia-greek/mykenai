@@ -12,3 +12,4 @@ data:
   VAULT_TLS: "true"
   GATHER_METRICS: "true"
   TLS_FILES: "/app/config"
+  HOT_POLICY_NAME: "hot_plain"
