@@ -6,3 +6,4 @@ metadata:
   name: euripides
 data:
   MAX_AGE: "5"
+  HOT_POLICY_NAME: "hot_30d"

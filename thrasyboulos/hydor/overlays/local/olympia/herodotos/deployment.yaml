@@ -45,9 +45,6 @@ spec:
             - name: herodotos-certs
               mountPath: /app/config/herodotos
               readOnly: true
-            - name: aristarchos-certs
-              mountPath: /app/config/aristarchos
-              readOnly: true
           ports:
             - containerPort: 5000
               name: http
@@ -67,6 +64,3 @@ spec:
         - name: herodotos-certs
           secret:
             secretName: herodotos-tls-certs
-        - name: aristarchos-certs
-          secret:
-            secretName: aristarchos-tls-certs
