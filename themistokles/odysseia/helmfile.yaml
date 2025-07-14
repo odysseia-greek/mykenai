@@ -205,7 +205,7 @@ releases:
     version: 0.1.1
     missingFileHandler: Error
     labels:
-      tier: backend
+      tier: alexandros
     needs:
       - odysseia/solon
     values:
