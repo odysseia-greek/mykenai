@@ -42,8 +42,7 @@ data:
           - delete_index
           - create
         cluster:
-          - monitor
-          - manage
+          - all
 
     hybrid:
       indices:
@@ -69,8 +68,7 @@ data:
           - manage
           - all
         cluster:
-          - monitor
-          - manage
+          - all
 
     creator:
       indices:
@@ -82,7 +80,7 @@ data:
           - index
           - create_index
         cluster:
-          - monitor
+          - all
 
     user_admin:
       indices: []
