@@ -70,6 +70,8 @@ data:
           - all
         cluster:
           - monitor
+          - manage
+          - manage_aliases
 
     creator:
       indices:
@@ -82,9 +84,6 @@ data:
           - create_index
         cluster:
           - monitor
-          - manage
-          - manage_index_templates
-          - manage_aliases
 
     user_admin:
       indices: []
