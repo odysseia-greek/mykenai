@@ -1,26 +1,26 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: herakleitos
+  name: demokritos
   labels:
-    app: herakleitos
+    app: demokritos
   annotations:
     volumes.odysseia.io/combined: "true"
 spec:
   template:
     metadata:
       labels:
-        app: herakleitos
-        release: herodotos
+        app: demokritos
+        release: alexandros
         version: v0.2.0
       annotations:
         odysseia-greek/role: seeder
-        odysseia-greek/access: text
+        odysseia-greek/access: dictionary
         perikles/accesses: solon
     spec:
       containers:
-        - name: "herakleitos"
-          image: ghcr.io/odysseia-greek/herakleitos:v0.2.0
+        - name: "demokritos"
+          image: ghcr.io/odysseia-greek/demokritos:v0.2.0
           imagePullPolicy: Always
           env:
             - name: POD_NAME
@@ -33,10 +33,6 @@ spec:
                   fieldPath: metadata.annotations['odysseia-greek/access']
           envFrom:
             - configMapRef:
-                name: herodotos
+                name: alexandros
       restartPolicy: Never
-      volumes:
-        - name: aristarchos-certs
-          secret:
-            secretName: aristarchos-tls-certs
   backoffLimit: 3

@@ -1,21 +1,33 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: herodotos
+  name: alexandros
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: herodotos
-  minReplicas: 1
-  maxReplicas: 5
+    name: alexandros
+  minReplicas: 3
+  maxReplicas: 9
   metrics:
     - type: Resource
       resource:
         name: cpu
         target:
           type: Utilization
+          averageUtilization: 20
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
           averageUtilization: 40
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 60
     - type: Resource
       resource:
         name: cpu

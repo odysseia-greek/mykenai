@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alexandros
+data:
+  MAX_NGRAM: "6"
+  MIN_NGRAM: "2"
+  HERODOTOS_SERVICE: "http://herodotos.olympia.svc:5000"
