@@ -1,0 +1,17 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-vault-access-herodotos
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: vault
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app: herodotos
+            io.kubernetes.pod.namespace: olympia
+      toPorts:
+        - ports:
+            - port: "8200"
+              protocol: TCP
