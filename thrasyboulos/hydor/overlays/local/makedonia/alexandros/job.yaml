@@ -6,6 +6,7 @@ metadata:
     app: demokritos
   annotations:
     volumes.odysseia.io/combined: "true"
+    mounts.odysseia.io/combined: "true"
 spec:
   template:
     metadata:
@@ -31,8 +32,5 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.annotations['odysseia-greek/access']
-          envFrom:
-            - configMapRef:
-                name: alexandros
       restartPolicy: Never
   backoffLimit: 3

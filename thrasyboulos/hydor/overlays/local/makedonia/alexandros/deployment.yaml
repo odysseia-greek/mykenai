@@ -5,7 +5,8 @@ metadata:
   labels:
     app: alexandros
   annotations:
-    volumes.odysseia.io/combined: "true"
+    volumes.odysseia.io/existing: "true"
+    mounts.odysseia.io/existing: "true"
 spec:
   replicas: 3
   selector:
