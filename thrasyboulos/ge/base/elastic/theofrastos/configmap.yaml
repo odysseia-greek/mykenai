@@ -71,7 +71,6 @@ data:
         cluster:
           - monitor
           - manage
-          - manage_aliases
 
     creator:
       indices:
