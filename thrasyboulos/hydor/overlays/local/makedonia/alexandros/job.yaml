@@ -23,6 +23,9 @@ spec:
         - name: "demokritos"
           image: ghcr.io/odysseia-greek/demokritos:v0.2.0
           imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: alexandros
           env:
             - name: POD_NAME
               valueFrom:

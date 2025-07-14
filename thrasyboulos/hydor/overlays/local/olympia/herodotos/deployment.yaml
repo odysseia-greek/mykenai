@@ -39,6 +39,9 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom:
+            - configMapRef:
+                name: herodotos
           volumeMounts:
             - name: herodotos-certs
               mountPath: /app/config/herodotos
