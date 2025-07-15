@@ -5,6 +5,7 @@ resources:
   - ../../../base/olympia
   - homeros
   - herodotos
+  - dionysios
   - aristarchos
 
 labels:
