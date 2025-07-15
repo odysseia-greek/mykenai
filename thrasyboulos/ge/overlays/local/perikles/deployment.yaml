@@ -43,6 +43,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: perikles
+            - configMapRef:
+                name: elastic-roles-and-cnp
           env:
             - name: ENV
               value: "k3d"
