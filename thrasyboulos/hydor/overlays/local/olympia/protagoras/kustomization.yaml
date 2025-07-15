@@ -4,7 +4,9 @@ namespace: olympia
 
 resources:
   - cronjob.yaml
+  - job.yaml
 
 components:
   - ../../../../../pyr/koinos/resources/local/low
   - ../../../../../pyr/koinos/common-env/base/cronjob
+  - ../../../../../pyr/koinos/common-env/base/job
