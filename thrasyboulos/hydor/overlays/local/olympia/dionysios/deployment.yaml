@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dionysios
+  labels:
+    app: dionysios
+  annotations:
+    volumes.odysseia.io/existing: "true"
+    mounts.odysseia.io/existing: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dionysios
+  template:
+    metadata:
+      labels:
+        app: dionysios
+        release: dionysios
+        version: v0.2.0
+      annotations:
+        odysseia-greek/role: api
+        odysseia-greek/access: grammar
+        perikles/accesses: "solon;alexandros"
+        perikles/hostname: "dionysios"
+        perikles/validity: "10"
+    spec:
+      containers:
+        - name: "dionysios"
+          image: ghcr.io/odysseia-greek/dionysios:v0.2.0
+          imagePullPolicy: Always
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom:
+            - configMapRef:
+                name: dionysios
+          volumeMounts:
+            - name: dionysios-certs
+              mountPath: /app/config/dionysios
+              readOnly: true
+          ports:
+            - containerPort: 5000
+              name: http
+          livenessProbe:
+            httpGet:
+              path: /dionysios/v1/health
+              port: 5000
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /dionysios/v1/ping
+              port: 5000
+            initialDelaySeconds: 1
+            periodSeconds: 20
+      volumes:
+        - name: dionysios-certs
+          secret:
+            secretName: dionysios-tls-certs

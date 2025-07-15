@@ -1,0 +1,8 @@
+---
+# Source: dionysios/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dionysios
+data:
+  ALEXANDROS_SERVICE: "http://alexandros.makedonia.svc:5000"
