@@ -1,0 +1,45 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: protagoras
+  labels:
+    app: protagoras
+spec:
+  template:
+    metadata:
+      labels:
+        app: protagoras
+        release: protagoras
+        version: v0.2.0
+      annotations:
+        perikles/accesses: "herodotos;dionysios"
+    spec:
+      containers:
+        - name: "protagoras"
+          image: ghcr.io/odysseia-greek/protagoras:v0.2.0
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: protagoras
+          volumeMounts:
+            - name: herodotos-certs
+              mountPath: /app/config/herodotos
+              readOnly: true
+            - name: dionysios-certs
+              mountPath: /app/config/dionysios
+              readOnly: true
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 500m
+            limits:
+              memory: 128Mi
+      volumes:
+        - name: herodotos-certs
+          secret:
+            secretName: herodotos-tls-certs
+        - name: dionysios-certs
+          secret:
+            secretName: dionysios-tls-certs
+      restartPolicy: Never
+  backoffLimit: 3

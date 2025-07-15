@@ -1,0 +1,9 @@
+---
+# Source: dionysios/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: protagoras
+data:
+  DIONYSIOS_SERVICE: "http://dionysios.olympia.svc:5000"
+  HERODOTOS_SERVICE: "http://herodotos.olympia.svc:5000"
