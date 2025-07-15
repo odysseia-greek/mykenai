@@ -21,7 +21,7 @@ spec:
       annotations:
         odysseia-greek/role: api
         odysseia-greek/access: grammar
-        perikles/accesses: "solon;alexandros"
+        perikles/accesses: "solon;alexandros;aristarchos"
         perikles/hostname: "dionysios"
         perikles/validity: "10"
     spec:
