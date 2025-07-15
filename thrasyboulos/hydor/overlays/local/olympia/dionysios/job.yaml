@@ -16,7 +16,7 @@ spec:
         version: v0.2.0
       annotations:
         odysseia-greek/role: seeder
-        odysseia-greek/access: text
+        odysseia-greek/access: grammar
         perikles/accesses: solon
     spec:
       containers:
