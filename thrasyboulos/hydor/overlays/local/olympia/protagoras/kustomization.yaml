@@ -5,6 +5,7 @@ namespace: olympia
 resources:
   - cronjob.yaml
   - job.yaml
+  - ../../../../base/olympia/protagoras
 
 components:
   - ../../../../../pyr/koinos/resources/local/low
