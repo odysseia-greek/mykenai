@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: antisthenes
+  labels:
+    app: antisthenes
+  annotations:
+    volumes.odysseia.io/existing: "true"
+    mounts.odysseia.io/existing: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: antisthenes
+  template:
+    metadata:
+      labels:
+        app: antisthenes
+        release: antisthenes
+        version: v0.1.0
+      annotations:
+        odysseia-greek/role: api
+        odysseia-greek/access: grammar-quiz
+        perikles/accesses: "alexandros;solon;herodotos"
+        perikles/hostname: "antisthenes"
+        perikles/validity: "10"
+    spec:
+      containers:
+        - name: "antisthenes"
+          image: ghcr.io/odysseia-greek/antisthenes:v0.1.0
+
+          imagePullPolicy: Always
+          env:
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom:
+            - configMapRef:
+                name: antisthenes
+          volumeMounts:
+            - name: antisthenes-certs
+              mountPath: /app/config/antisthenes
+              readOnly: true
+          ports:
+            - containerPort: 50060
+      volumes:
+        - name: antisthenes-certs
+          secret:
+            secretName: antisthenes-tls-certs

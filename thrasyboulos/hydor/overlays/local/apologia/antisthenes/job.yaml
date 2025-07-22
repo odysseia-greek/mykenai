@@ -1,9 +1,9 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: parmenides-alkibiades
+  name: parmenides-antisthenes
   labels:
-    app: parmenides-alkibiades
+    app: parmenides-antisthenes
   annotations:
     volumes.odysseia.io/combined: "true"
     mounts.odysseia.io/combined: "true"
@@ -11,8 +11,8 @@ spec:
   template:
     metadata:
       labels:
-        app: parmenides-alkibiades
-        release: alkibiades
+        app: parmenides-antisthenes
+        release: antisthenes
         version: v0.2.0
       annotations:
         odysseia-greek/role: seeder
@@ -20,7 +20,7 @@ spec:
         perikles/accesses: "solon;aristarchos"
     spec:
       containers:
-        - name: "parmenides-alkibiades"
+        - name: "parmenides-antisthenes"
           image: ghcr.io/odysseia-greek/parmenides:v0.2.0
           imagePullPolicy: Always
           env:
@@ -34,6 +34,6 @@ spec:
                   fieldPath: metadata.annotations['odysseia-greek/access']
           envFrom:
             - configMapRef:
-                name: alkibiades
+                name: antisthenes
       restartPolicy: Never
   backoffLimit: 3

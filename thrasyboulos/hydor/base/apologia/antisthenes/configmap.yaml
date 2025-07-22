@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: antisthenes
+data:
+  VERSION: "v0.1.0"
+  ALEXANDROS_SERVICE: "http://alexandros.makedonia.svc:5000"
+  HERODOTOS_SERVICE: "http://herodotos.olympia.svc:5000"
