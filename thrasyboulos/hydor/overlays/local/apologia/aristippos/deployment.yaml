@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aristippos
+  labels:
+    app: aristippos
+  annotations:
+    volumes.odysseia.io/existing: "true"
+    mounts.odysseia.io/existing: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aristippos
+  template:
+    metadata:
+      labels:
+        app: aristippos
+        release: aristippos
+        version: v0.1.0
+      annotations:
+        odysseia-greek/role: api
+        odysseia-greek/access: media-quiz
+        perikles/accesses: "alexandros;solon;herodotos"
+        perikles/hostname: "aristippos"
+        perikles/validity: "10"
+    spec:
+      containers:
+        - name: "aristippos"
+          image: ghcr.io/odysseia-greek/aristippos:v0.1.0
+
+          imagePullPolicy: Always
+          env:
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom:
+            - configMapRef:
+                name: aristippos
+          volumeMounts:
+            - name: aristippos-certs
+              mountPath: /app/config/aristippos
+              readOnly: true
+          ports:
+            - containerPort: 50060
+      volumes:
+        - name: aristippos-certs
+          secret:
+            secretName: aristippos-tls-certs

@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: parmenides-kritias
+  labels:
+    app: parmenides-kritias
+  annotations:
+    volumes.odysseia.io/combined: "true"
+    mounts.odysseia.io/combined: "true"
+spec:
+  template:
+    metadata:
+      labels:
+        app: parmenides-kritias
+        release: kritias
+        version: v0.2.0
+      annotations:
+        odysseia-greek/role: seedert
+        odysseia-greek/access: multiple-choice-quiz
+        perikles/accesses: "solon;aristarchos"
+    spec:
+      containers:
+        - name: "parmenides-kritias"
+          image: ghcr.io/odysseia-greek/parmenides:v0.2.0
+          imagePullPolicy: Always
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom:
+            - configMapRef:
+                name: kritias
+      restartPolicy: Never
+  backoffLimit: 3

@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kritias
+  labels:
+    app: kritias
+  annotations:
+    volumes.odysseia.io/existing: "true"
+    mounts.odysseia.io/existing: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kritias
+  template:
+    metadata:
+      labels:
+        app: kritias
+        release: kritias
+        version: v0.1.0
+      annotations:
+        odysseia-greek/role: api
+        odysseia-greek/access: multiple-choice-quiz
+        perikles/accesses: "alexandros;solon;herodotos"
+        perikles/hostname: "kritias"
+        perikles/validity: "10"
+    spec:
+      containers:
+        - name: "kritias"
+          image: ghcr.io/odysseia-greek/kritias:v0.1.0
+
+          imagePullPolicy: Always
+          env:
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom:
+            - configMapRef:
+                name: kritias
+          volumeMounts:
+            - name: kritias-certs
+              mountPath: /app/config/kritias
+              readOnly: true
+          ports:
+            - containerPort: 50060
+      volumes:
+        - name: kritias-certs
+          secret:
+            secretName: kritias-tls-certs
