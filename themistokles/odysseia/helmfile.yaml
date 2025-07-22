@@ -336,7 +336,7 @@ releases:
     version: 0.2.0
     missingFileHandler: Error
     labels:
-      tier: quiz
+      tier: sokrates
     needs:
       - odysseia/solon
     values:

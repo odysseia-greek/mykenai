@@ -27,7 +27,7 @@ spec:
         elastic/roles: "api;seeder;hybrid;creator;alias"
         perikles/hostname: "solon"
         perikles/validity: "365"
-        solon/namespaces: "attike;olympia"
+        solon/namespaces: "attike;olympia;makedonia;apologia"
     spec:
       serviceAccountName: solon-access-sa
       initContainers:

@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sokrates
+  labels:
+    app: sokrates
+  annotations:
+    volumes.odysseia.io/elastic: "true"
+    mount.odysseia.io/elastic: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sokrates
+  template:
+    metadata:
+      labels:
+        app: sokrates
+        release: sokrates
+        version: v0.2.0
+      annotations:
+        perikles/accesses: "aristippos;xenofon;kriton;kritias;alkibiades;antisthenes"
+        perikles/hostname: "sokrates"
+        perikles/validity: "10"
+    spec:
+      serviceAccountName: sophokles-access-sa
+      containers:
+        - name: sokrates
+          image: ghcr.io/odysseia-greek/sokrates:v0.2.0
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: sokrates
+          ports:
+            - name: graphql
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 20
