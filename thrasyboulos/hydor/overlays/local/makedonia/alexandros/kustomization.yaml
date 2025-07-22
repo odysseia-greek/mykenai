@@ -6,6 +6,7 @@ resources:
   - deployment.yaml
   - job.yaml
   - scaler.yaml
+  - ../../../../base/makedonia/alexandros
 
 components:
   - ../../../../../pyr/koinos/deployment/aristophanes
