@@ -25,6 +25,7 @@ spec:
         perikles/hostname: "herodotos"
         perikles/validity: "10"
     spec:
+      serviceAccountName: sophokles-access
       containers:
         - name: "herodotos"
           image: ghcr.io/odysseia-greek/herodotos:v0.2.0

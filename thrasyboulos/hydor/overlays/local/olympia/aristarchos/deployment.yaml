@@ -25,6 +25,7 @@ spec:
         perikles/hostname: "aristarchos"
         perikles/validity: "10"
     spec:
+      serviceAccountName: sophokles-access
       containers:
         - name: "aristarchos"
           image: ghcr.io/odysseia-greek/aristarchos:v0.2.0

@@ -23,6 +23,7 @@ spec:
         odysseia-greek/access: tracing;metrics
         perikles/accesses: solon
     spec:
+      serviceAccountName: sophokles-access
       containers:
         - name: euripides
           image: ghcr.io/odysseia-greek/euripides:v0.1.0

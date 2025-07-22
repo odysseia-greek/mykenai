@@ -26,5 +26,5 @@ roleRef:
   name: aiskhylos
 subjects:
   - kind: ServiceAccount
-    name: aiskhylos-access-sa
+    name: aiskhylos-access
     namespace: attike

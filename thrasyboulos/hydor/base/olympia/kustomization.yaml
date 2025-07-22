@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: olympia
 resources:
   - external-secrets.yaml
+  - metrics-rbac.yaml
   - ns.yaml
 
 components:

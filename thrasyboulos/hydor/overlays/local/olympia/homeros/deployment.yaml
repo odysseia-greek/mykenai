@@ -23,7 +23,7 @@ spec:
       annotations:
         perikles/accesses: "alexandros;sokrates;dionysios;herodotos"
     spec:
-      serviceAccountName: sophokles-access-sa
+      serviceAccountName: sophokles-access
       containers:
         - name: homeros
           image: ghcr.io/odysseia-greek/homeros:v0.2.0
