@@ -25,7 +25,6 @@ spec:
         perikles/hostname: "alexandros"
         perikles/validity: "10"
     spec:
-      serviceAccountName: sophokles-access
       containers:
         - name: "alexandros"
           image: ghcr.io/odysseia-greek/alexandros:v0.2.0

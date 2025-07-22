@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: aristarchos
+  name: alkibiades
   labels:
-    app: aristarchos
+    app: alkibiades
   annotations:
     volumes.odysseia.io/existing: "true"
     mounts.odysseia.io/existing: "true"
@@ -11,36 +11,40 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: aristarchos
+      app: alkibiades
   template:
     metadata:
       labels:
-        app: aristarchos
-        release: aristarchos
-        version: v0.2.0
+        app: alkibiades
+        release: alkibiades
+        version: v0.1.0
       annotations:
-        odysseia-greek/role: hybrid
-        odysseia-greek/access: aggregator
-        perikles/accesses: solon
-        perikles/hostname: "aristarchos"
+        odysseia-greek/role: api
+        odysseia-greek/access: journey-quiz
+        perikles/accesses: "solon"
+        perikles/hostname: "alkibiades"
         perikles/validity: "10"
     spec:
       containers:
-        - name: "aristarchos"
-          image: ghcr.io/odysseia-greek/aristarchos:v0.2.0
+        - name: "alkibiades"
+          image: ghcr.io/odysseia-greek/alkibiades:v0.1.0
+
           imagePullPolicy: Always
           env:
             - name: ELASTIC_ACCESS
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom:
+            - configMapRef:
+                name: alkibiades
           volumeMounts:
-            - name: aristarchos-certs
-              mountPath: /app/config/aristarchos
+            - name: alkibiades-certs
+              mountPath: /app/config/alkibiades
               readOnly: true
           ports:
             - containerPort: 50060
       volumes:
-        - name: aristarchos-certs
+        - name: alkibiades-certs
           secret:
-            secretName: aristarchos-tls-certs
+            secretName: alkibiades-tls-certs

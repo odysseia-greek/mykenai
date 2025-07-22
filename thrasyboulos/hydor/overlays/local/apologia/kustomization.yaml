@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - ../../../base/apologia
   - sokrates
+  - alkibiades
 
 labels:
   - pairs:

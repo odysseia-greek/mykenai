@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: parmenides-alkibiades
+  labels:
+    app: parmenides-alkibiades
+  annotations:
+    volumes.odysseia.io/combined: "true"
+    mounts.odysseia.io/combined: "true"
+spec:
+  template:
+    metadata:
+      labels:
+        app: parmenides-alkibiades
+        release: alkibiades
+        version: v0.2.0
+      annotations:
+        odysseia-greek/role: seeder
+        odysseia-greek/access: journey-quiz
+        perikles/accesses: "solon;aristarchos"
+    spec:
+      containers:
+        - name: "parmenides-alkibiades"
+          image: ghcr.io/odysseia-greek/parmenides:v0.2.0
+          imagePullPolicy: Always
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom:
+            - configMapRef:
+                name: alkibiades
+      restartPolicy: Never
+  backoffLimit: 3

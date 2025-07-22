@@ -25,7 +25,6 @@ spec:
         perikles/hostname: "dionysios"
         perikles/validity: "10"
     spec:
-      serviceAccountName: sophokles-access
       containers:
         - name: "dionysios"
           image: ghcr.io/odysseia-greek/dionysios:v0.2.0

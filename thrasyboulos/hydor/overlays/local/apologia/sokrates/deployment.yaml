@@ -23,7 +23,6 @@ spec:
         perikles/hostname: "sokrates"
         perikles/validity: "10"
     spec:
-      serviceAccountName: sophokles-access
       containers:
         - name: sokrates
           image: ghcr.io/odysseia-greek/sokrates:v0.2.0
