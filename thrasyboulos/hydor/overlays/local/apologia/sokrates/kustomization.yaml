@@ -12,8 +12,8 @@ components:
   - ../../../../../pyr/koinos/deployment/serviceaccount
   - ../../../../../pyr/koinos/services/graphql
   - ../../../../../pyr/koinos/resources/local/mid
-  - ../../../../../pyr/koinos/transformers/volumes
-  - ../../../../../pyr/koinos/transformers/mounts
+  - ../../../../../pyr/koinos/transformers/volumes/combined
+  - ../../../../../pyr/koinos/transformers/mounts/combined
   - ../../../../../pyr/koinos/common-env/base/deploy
 
 patches:
