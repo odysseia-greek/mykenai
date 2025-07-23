@@ -1,0 +1,18 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: homeros-route
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`k3d-odysseia.greek`) && PathPrefix(`/homeros/v1`)
+      kind: Rule
+      services:
+        - name: homeros
+          port: 8080
+    - match: Host(`k3d-odysseia.greek`) && PathPrefix(`/graphql`)
+      kind: Rule
+      services:
+        - name: homeros
+          port: 8080

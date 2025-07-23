@@ -5,6 +5,7 @@ resources:
   - deployment.yaml
   - scaler.yaml
   - tracemap.yaml
+  - ir.yaml
   - ../../../../base/olympia/homeros
 
 components:

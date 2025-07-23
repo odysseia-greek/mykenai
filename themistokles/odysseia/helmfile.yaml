@@ -73,7 +73,7 @@ releases:
     version: 0.1.1
     missingFileHandler: Error
     labels:
-      tier: infra
+      tier: thermopulai
     values:
       - values/{{ .Environment.Name }}.yaml
     set:
