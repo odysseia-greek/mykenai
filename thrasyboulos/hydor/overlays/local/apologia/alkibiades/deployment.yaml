@@ -5,8 +5,8 @@ metadata:
   labels:
     app: alkibiades
   annotations:
-    volumes.odysseia.io/existing: "true"
-    mounts.odysseia.io/existing: "true"
+    mount.odysseia.io/combined: "true"
+    volumes.odysseia.io/combined: "true"
 spec:
   replicas: 1
   selector:
@@ -22,8 +22,6 @@ spec:
         odysseia-greek/role: api
         odysseia-greek/access: journey-quiz
         perikles/accesses: "solon"
-        perikles/hostname: "alkibiades"
-        perikles/validity: "10"
     spec:
       containers:
         - name: "alkibiades"
@@ -38,13 +36,5 @@ spec:
           envFrom:
             - configMapRef:
                 name: alkibiades
-          volumeMounts:
-            - name: alkibiades-certs
-              mountPath: /app/config/alkibiades
-              readOnly: true
           ports:
             - containerPort: 50060
-      volumes:
-        - name: alkibiades-certs
-          secret:
-            secretName: alkibiades-tls-certs

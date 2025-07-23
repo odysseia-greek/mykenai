@@ -5,8 +5,8 @@ metadata:
   labels:
     app: aristippos
   annotations:
-    volumes.odysseia.io/existing: "true"
-    mounts.odysseia.io/existing: "true"
+    mount.odysseia.io/combined: "true"
+    volumes.odysseia.io/combined: "true"
 spec:
   replicas: 1
   selector:
@@ -22,8 +22,6 @@ spec:
         odysseia-greek/role: api
         odysseia-greek/access: media-quiz
         perikles/accesses: "alexandros;solon;herodotos"
-        perikles/hostname: "aristippos"
-        perikles/validity: "10"
     spec:
       containers:
         - name: "aristippos"
@@ -38,13 +36,5 @@ spec:
           envFrom:
             - configMapRef:
                 name: aristippos
-          volumeMounts:
-            - name: aristippos-certs
-              mountPath: /app/config/aristippos
-              readOnly: true
           ports:
             - containerPort: 50060
-      volumes:
-        - name: aristippos-certs
-          secret:
-            secretName: aristippos-tls-certs

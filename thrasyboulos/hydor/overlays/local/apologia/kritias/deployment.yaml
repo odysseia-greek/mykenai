@@ -5,8 +5,8 @@ metadata:
   labels:
     app: kritias
   annotations:
-    volumes.odysseia.io/existing: "true"
-    mounts.odysseia.io/existing: "true"
+    mount.odysseia.io/combined: "true"
+    volumes.odysseia.io/combined: "true"
 spec:
   replicas: 1
   selector:
@@ -22,8 +22,6 @@ spec:
         odysseia-greek/role: api
         odysseia-greek/access: multiple-choice-quiz
         perikles/accesses: "alexandros;solon;herodotos"
-        perikles/hostname: "kritias"
-        perikles/validity: "10"
     spec:
       containers:
         - name: "kritias"
@@ -38,13 +36,5 @@ spec:
           envFrom:
             - configMapRef:
                 name: kritias
-          volumeMounts:
-            - name: kritias-certs
-              mountPath: /app/config/kritias
-              readOnly: true
           ports:
             - containerPort: 50060
-      volumes:
-        - name: kritias-certs
-          secret:
-            secretName: kritias-tls-certs
