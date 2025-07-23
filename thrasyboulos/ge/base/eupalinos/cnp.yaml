@@ -1,0 +1,35 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: apologia-to-eupalinos
+spec:
+  description: "Allow all pods in apologia namespace to access Eupalinos"
+  endpointSelector:
+    matchLabels:
+      app: eupalinos
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: apologia
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: olympia-to-eupalinos
+spec:
+  description: "Allow all pods in olympia namespace to access Eupalinos"
+  endpointSelector:
+    matchLabels:
+      app: eupalinos
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: olympia
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
