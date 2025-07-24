@@ -16,7 +16,7 @@ spec:
         version: v0.2.0
       annotations:
         odysseia-greek/role: seeder
-        odysseia-greek/access: journey-quiz
+        odysseia-greek/access: grammar-quiz
         perikles/accesses: "solon;aristarchos"
     spec:
       containers:

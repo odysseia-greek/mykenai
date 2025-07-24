@@ -13,7 +13,7 @@ components:
   - ../../../../../pyr/koinos/deployment/sophokles
   - ../../../../../pyr/koinos/deployment/aristides
   - ../../../../../pyr/koinos/deployment/serviceaccount
-  - ../../../../../pyr/koinos/services/http
+  - ../../../../../pyr/koinos/services/grpc
   - ../../../../../pyr/koinos/resources/local/low
   - ../../../../../pyr/koinos/resources/local/job
   - ../../../../../pyr/koinos/transformers/volumes/existing
