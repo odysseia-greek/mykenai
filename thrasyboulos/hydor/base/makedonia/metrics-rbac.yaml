@@ -20,7 +20,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: sophokles-access
-    namespace: olympia
+    namespace: makedonia
 ---
 apiVersion: v1
 kind: ServiceAccount

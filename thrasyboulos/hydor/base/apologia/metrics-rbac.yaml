@@ -20,7 +20,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: sophokles-access
-    namespace: attike
+    namespace: apologia
 ---
 apiVersion: v1
 kind: ServiceAccount
