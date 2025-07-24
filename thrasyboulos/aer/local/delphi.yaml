@@ -14,5 +14,3 @@ spec:
   path: thrasyboulos/ge/base/delphi
   prune: true
   wait: true
-  dependsOn:
-    - name: elastic
