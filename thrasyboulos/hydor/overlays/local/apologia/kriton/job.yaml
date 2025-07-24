@@ -1,9 +1,9 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: parmenides-kritias
+  name: parmenides-kriton
   labels:
-    app: parmenides-kritias
+    app: parmenides-kriton
   annotations:
     volumes.odysseia.io/combined: "true"
     mounts.odysseia.io/combined: "true"
@@ -11,16 +11,16 @@ spec:
   template:
     metadata:
       labels:
-        app: parmenides-kritias
-        release: kritias
+        app: parmenides-kriton
+        release: kriton
         version: v0.2.0
       annotations:
         odysseia-greek/role: seeder
-        odysseia-greek/access: multiple-choice-quiz
-        perikles/accesses: "solon;aristarchos"
+        odysseia-greek/access: dialogue-quiz
+        perikles/accesses: "solon"
     spec:
       containers:
-        - name: "parmenides-kritias"
+        - name: "parmenides-kriton"
           image: ghcr.io/odysseia-greek/parmenides:v0.2.0
           imagePullPolicy: Always
           env:
@@ -34,6 +34,6 @@ spec:
                   fieldPath: metadata.annotations['odysseia-greek/access']
           envFrom:
             - configMapRef:
-                name: kritias
+                name: kriton
       restartPolicy: Never
   backoffLimit: 3

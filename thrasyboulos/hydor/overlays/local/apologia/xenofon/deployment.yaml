@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: xenofon
+  labels:
+    app: xenofon
+  annotations:
+    volumes.odysseia.io/existing: "true"
+    mounts.odysseia.io/existing: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: xenofon
+  template:
+    metadata:
+      labels:
+        app: xenofon
+        release: xenofon
+        version: v0.1.0
+      annotations:
+        odysseia-greek/role: api
+        odysseia-greek/access: author-based-quiz
+        perikles/accesses: "solon"
+        perikles/hostname: "xenofon"
+        perikles/validity: "10"
+    spec:
+      containers:
+        - name: "xenofon"
+          image: ghcr.io/odysseia-greek/xenofon:v0.1.0
+
+          imagePullPolicy: Always
+          env:
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom:
+            - configMapRef:
+                name: xenofon
+          volumeMounts:
+            - name: xenofon-certs
+              mountPath: /app/config/xenofon
+              readOnly: true
+          ports:
+            - containerPort: 50060
+      volumes:
+        - name: xenofon-certs
+          secret:
+            secretName: xenofon-tls-certs
