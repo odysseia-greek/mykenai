@@ -13,7 +13,7 @@ spec:
             k8s:io.kubernetes.pod.namespace: apologia
       toPorts:
         - ports:
-            - port: "8080"
+            - port: "50051"
               protocol: TCP
 ---
 apiVersion: cilium.io/v2
@@ -31,5 +31,5 @@ spec:
             k8s:io.kubernetes.pod.namespace: olympia
       toPorts:
         - ports:
-            - port: "8080"
+            - port: "50051"
               protocol: TCP
