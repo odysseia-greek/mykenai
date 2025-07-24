@@ -1,0 +1,19 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  annotations:
+    gitops.ignore: "true"
+  name: allow-apologia-namespace-to-aristarchos
+  namespace: olympia
+spec:
+  endpointSelector:
+    matchLabels:
+      app: aristarchos
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: apologia
+      toPorts:
+        - ports:
+            - port: "50060"
+              protocol: TCP

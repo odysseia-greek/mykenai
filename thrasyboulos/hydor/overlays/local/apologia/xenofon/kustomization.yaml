@@ -5,6 +5,7 @@ namespace: apologia
 resources:
   - deployment.yaml
   - job.yaml
+  - temp-cnp.yaml
   - ../../../../base/apologia/xenofon
 
 components:
