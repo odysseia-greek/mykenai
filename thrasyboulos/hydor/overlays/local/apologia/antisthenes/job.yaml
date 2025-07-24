@@ -8,9 +8,6 @@ metadata:
     volumes.odysseia.io/combined: "true"
     mounts.odysseia.io/combined: "true"
 spec:
-  selector:
-    matchLabels:
-      app: parmenides-antisthenes
   template:
     metadata:
       labels:
