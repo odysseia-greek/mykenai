@@ -5,7 +5,9 @@ resources:
   - ../../../base/apologia
   - sokrates
   - alkibiades
+  - antisthenes
   - aristippos
+  - kritias
 
 labels:
   - pairs:

@@ -22,6 +22,8 @@ spec:
         odysseia-greek/role: api
         odysseia-greek/access: grammar-quiz
         perikles/accesses: "alexandros;solon;herodotos"
+        perikles/hostname: "antisthenes"
+        perikles/validity: "10"
     spec:
       containers:
         - name: "antisthenes"
@@ -36,5 +38,13 @@ spec:
           envFrom:
             - configMapRef:
                 name: antisthenes
+          volumeMounts:
+            - name: antisthenes-certs
+              mountPath: /app/config/antisthenes
+              readOnly: true
           ports:
             - containerPort: 50060
+      volumes:
+        - name: antisthenes-certs
+          secret:
+            secretName: antisthenes-tls-certs
