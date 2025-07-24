@@ -10,6 +10,10 @@ spec:
       app: eupalinos
   template:
     metadata:
+      labels:
+        app: eupalinos
+        release: eupalinos
+        version: v1.0.2
       annotations:
         perikles/hostname: "eupalinos"
         perikles/validity: "60"
