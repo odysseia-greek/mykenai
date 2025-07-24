@@ -4,6 +4,7 @@ namespace: apologia
 resources:
   - deployment.yaml
   - scaler.yaml
+  - ir.yaml
   - ../../../../base/apologia/sokrates
 
 components:
