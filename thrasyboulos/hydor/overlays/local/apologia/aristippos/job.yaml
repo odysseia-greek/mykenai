@@ -17,7 +17,7 @@ spec:
       annotations:
         odysseia-greek/role: seeder
         odysseia-greek/access: media-quiz
-        perikles/accesses: "solon;aristarchos"
+        perikles/accesses: "solon"
     spec:
       containers:
         - name: "parmenides-aristippos"

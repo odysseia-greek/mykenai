@@ -6,4 +6,3 @@ data:
   VERSION: "v0.1.0"
   ALEXANDROS_SERVICE: "http://alexandros.makedonia.svc:5000"
   HERODOTOS_SERVICE: "http://herodotos.olympia.svc:5000"
-  ARISTARCHOS_SERVICE: "http://aristarchos.olympia.svc:50060"
