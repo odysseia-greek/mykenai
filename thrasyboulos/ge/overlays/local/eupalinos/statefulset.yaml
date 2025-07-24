@@ -4,6 +4,7 @@ metadata:
   name: eupalinos
 spec:
   replicas: 1
+  serviceName: eupalinos
   selector:
     matchLabels:
       app: eupalinos
