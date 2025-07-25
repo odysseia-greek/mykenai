@@ -6,7 +6,7 @@ resources:
   - statefulset.yaml
 
 components:
-  - ../../../../pyr/koinos/services/queue
+  - ../../../../pyr/koinos/services/grpc
 
 patches:
   - target:
