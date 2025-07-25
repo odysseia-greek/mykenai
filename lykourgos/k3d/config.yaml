@@ -4,7 +4,7 @@ metadata:
   name: odysseia
 servers: 1
 agents: 0
-image: rancher/k3s:v1.32.5-k3s1
+image: ghcr.io/k3s-io/k3s:v1.33.2-k3s1
 ports:
   - port: 8080:80
     nodeFilters:
