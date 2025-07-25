@@ -30,7 +30,7 @@ spec:
       serviceAccountName: solon-access-sa
       initContainers:
         - name: peisistratos
-          image: ghcr.io/odysseia-greek/peisistratos:v0.1.3
+          image: ghcr.io/odysseia-greek/peisistratos:v0.1.4
           imagePullPolicy: Always
           env:
             - name: POD_NAME
@@ -54,7 +54,7 @@ spec:
               readOnly: true
       containers:
         - name: "solon"
-          image: ghcr.io/odysseia-greek/solon:v0.2.0
+          image: ghcr.io/odysseia-greek/solon:v0.2.1
           imagePullPolicy: Always
           env:
             - name: NAMESPACE

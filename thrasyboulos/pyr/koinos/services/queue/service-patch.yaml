@@ -1,6 +1,0 @@
-- op: replace
-  path: /spec/ports
-  value:
-    - name: "queue"
-      port: 50051
-      targetPort: 50051
