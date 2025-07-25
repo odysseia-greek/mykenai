@@ -44,10 +44,10 @@ spec:
           disable_mlock = true
       resources:
         requests:
-          memory: "64Mi"
+          memory: "76Mi"
           cpu: "100m"
         limits:
-          memory: "64Mi"
+          memory: "76Mi"
     ui:
       enabled: true
     injector:
