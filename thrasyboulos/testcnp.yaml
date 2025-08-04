@@ -1,0 +1,23 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-cross-namespace-to-aristarchos
+  namespace: olympia  # assuming aristarchos is in olympia namespace
+spec:
+  endpointSelector:
+    matchLabels:
+      app: aristarchos
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: apologia
+        - matchLabels:
+            io.kubernetes.pod.namespace: agora
+        - matchLabels:
+            io.kubernetes.pod.namespace: attike
+        - matchLabels:
+            io.kubernetes.pod.namespace: makedonia
+      toPorts:
+        - ports:
+            - port: "50060"
+              protocol: TCP
