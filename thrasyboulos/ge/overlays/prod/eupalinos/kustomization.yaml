@@ -26,4 +26,4 @@ patches:
     patch: |-
       - op: replace
         path: /data/ENV
-        value: "k3d"
+        value: "prod"

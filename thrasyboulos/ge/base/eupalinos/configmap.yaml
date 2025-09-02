@@ -1,11 +1,9 @@
----
-# Source: dionysios/templates/configmap.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: eupalinos
 data:
-  ENV: "k3d"
+  ENV: "OVERWRITE"
   TLS_ENABLED: "false"
   CERT_ROOT: "/app/config"
   TOTAL_REPLICAS: "1"

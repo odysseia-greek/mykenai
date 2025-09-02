@@ -2,7 +2,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
 kind: Kustomization
 metadata:
-  name: elastic-operator
+  name: eupalinos
   namespace: flux-system
 spec:
   interval: 4h
@@ -11,6 +11,8 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: thrasyboulos/ge/base/elastic-operator
+  path: thrasyboulos/ge/overlays/acc/eupalinos
   prune: true
   wait: true
+  dependsOn:
+    - name: elastic
