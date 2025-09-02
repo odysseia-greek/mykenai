@@ -30,11 +30,10 @@
             name: odysseia-common-env
       imagePullPolicy: Always
       resources:
-          requests:
-              memory: 32Mi
-              cpu: 50m
-          limits:
-              memory: 64Mi
+        requests:
+          memory: 32Mi
+        limits:
+          memory: 32Mi
       volumeMounts:
           - name: elastic-internal-tls
             mountPath: /app/config/elastic
