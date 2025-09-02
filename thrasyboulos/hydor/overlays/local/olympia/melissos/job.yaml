@@ -10,7 +10,7 @@ spec:
       labels:
         app: melissos
         release: melissos
-        version: v0.2.1
+        version: v0.2.0
       annotations:
         odysseia-greek/role: hybrid
         odysseia-greek/access: dictionary
