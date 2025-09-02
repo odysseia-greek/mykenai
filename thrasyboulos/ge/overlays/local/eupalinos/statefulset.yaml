@@ -41,4 +41,4 @@ spec:
               memory: "32Mi"
               cpu: "100m"
             limits:
-              memory: "64Mi"
+              memory: "32Mi"

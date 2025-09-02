@@ -1,0 +1,26 @@
+# thrasyboulos/pyr/koinos/stoicheia/sophokles.yaml
+- op: add
+  path: /spec/template/spec/containers/-
+  value:
+      name: "sophokles"
+      image: ghcr.io/odysseia-greek/sophokles:v0.1.0
+      env:
+          - name: POD_NAME
+            valueFrom:
+                fieldRef:
+                    fieldPath: metadata.name
+          - name: NAMESPACE
+            valueFrom:
+                fieldRef:
+                    fieldPath: metadata.namespace
+      envFrom:
+        - configMapRef:
+            name: odysseia-common-env
+      ports:
+          - containerPort: 50053
+      imagePullPolicy: Always
+      resources:
+        requests:
+          memory: 32Mi
+        limits:
+          memory: 32Mi
