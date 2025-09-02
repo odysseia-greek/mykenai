@@ -271,7 +271,7 @@ releases:
     version: 0.1.1
     missingFileHandler: Error
     labels:
-      tier: backend
+      tier: melissos
     needs:
       - odysseia/solon
     values:
