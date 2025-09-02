@@ -13,7 +13,7 @@ spec:
       labels:
         app: demokritos
         release: alexandros
-        version: v0.2.0
+        version: v0.2.1
       annotations:
         odysseia-greek/role: seeder
         odysseia-greek/access: dictionary
@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: "demokritos"
-          image: ghcr.io/odysseia-greek/demokritos:v0.2.0
+          image: ghcr.io/odysseia-greek/demokritos:v0.2.1
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
