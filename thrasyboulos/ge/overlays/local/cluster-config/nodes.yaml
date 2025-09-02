@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: Node
-metadata:
-  annotations:
-    kustomize.toolkit.fluxcd.io/prune: disabled
-    kustomize.toolkit.fluxcd.io/ssa: merge
-  labels:
-    elastic-kind: all
-  name: k3d-odysseia-server-0
