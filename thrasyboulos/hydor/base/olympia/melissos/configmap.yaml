@@ -6,4 +6,6 @@ metadata:
   name: melissos
 data:
   JOB_NAME: "demokritos"
+  JOB_NAMESPACE: "makedonia"
   EUPALINOS_CHANNEL: "parmenides"
+
