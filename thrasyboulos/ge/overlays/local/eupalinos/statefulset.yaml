@@ -21,7 +21,7 @@ spec:
       terminationGracePeriodSeconds: 3
       containers:
         - name: eupalinos
-          image: ghcr.io/odysseia-greek/eupalinos:v0.2.0
+          image: ghcr.io/odysseia-greek/eupalinos:v0.2.1
           ports:
             - containerPort: 50060
           envFrom:
