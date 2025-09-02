@@ -15,7 +15,9 @@ components:
   - ../../../../../pyr/koinos/job/periandros
   - ../../../../../pyr/koinos/job/sophokles
   - ../../../../../pyr/koinos/job/aristides
+  - ../../../../../pyr/koinos/job/serviceaccount
   - ../../../../../pyr/koinos/cronjob/aristides
   - ../../../../../pyr/koinos/cronjob/aristophanes
   - ../../../../../pyr/koinos/cronjob/periandros
   - ../../../../../pyr/koinos/cronjob/sophokles
+  - ../../../../../pyr/koinos/cronjob/serviceaccount
