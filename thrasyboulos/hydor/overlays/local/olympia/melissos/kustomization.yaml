@@ -11,3 +11,11 @@ components:
   - ../../../../../pyr/koinos/resources/local/low
   - ../../../../../pyr/koinos/common-env/base/cronjob
   - ../../../../../pyr/koinos/common-env/base/job
+  - ../../../../../pyr/koinos/deployment/aristophanes
+  - ../../../../../pyr/koinos/deployment/periandros
+  - ../../../../../pyr/koinos/deployment/sophokles
+  - ../../../../../pyr/koinos/deployment/aristides
+  - ../../../../../pyr/koinos/cronjob/aristides
+  - ../../../../../pyr/koinos/cronjob/aristophanes
+  - ../../../../../pyr/koinos/cronjob/periandros
+  - ../../../../../pyr/koinos/cronjob/sophokles

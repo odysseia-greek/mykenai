@@ -1,0 +1,3 @@
+- op: add
+  path: /spec/jobTemplate/spec/template/spec/serviceAccountName
+  value: "sophokles-access"

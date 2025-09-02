@@ -5,13 +5,7 @@ resources: []
 
 patches:
   - target:
-      group: apps
-      version: v1
-      kind: Deployment
-    path: stoicheia.yaml
-
-  - target:
       group: batch
       version: v1
-      kind: Job
+      kind: CronJob
     path: stoicheia.yaml
