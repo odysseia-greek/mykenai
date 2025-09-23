@@ -7,6 +7,8 @@ metadata:
   annotations:
     volumes.odysseia.io/elastic: "true"
     volumes.odysseia.io/init: "true"
+    perikles/hostname: "eukleides"
+    perikles/validity: "10"
 spec:
   replicas: 1
   selector:
@@ -17,7 +19,7 @@ spec:
       labels:
         app: eukleides
         release: eukleides
-        version: v0.1.0
+        version: v0.0.1
     spec:
       containers:
         - name: "eukleides"
