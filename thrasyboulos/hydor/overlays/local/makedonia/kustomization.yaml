@@ -5,6 +5,7 @@ resources:
   - ../../../base/makedonia
   - alexandros
   - antigonos
+  - eukleides
 
 labels:
   - pairs:

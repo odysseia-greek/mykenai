@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eukleides
+  labels:
+    app: eukleides
+  annotations:
+    volumes.odysseia.io/elastic: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eukleides
+  template:
+    metadata:
+      labels:
+        app: eukleides
+        release: eukleides
+        version: v0.1.0
+      annotations:
+        perikles/hostname: "eukleides"
+        perikles/validity: "10"
+    spec:
+      containers:
+        - name: "eukleides"
+          image: ghcr.io/odysseia-greek/eukleides:v0.0.1
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: eukleides
+          volumeMounts:
+            - name: eukleides-certs
+              mountPath: /app/config/eukleides
+              readOnly: true
+          ports:
+            - containerPort: 50060
+      volumes:
+        - name: eukleides-certs
+          secret:
+            secretName: eukleides-tls-certs
