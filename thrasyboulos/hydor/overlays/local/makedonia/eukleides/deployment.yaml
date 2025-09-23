@@ -6,6 +6,7 @@ metadata:
     app: eukleides
   annotations:
     volumes.odysseia.io/elastic: "true"
+    volumes.odysseia.io/init: "true"
 spec:
   replicas: 1
   selector:
@@ -17,9 +18,6 @@ spec:
         app: eukleides
         release: eukleides
         version: v0.1.0
-      annotations:
-        perikles/hostname: "eukleides"
-        perikles/validity: "10"
     spec:
       containers:
         - name: "eukleides"
@@ -28,13 +26,5 @@ spec:
           envFrom:
             - configMapRef:
                 name: eukleides
-          volumeMounts:
-            - name: eukleides-certs
-              mountPath: /app/config/eukleides
-              readOnly: true
           ports:
             - containerPort: 50060
-      volumes:
-        - name: eukleides-certs
-          secret:
-            secretName: eukleides-tls-certs
