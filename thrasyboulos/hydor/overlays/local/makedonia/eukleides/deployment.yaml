@@ -7,6 +7,7 @@ metadata:
   annotations:
     volumes.odysseia.io/elastic: "true"
     volumes.odysseia.io/init: "true"
+    perikles/accesses: "solon"
     perikles/hostname: "eukleides"
     perikles/validity: "10"
 spec:
