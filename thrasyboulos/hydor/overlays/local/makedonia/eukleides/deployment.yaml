@@ -7,11 +7,6 @@ metadata:
   annotations:
     volumes.odysseia.io/elastic: "true"
     volumes.odysseia.io/init: "true"
-    perikles/accesses: "solon"
-    perikles/hostname: "eukleides"
-    perikles/validity: "10"
-    odysseia-greek/role: api
-    odysseia-greek/access: dictionary
 spec:
   replicas: 1
   selector:
@@ -23,6 +18,11 @@ spec:
         app: eukleides
         release: eukleides
         version: v0.0.1
+      annotations:
+        perikles/hostname: "eukleides"
+        perikles/validity: "10"
+        odysseia-greek/role: api
+        odysseia-greek/access: dictionary
     spec:
       containers:
         - name: "eukleides"

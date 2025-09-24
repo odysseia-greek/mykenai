@@ -1,0 +1,13 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: homeros-route
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`k3d-odysseia.greek`) && PathPrefix(`/alexandros/graphql`)
+      kind: Rule
+      services:
+        - name: alexandros
+          port: 8080
