@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: alexander
+  name: alexandros
   labels:
-    app: alexander
+    app: alexandros
   annotations:
     mount.odysseia.io/combined: "true"
     volumes.odysseia.io/combined: "true"
@@ -24,7 +24,7 @@ spec:
         perikles/validity: "10"
     spec:
       containers:
-        - name: alexander
+        - name: alexandros
           image: ghcr.io/odysseia-greek/alexandros:v0.3.0
           imagePullPolicy: Always
           envFrom:
