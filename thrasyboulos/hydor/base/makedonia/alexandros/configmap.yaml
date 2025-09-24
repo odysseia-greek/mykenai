@@ -6,3 +6,4 @@ data:
   MAX_NGRAM: "6"
   MIN_NGRAM: "2"
   HERODOTOS_SERVICE: "http://herodotos.olympia.svc:5000"
+  ANTIGONOS_SERVICE: "antigonos:50060"
