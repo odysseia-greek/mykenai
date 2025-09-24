@@ -8,4 +8,5 @@ resources:
   - cnp-operator.yaml
   - cnp-sokrates.yaml
   - cnp-melissos.yaml
+  - cnp-alexandros.yaml
   - ./theofrastos
