@@ -23,15 +23,15 @@ bootstrap-flux: check-flux
 	@echo "Bootstrapping Flux..."
 	@flux install
 	@flux create source git themistokles \
-	  --url="${REPO_URL_CORE}" \
-	  --branch="${BRANCH_CORE}" \
+	  --url="${REPO_URL}" \
+	  --branch="${BRANCH}" \
 	  --interval=1m
 
 	# kustomization for core
-	@flux create kustomization ks-themistokles \
+	@flux create kustomization themistokles \
 	  --namespace=flux-system \
 	  --source=themistokles \
-	  --path="${PATH_IN_REPO_CORE}" \
+	  --path="${PATH_IN_REPO}" \
 	  --prune=true \
 	  --interval=10m
 

@@ -21,13 +21,12 @@ check-flux:
 .PHONY: bootstrap-flux
 bootstrap-flux: check-flux
 	@echo "Bootstrapping Flux..."
-	@flux install
 	@flux create source git thrasyboulos \
 		--url=$(REPO_URL) \
 		--branch=$(BRANCH) \
 		--interval=1m
-	@flux create kustomization flux-system \
-		--source=flux-system \
+	@flux create kustomization thrasyboulos\
+		--source=thrasyboulos \
 		--path=$(PATH_IN_REPO) \
 		--prune=true \
 		--interval=10m

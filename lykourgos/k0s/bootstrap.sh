@@ -10,6 +10,7 @@ NC='\033[0m' # No Color
 
 # Versions
 CILIUM_VERSION="${CILIUM_VERSION:-1.18.1}"
+FLUX_NAMESPACE="${FLUX_NAMESPACE:-flux-system}"
 
 # Kubeconfig
 KUBECONFIG_FILE="${KUBECONFIG:-$HOME/.kube/config}"
@@ -80,6 +81,27 @@ kubectl wait --for=condition=Ready pods -n cilium -l k8s-app=hubble-ui --timeout
 
 echo -e "${GREEN}✓ Cilium installed successfully${NC}"
 echo ""
+
+# ---------- Flux ----------
+echo -e "${GREEN}Installing Flux controllers in ${FLUX_NAMESPACE}...${NC}"
+
+# Check flux CLI
+if ! command -v flux &> /dev/null; then
+  echo -e "${RED}Error: flux CLI is not installed${NC}"
+  echo "Install with: brew install fluxcd/tap/flux"
+  exit 1
+fi
+
+# Namespace
+kubectl create namespace "${FLUX_NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
+
+# Install controllers (idempotent)
+flux install --namespace "${FLUX_NAMESPACE}"
+
+# Wait for core controllers to be ready
+kubectl -n "${FLUX_NAMESPACE}" rollout status deploy/source-controller --timeout=180s || true
+kubectl -n "${FLUX_NAMESPACE}" rollout status deploy/kustomize-controller --timeout=180s || true
+kubectl -n "${FLUX_NAMESPACE}" rollout status deploy/notification-controller --timeout=180s || true
 
 
 # Summary
