@@ -46,17 +46,14 @@ if ! command -v helm &> /dev/null; then
 fi
 
 # Switch to k0s context
-echo -e "${GREEN}[1/5] Switching to ctx: ${CONTEXT}...${NC}"
+echo -e "${GREEN} Switching to ctx: ${CONTEXT}...${NC}"
 kubectl config use-context ${CONTEXT}
 echo ""
 
-# Wait for cluster to be ready
-echo -e "${GREEN}[2/5] Waiting for cluster to be ready...${NC}"
-kubectl wait --for=condition=Ready nodes --all --timeout=300s
-echo ""
+
 
 # Install Cilium
-echo -e "${GREEN}[3/5] Installing Cilium ${CILIUM_VERSION} in cilium namespace...${NC}"
+echo -e "${GREEN} Installing Cilium ${CILIUM_VERSION} in cilium namespace...${NC}"
 
 # Create cilium namespace
 kubectl create namespace cilium --dry-run=client -o yaml | kubectl apply -f -
@@ -65,6 +62,7 @@ cilium install --version ${CILIUM_VERSION} \
     --namespace cilium \
     --set ipam.mode=kubernetes \
     --set kubeProxyReplacement=false \
+    --set enableHostFirewall=false \
     --wait
 
 echo ""

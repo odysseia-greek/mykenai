@@ -92,10 +92,14 @@
         state: directory
         mode: '0755'
 
-    - name: Generate default k0s configuration
-      shell: "/usr/local/bin/k0s config create > /etc/k0s/k0s.yaml"
-      args:
-        creates: /etc/k0s/k0s.yaml
+
+    - name: Drop k0s config from template
+      template:
+        src: ../k0s/config.yaml.j2
+        dest: /etc/k0s/k0s.yaml
+        owner: root
+        group: root
+        mode: "0644"
 
     - name: Install k0s as a single-node cluster (controller + worker)
       shell: "/usr/local/bin/k0s install controller --single"
