@@ -12,8 +12,3 @@ spec:
         kind: HelmRepository
         name: rancher
         namespace: local-path-storage
-  values:
-    nodePathMap:
-      - node: DEFAULT_PATH_FOR_NON_LISTED_NODES
-        paths:
-          - /var/lib/rancher/k3s/storage
