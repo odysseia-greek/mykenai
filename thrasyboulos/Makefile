@@ -22,7 +22,7 @@ check-flux:
 bootstrap-flux: check-flux
 	@echo "Bootstrapping Flux..."
 	@flux install
-	@flux create source git flux-system \
+	@flux create source git thrasyboulos \
 		--url=$(REPO_URL) \
 		--branch=$(BRANCH) \
 		--interval=1m
