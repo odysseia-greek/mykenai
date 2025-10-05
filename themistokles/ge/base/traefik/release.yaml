@@ -4,10 +4,20 @@ metadata:
   name: traefik
 spec:
   interval: 10m
+  targetNamespace: traefik
+  install:
+    createNamespace: true
+    crds: Create
+    remediation:
+      retries: -1
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: -1
   chart:
     spec:
       chart: traefik
-      version: "^28.0.0"
+      version: "^28.0.0"   # Traefik v3.x chart line
       sourceRef:
         kind: HelmRepository
         name: traefik
@@ -15,9 +25,13 @@ spec:
   values:
     service:
       type: LoadBalancer
+      # annotations: {}   # <- add MetalLB or cloud LB annotations here if needed
     ports:
       web:
         redirectTo: websecure
       websecure:
         tls:
           enabled: true
+    # optional hardening:
+    podSecurityContext:
+      fsGroup: 65532

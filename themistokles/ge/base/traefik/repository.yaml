@@ -3,5 +3,5 @@ kind: HelmRepository
 metadata:
   name: traefik
 spec:
-  interval: 10m
-  url: https://traefik.github.io/charts
+  interval: 1h
+  url: https://helm.traefik.io/traefik
