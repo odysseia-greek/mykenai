@@ -7,21 +7,18 @@ spec:
   targetNamespace: local-path-storage
   install:
     createNamespace: true
-    remediation:
-      retries: -1
+    remediation: { retries: -1 }
   upgrade:
-    remediation:
-      retries: -1
+    remediation: { retries: -1 }
   chart:
     spec:
-      chart: local-path-provisioner
-      version: "^0.0.29"
+      chart: local-path-provisioner     # <- chart NAME must be present & exact
+      version: "0.0.29"                 # <- try exact version first (no ^)
       sourceRef:
         kind: HelmRepository
         name: rancher
         namespace: local-path-storage
   values:
-    # Optional: set default StorageClass behavior
     storageClass:
       defaultClass: true
       name: local-path
