@@ -28,7 +28,8 @@ spec:
       # annotations: {}   # <- add MetalLB or cloud LB annotations here if needed
     ports:
       web:
-        redirectTo: websecure
+        redirectTo: 
+          port: websecure
       websecure:
         tls:
           enabled: true
