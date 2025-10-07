@@ -7,8 +7,8 @@ spec:
   interval: 10m
   targetNamespace: traefik
   install:
-    crds: Skip
     createNamespace: true
+    crds: Skip
   chart:
     spec:
       chart: traefik
@@ -20,34 +20,26 @@ spec:
   values:
     hostNetwork: true
     dnsPolicy: ClusterFirstWithHostNet
-
     deployment:
       kind: Deployment
-      # or DaemonSet if you want every node to listen
-
     additionalArguments:
       - "--entryPoints.web.address=:8080"
-      - "--entryPoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entryPoints.web.http.redirections.entrypoint.scheme=https"
-      - "--entryPoints.websecure.address=:8443"
+      - "--entryPoints.websecure.address=:8443"  # keep defined, but no global redirect
       - "--api.dashboard=true"
-
     ports:
       web:
         port: 8080
       websecure:
         port: 8443
         tls:
-          enabled: true
+          enabled: false      # you said you’re not issuing certs now
       traefik:
+        port: 9000
         expose:
           default: false
           internal: true
-        port: 9000
-
     service:
       enabled: true
       type: ClusterIP
-
     podSecurityContext:
       fsGroup: 65532
