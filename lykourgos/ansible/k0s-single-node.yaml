@@ -27,6 +27,33 @@
         cmdline_path: /boot/cmdline.txt
       when: rpi_cmdline_old.stat.exists and not rpi_cmdline_new.stat.exists
 
+    - name: Install Longhorn packages
+      apt:
+        name:
+          - open-iscsi      # REQUIRED
+          - nfs-common      # Only needed for RWX/NFS backup target
+        state: present
+        update_cache: yes
+
+    - name: Ensure iscsid service is enabled and running
+      service:
+        name: iscsid
+        state: started
+        enabled: yes
+
+    - name: Load iscsi_tcp kernel module now (idempotent)
+      modprobe:
+        name: iscsi_tcp
+        state: present
+
+    - name: Persist iscsi_tcp module across reboots
+      copy:
+        dest: /etc/modules-load.d/iscsi.conf
+        content: "iscsi_tcp\n"
+        owner: root
+        group: root
+        mode: "0644"
+
     - name: Read current cmdline.txt
       slurp:
         src: "{{ cmdline_path }}"

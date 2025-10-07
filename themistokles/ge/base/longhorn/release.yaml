@@ -1,0 +1,39 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: longhorn
+spec:
+  interval: 10m
+  targetNamespace: longhorn
+  install:
+    createNamespace: true
+    remediation: { retries: -1 }
+  upgrade:
+    remediation: { retries: -1 }
+  chart:
+    spec:
+      chart: longhorn
+      # version: "1.6.x"
+      sourceRef:
+        kind: HelmRepository
+        name: longhorn
+        namespace: longhorn
+  values:
+    # Tolerate master/control-plane taints so Longhorn can run on a single node
+    global:
+      tolerations:
+        - key: "node-role.kubernetes.io/master"
+          effect: "NoSchedule"
+          operator: "Exists"
+        - key: "node-role.kubernetes.io/control-plane"
+          effect: "NoSchedule"
+          operator: "Exists"
+
+    # Make the built-in StorageClass 'longhorn' the default & use 1 replica
+    persistence:
+      defaultClass: true
+      defaultClassReplicaCount: 1
+
+    # Also set Longhorn's system default replica count to 1 (belt-and-braces)
+    defaultSettings:
+      defaultReplicaCount: 1
