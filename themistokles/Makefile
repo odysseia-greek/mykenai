@@ -3,7 +3,7 @@
 # Variables
 REPO_URL := https://github.com/odysseia-greek/mykenai.git
 BRANCH := feat/add-flux
-PATH_IN_REPO := ./themistokles/aer/local
+PATH_IN_REPO := ./themistokles/aer/acc
 CLUSTER_NAME := themistokles
 NAMESPACE := flux-system
 

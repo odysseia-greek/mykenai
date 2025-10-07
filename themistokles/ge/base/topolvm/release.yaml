@@ -1,0 +1,39 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: topolvm
+spec:
+  interval: 10m
+  targetNamespace: topolvm
+  install:
+    createNamespace: true
+    remediation: { retries: -1 }
+  upgrade:
+    remediation: { retries: -1 }
+  chart:
+    spec:
+      chart: topolvm
+      sourceRef:
+        kind: HelmRepository
+        name: topolvm
+        namespace: topolvm-system
+  values:
+    scheduler:
+      enabled: false
+    storageCapacityTracking:
+      enabled: true
+    lvmd:
+      managed: true
+      deviceClasses:
+        - name: fast              # you'll reference this in your StorageClass
+          default: true
+          type: thin              # thin for snapshots/expansion
+          volumeGroup: vg0
+          thinPool:
+            name: thinpool
+            overprovisionRatio: 1.0  # adjust if you want controlled overcommit
+    node:
+      tolerations:
+        - operator: Exists
+    namespaceLabels:
+      topolvm.io/webhook: "ignore"
