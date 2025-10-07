@@ -31,7 +31,6 @@ spec:
     additionalArguments:
       - "--entryPoints.web.address=:8080"
       - "--entryPoints.websecure.address=:8443"
-      - "--api.dashboard=true"
     ports:
       web:
         port: 8080
