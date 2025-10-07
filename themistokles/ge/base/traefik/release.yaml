@@ -2,18 +2,17 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: traefik
+  namespace: traefik
 spec:
   interval: 10m
   targetNamespace: traefik
   install:
-    createNamespace: false
+    createNamespace: true
     crds: Create
-    remediation:
-      retries: -1
+    remediation: { retries: -1 }
   upgrade:
     crds: CreateReplace
-    remediation:
-      retries: -1
+    remediation: { retries: -1 }
   chart:
     spec:
       chart: traefik
@@ -25,23 +24,30 @@ spec:
   values:
     hostNetwork: true
     dnsPolicy: ClusterFirstWithHostNet
+
     deployment:
       kind: Deployment
-    # Make Traefik listen on 8080/8443
+
     additionalArguments:
       - "--entryPoints.web.address=:8080"
+      - "--entryPoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entryPoints.web.http.redirections.entrypoint.scheme=https"
       - "--entryPoints.websecure.address=:8443"
+      - "--api.dashboard=true"
+
     ports:
       web:
         port: 8080
-        hostPort: 8080
       websecure:
         port: 8443
-        hostPort: 8443
         tls:
           enabled: true
+      traefik:
+        expose: false
+
     service:
       enabled: true
       type: ClusterIP
+
     podSecurityContext:
       fsGroup: 65532
