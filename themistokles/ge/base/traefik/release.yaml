@@ -33,19 +33,15 @@ spec:
       - "--entryPoints.websecure.address=:8443"
     ports:
       web:
-        port: 8080              # service port (ClusterIP)
-        hostPort: 8080          # bind node port 8080
-        redirectTo:
-          port: websecure
+        port: 8080
+        hostPort: 8080
       websecure:
         port: 8443
         hostPort: 8443
         tls:
           enabled: true
-
     service:
       enabled: true
       type: ClusterIP
-
     podSecurityContext:
       fsGroup: 65532
