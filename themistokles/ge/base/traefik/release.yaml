@@ -7,12 +7,7 @@ spec:
   interval: 10m
   targetNamespace: traefik
   install:
-    createNamespace: true
-    crds: Create
-    remediation: { retries: -1 }
-  upgrade:
-    crds: CreateReplace
-    remediation: { retries: -1 }
+    crds: Skip
   chart:
     spec:
       chart: traefik
@@ -21,6 +16,7 @@ spec:
         kind: HelmRepository
         name: traefik
         namespace: traefik
+        interval: 12h
   values:
     hostNetwork: true
     dnsPolicy: ClusterFirstWithHostNet
