@@ -42,8 +42,7 @@ spec:
         port: 8443
         tls:
           enabled: true
-      traefik:
-        expose: false
+
 
     service:
       enabled: true
