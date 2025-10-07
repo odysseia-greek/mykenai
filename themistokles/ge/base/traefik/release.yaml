@@ -40,7 +40,9 @@ spec:
         tls:
           enabled: true
       traefik:
-        expose: true
+        expose:
+          default: false
+          internal: true
         port: 9000
 
     service:
