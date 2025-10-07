@@ -8,6 +8,7 @@ spec:
   targetNamespace: traefik
   install:
     crds: Skip
+    createNamespace: true
   chart:
     spec:
       chart: traefik
@@ -23,6 +24,7 @@ spec:
 
     deployment:
       kind: Deployment
+      # or DaemonSet if you want every node to listen
 
     additionalArguments:
       - "--entryPoints.web.address=:8080"
@@ -38,7 +40,9 @@ spec:
         port: 8443
         tls:
           enabled: true
-
+      traefik:
+        expose: true
+        port: 9000
 
     service:
       enabled: true
