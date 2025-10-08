@@ -1,0 +1,94 @@
+---
+- name: Install k0s Single Node Cluster (controller + worker)
+  hosts: poleis-single
+  become: yes
+  vars:
+    k0s_version: "v1.33.4+k0s.0"
+  tasks:
+    - name: Ensure base packages
+      apt:
+        name: [ curl, iptables ]
+        state: present
+        update_cache: yes
+
+    - name: Download k0s install script
+      get_url:
+        url: https://get.k0s.sh
+        dest: /tmp/k0s-install.sh
+        mode: "0755"
+
+    - name: Install k0s binary
+      shell: /tmp/k0s-install.sh
+      environment:
+        K0S_VERSION: "{{ k0s_version }}"
+      args:
+        creates: /usr/local/bin/k0s
+
+    - name: Ensure /etc/k0s exists
+      file:
+        path: /etc/k0s
+        state: directory
+        mode: "0755"
+
+    - name: Drop k0s config from template
+      template:
+        src: templates/k0s/config.yaml.j2
+        dest: /etc/k0s/k0s.yaml
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Install controller (single) with config (idempotent)
+      shell: >
+        test -f /etc/systemd/system/k0scontroller.service ||
+        /usr/local/bin/k0s install controller --single -c /etc/k0s/k0s.yaml
+
+    - name: Start and enable k0s controller
+      systemd:
+        name: k0scontroller
+        state: started
+        enabled: yes
+        daemon_reload: yes
+
+    - name: Wait for API server port to be available
+      wait_for:
+        host: 127.0.0.1
+        port: 6443
+        delay: 5
+        timeout: 300
+        state: started
+
+    - name: Ensure ~/.kube for {{ ansible_user }}
+      file:
+        path: "/home/{{ ansible_user }}/.kube"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0755"
+
+    - name: Generate kubeconfig for admin
+      shell: /usr/local/bin/k0s kubeconfig admin
+      register: kubeconfig_content
+      changed_when: false
+
+    - name: Write kubeconfig
+      copy:
+        content: "{{ kubeconfig_content.stdout }}"
+        dest: "/home/{{ ansible_user }}/.kube/config"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0600"
+
+    - name: Fetch kubeconfig locally
+      fetch:
+        src: "/home/{{ ansible_user }}/.kube/config"
+        dest: "./k0s-kubeconfig-{{ inventory_hostname }}"
+        flat: yes
+
+    - name: Verify node registration
+      shell: /usr/local/bin/k0s kubectl get nodes -o wide
+      register: cluster_status
+      changed_when: false
+
+    - debug:
+        var: cluster_status.stdout_lines
