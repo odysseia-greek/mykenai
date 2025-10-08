@@ -16,7 +16,7 @@ spec:
   nodeSets:
     # Master nodes - minimal specs for quorum
     - name: master
-      count: 3
+      count: 1
       config:
         node.roles: ["master"]
         node.store.allow_mmap: false
@@ -31,13 +31,12 @@ spec:
                   cpu: 200m
                 limits:
                   memory: 1Gi
-                  cpu: 500m
           nodeSelector:
             kubernetes.io/arch: arm64  # For Raspberry Pi
 
     # Hot data nodes - high specs for data processing
     - name: hot-data
-      count: 2
+      count: 1
       config:
         node.roles: ["data_hot", "data_content", "ingest"]
         node.store.allow_mmap: false
@@ -51,11 +50,10 @@ spec:
             - name: elasticsearch
               resources:
                 requests:
-                  memory: 6Gi   # High memory request for scheduling preference
-                  cpu: 3000m    # High CPU request to limit scheduling
+                  memory: 2Gi   # High memory request for scheduling preference
+                  cpu: 1000m    # High CPU request to limit scheduling
                 limits:
-                  memory: 7Gi   # Leave some headroom for the system
-                  cpu: 4000m
+                  memory: 4Gi   # Leave some headroom for the system
           nodeSelector:
             kubernetes.io/arch: arm64
             odysseia.io/thermos-ready: "true"  # Label for hot-data capable nodes
