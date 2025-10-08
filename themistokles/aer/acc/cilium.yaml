@@ -12,7 +12,7 @@ spec:
     kind: GitRepository
     name: themistokles
   dependsOn:
-    name: node-labels
+    - name: node-labels
   path: themistokles/ge/base/cilium
   prune: true
   wait: true
