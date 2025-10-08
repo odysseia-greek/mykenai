@@ -31,8 +31,6 @@ spec:
                   cpu: 200m
                 limits:
                   memory: 1Gi
-          nodeSelector:
-            kubernetes.io/arch: arm64  # For Raspberry Pi
 
     # Hot data nodes - high specs for data processing
     - name: hot-data
@@ -54,11 +52,3 @@ spec:
                   cpu: 1000m    # High CPU request to limit scheduling
                 limits:
                   memory: 4Gi   # Leave some headroom for the system
-          nodeSelector:
-            kubernetes.io/arch: arm64
-            odysseia.io/thermos-ready: "true"  # Label for hot-data capable nodes
-          tolerations:
-            - key: "high-memory-workload"
-              operator: "Equal"
-              value: "true"
-              effect: "NoSchedule"
