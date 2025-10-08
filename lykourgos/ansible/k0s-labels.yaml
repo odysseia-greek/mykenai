@@ -1,0 +1,32 @@
+# 1) Detect on every node whether it's a Pi 5 (sets a hostvar we can use later)
+- hosts: poleis-acc-controller,poleis-acc-workers
+  become: yes
+  tasks:
+    - name: Detect if this node is a Raspberry Pi 5
+      shell: 'grep -q "Raspberry Pi 5" /proc/device-tree/model'
+      register: pi5_check
+      ignore_errors: true
+      changed_when: false
+
+    - name: Set envoy_capable host fact (true for Pi 5, false otherwise)
+      set_fact:
+        envoy_capable: "{{ pi5_check.rc == 0 }}"
+
+# 2) From the controller, apply labels to all joined nodes using admin kubeconfig
+- hosts: poleis-acc-controller
+  become: yes
+  vars:
+    all_nodes: "{{ groups['poleis-acc-controller'] + groups['poleis-acc-workers'] }}"
+  tasks:
+    - name: Label nodes for cilium-envoy scheduling (only if node exists)
+      shell: |
+        NODE="{{ item }}"
+        # only label if the Node object exists (worker might not be joined yet)
+        if /usr/local/bin/k0s kubectl get node "${NODE}" >/dev/null 2>&1; then
+          VAL="{{ 'true' if hostvars[item].envoy_capable else 'false' }}"
+          /usr/local/bin/k0s kubectl label node "${NODE}" cilium.io/envoy-capable="${VAL}" --overwrite
+        else
+          echo "Node ${NODE} not in cluster yet; skipping label"
+        fi
+      loop: "{{ all_nodes }}"
+      changed_when: false

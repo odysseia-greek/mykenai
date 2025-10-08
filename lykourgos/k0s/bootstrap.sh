@@ -59,12 +59,14 @@ echo -e "${GREEN} Installing Cilium ${CILIUM_VERSION} in cilium namespace...${NC
 # Create cilium namespace
 kubectl create namespace cilium --dry-run=client -o yaml | kubectl apply -f -
 
-cilium install --version ${CILIUM_VERSION} \
-    --namespace cilium \
-    --set ipam.mode=kubernetes \
-    --set kubeProxyReplacement=false \
-    --set enableHostFirewall=false \
-    --wait
+cilium install \
+  --version ${CILIUM_VERSION} \
+  --namespace cilium \
+  --set ipam.mode=kubernetes \
+  --set kubeProxyReplacement=false \
+  --set enableHostFirewall=false \
+  --set envoy.enabled=false \
+  --wait
 
 echo ""
 echo "Waiting for Cilium to be ready..."

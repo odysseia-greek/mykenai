@@ -65,7 +65,13 @@ deploy-k0s: ## Deploy k0s cluster using Ansible
 	@echo ""
 	@echo "Now run 'make merge-k0s-config' to add the cluster to your kubeconfig"
 
-full-setup: deploy-k0s merge-k0s-config ## Deploy k0s and merge config in one step
+add-worker-k0s: ## Deploy k0s cluster using Ansible
+	@echo "Adding k0s workers..."
+	@ansible-playbook -i inventory.ini k0s-join-nodes.yaml
+	@echo ""
+	@echo "Now run 'make merge-k0s-config' to add the cluster to your kubeconfig"
+
+full-setup: deploy-k0s add-worker-k0s merge-k0s-config ## Deploy k0s and merge config in one step
 	@echo "✓ Full k0s setup complete!"
 	@echo ""
 	@echo "To use the cluster:"

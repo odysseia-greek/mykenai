@@ -129,7 +129,7 @@
         mode: "0644"
 
     - name: Install k0s as a single-node cluster (controller + worker)
-      shell: "/usr/local/bin/k0s install controller --single"
+      shell: "/usr/local/bin/k0s install controller --enable-worker"
       args:
         creates: /etc/systemd/system/k0scontroller.service
 

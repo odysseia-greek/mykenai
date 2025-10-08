@@ -1,11 +1,20 @@
-
 ---
-- name: Install k0s Single Node Cluster
-  hosts: poleis-acc-controller
+- hosts: poleis-acc-controller
+  become: yes
+  tasks:
+    - name: Create worker join token (valid 1h)
+      shell: "/usr/local/bin/k0s token create --role=worker --expiry 1h"
+      register: k0s_worker_token
+      changed_when: false
+
+    - name: Share token fact
+      set_fact:
+        worker_join_token: "{{ k0s_worker_token.stdout }}"
+
+- hosts: poleis-acc-workers
   become: yes
   vars:
-    k0s_version: "v1.33.4+k0s.0"
-
+    controller_host: "{{ groups['poleis-acc-controller'][0] }}"
   tasks:
     - name: Check if running on Raspberry Pi
       stat:
@@ -100,94 +109,56 @@
         state: present
         update_cache: yes
 
+    - name: Install Longhorn prereqs
+      apt:
+        name:
+          - open-iscsi
+          - nfs-common
+        state: present
+        update_cache: yes
+
+    - name: Ensure iscsid running
+      service:
+        name: iscsid
+        state: started
+        enabled: yes
+
+    - name: Ensure pella resolves
+      lineinfile:
+        path: /etc/hosts
+        line: "192.168.1.191  pella"
+        state: present
+
+    # make sure k0s binary exists
     - name: Download k0s install script
       get_url:
         url: "https://get.k0s.sh"
         dest: "/tmp/k0s-install.sh"
         mode: '0755'
 
-    - name: Install k0s binary using install script
+    - name: Install k0s binary
       shell: "/tmp/k0s-install.sh"
-      environment:
-        K0S_VERSION: "{{ k0s_version }}"
       args:
         creates: /usr/local/bin/k0s
 
-    - name: Create k0s configuration directory
-      file:
-        path: /etc/k0s
-        state: directory
-        mode: '0755'
-
-
-    - name: Drop k0s config from template
-      template:
-        src: ../k0s/config.yaml.j2
-        dest: /etc/k0s/k0s.yaml
+    # --- write token to temp file ---
+    - name: Write join token to file
+      copy:
+        content: "{{ hostvars[controller_host].worker_join_token }}"
+        dest: /tmp/k0s-worker.token
         owner: root
         group: root
-        mode: "0644"
+        mode: '0600'
 
-    - name: Install k0s as a single-node cluster (controller + worker)
-      shell: "/usr/local/bin/k0s install controller --single"
-      args:
-        creates: /etc/systemd/system/k0scontroller.service
+    # --- install and start worker ---
+    - name: Install k0s worker (idempotent)
+      shell: >
+        test -f /etc/systemd/system/k0sworker.service ||
+        /usr/local/bin/k0s install worker --token-file /tmp/k0s-worker.token
 
-    - name: Start and enable k0s service
+    - name: Start/enable worker service
       systemd:
-        name: k0scontroller
+        name: k0sworker
         state: started
         enabled: yes
         daemon_reload: yes
-
-    - name: Wait for k0s service to be active
-      shell: "systemctl is-active k0scontroller"
-      register: k0s_service_check
-      until: k0s_service_check.stdout == "active"
-      retries: 30
-      delay: 10
-      changed_when: false
-
-    - name: Wait for API server port to be available
-      wait_for:
-        port: 6443
-        host: 127.0.0.1
-        delay: 10
-        timeout: 300
-        state: started
-
-    - name: Create kubeconfig directory for pi user
-      file:
-        path: /home/pi/.kube
-        state: directory
-        owner: pi
-        group: pi
-        mode: '0755'
-
-    - name: Generate kubeconfig for admin
-      shell: "/usr/local/bin/k0s kubeconfig admin"
-      register: kubeconfig_content
-      changed_when: false
-
-    - name: Write kubeconfig to file
-      copy:
-        content: "{{ kubeconfig_content.stdout }}"
-        dest: /home/pi/.kube/config
-        owner: pi
-        group: pi
-        mode: '0600'
-
-    - name: Fetch kubeconfig to local machine
-      fetch:
-        src: /home/pi/.kube/config
-        dest: "./k0s-kubeconfig-{{ inventory_hostname }}"
-        flat: yes
-
-    - name: Verify cluster is working
-      shell: "/usr/local/bin/k0s kubectl get nodes"
-      register: cluster_status
-      changed_when: false
-
-    - name: Show cluster status
-      debug:
-        var: cluster_status.stdout_lines
