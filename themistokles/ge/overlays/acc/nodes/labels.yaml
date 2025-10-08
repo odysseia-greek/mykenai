@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Node
+metadata:
+  name: pella-hellenistike
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+    kustomize.toolkit.fluxcd.io/ssa: disabled
+  labels:
+    cilium.io/envoy-capable: "true"
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: alexandreia-hellenistike
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+    kustomize.toolkit.fluxcd.io/ssa: disabled
+  labels:
+    cilium.io/envoy-capable: "false"

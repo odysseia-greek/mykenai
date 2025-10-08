@@ -11,6 +11,6 @@ spec:
   sourceRef:
     kind: GitRepository
     name: themistokles
-  path: themistokles/ge/overlays/acc/node-labels
+  path: themistokles/ge/overlays/acc/nodes
   prune: true
   wait: true

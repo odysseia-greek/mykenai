@@ -1,6 +1,0 @@
-apiVersion: v1
-kind: Node
-metadata:
-  name: pella-hellenistike
-  labels:
-    cilium.io/envoy-capable: "true"
