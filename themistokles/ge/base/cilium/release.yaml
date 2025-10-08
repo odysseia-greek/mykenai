@@ -4,6 +4,8 @@ metadata:
   name: cilium
   namespace: cilium
 spec:
+  interval: 10m
+  targetNamespace: cilium
   chart:
     spec:
       chart: cilium
