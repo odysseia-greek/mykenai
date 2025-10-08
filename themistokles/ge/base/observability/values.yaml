@@ -1,0 +1,46 @@
+prometheus:
+  prometheusSpec:
+    retention: 15d
+    retentionSize: 6GB
+    resources:
+      requests: { cpu: 100m, memory: 256Mi }
+      limits:   {  memory: 256Mi }
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: longhorn
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests: { storage: 15Gi }
+
+alertmanager:
+  enabled: false
+grafana:
+  enabled: true
+  adminUser: admin
+  defaultDashboardsEnabled: true
+  persistence:
+    enabled: true
+    type: pvc
+    storageClassName: longhorn
+    size: 5Gi
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: false
+  resources:
+    requests: { cpu: 50m, memory: 128Mi }
+    limits:   { memory: 128Mi }
+
+# Disable components you don’t expose (trim noise)
+kubeEtcd: { enabled: false }
+kubeProxy: { enabled: true }
+kubeScheduler: { enabled: true }
+kubeControllerManager: { enabled: true }
+
+# Operator tolerations if you run on controller nodes
+prometheusOperator:
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule

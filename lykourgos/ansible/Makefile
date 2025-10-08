@@ -2,7 +2,7 @@ INVENTORY_ACC = inventories/acc/hosts.yaml
 INVENTORY_PRD = inventories/prd/hosts.yaml
 INVENTORY_SINGLE = inventories/single/hosts.yaml
 
-.PHONY: ping-acc ping-prd bootstrap-acc bootstrap-prd k0s-acc
+.PHONY: ping-acc ping-prd bootstrap-acc bootstrap-prd k0s-acc k3s-acc k0s-single
 
 ping-acc:
 	ansible -i $(INVENTORY_ACC) all -m ping
