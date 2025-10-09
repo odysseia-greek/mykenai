@@ -11,7 +11,7 @@ metadata:
 apiVersion: v1
 kind: Node
 metadata:
-  name: alexandreia-hellenistike
+  name: antioch-hellenistike
   annotations:
     kustomize.toolkit.fluxcd.io/prune: disabled
     kustomize.toolkit.fluxcd.io/ssa: disabled

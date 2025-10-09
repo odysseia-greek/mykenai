@@ -11,14 +11,8 @@ all:
               arch: rpi5
         poleis-acc-workers:
           hosts:
-            alexandreia:
-              ansible_user: pi
-              ansible_ssh_private_key_file: ~/.ssh/id_raspie
-              ansible_host: 192.168.1.192
-              arch: rpi4
             antioch:
               ansible_user: pi
               ansible_ssh_private_key_file: ~/.ssh/id_raspie
-              ansible_host: 192.168.1.193
-              arch: rpi5
-              disabled: true
+              ansible_host: 192.168.1.124
+              arch: rpi4

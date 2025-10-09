@@ -1,23 +1,46 @@
 ---
 - name: Bootstrap Raspberry Pis for K3s/K0s
-  hosts: poleis-prd:poleis-acc
+  hosts: poleis-acc,poleis-prd
   become: yes
   serial: 1
   vars:
     use_cilium: true           # flip to false if you don’t want cgroup2 mount
     add_util_linux: true       # keep for k3s legacy bits if you like
   tasks:
-    - name: Determine cmdline path (newer vs older Raspberry Pi OS)
-      set_fact:
-        cmdline_path: "{{ item }}"
-      with_first_found:
-        - /boot/firmware/cmdline.txt
-        - /boot/cmdline.txt
+    # Prefer newer path, then fall back
+    - name: Candidate cmdline paths (newer first)
+      ansible.builtin.set_fact:
+        _cmdline_candidates:
+          - /boot/firmware/cmdline.txt
+          - /boot/cmdline.txt
+
+    - name: Probe candidate paths on remote
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      loop: "{{ _cmdline_candidates }}"
+      register: _cmdline_stats
+
+    - name: Pick the first existing cmdline.txt
+      ansible.builtin.set_fact:
+        cmdline_path: >-
+          {{
+            (_cmdline_stats.results
+             | selectattr('stat.exists')
+             | map(attribute='item')
+             | list
+            )[0] | default(omit)
+          }}
+
+    - name: Fail if no cmdline.txt found
+      ansible.builtin.fail:
+        msg: "Could not find cmdline.txt at /boot/firmware or /boot."
+      when: cmdline_path is not defined
 
     - name: Read current cmdline.txt
-      slurp:
+      ansible.builtin.slurp:
         src: "{{ cmdline_path }}"
       register: cmdline_content
+      become: true  # often needed for /boot
 
     - name: Check if cgroups are already enabled
       set_fact:
