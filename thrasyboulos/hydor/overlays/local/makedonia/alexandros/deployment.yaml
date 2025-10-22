@@ -19,7 +19,7 @@ spec:
         release: alexandros
         version: v0.3.0
       annotations:
-        perikles/accesses: "antigonos"
+        perikles/accesses: "antigonos;eukleides"
         perikles/hostname: "alexandros"
         perikles/validity: "10"
     spec:
