@@ -6,6 +6,7 @@ resources:
   - alexandros
   - antigonos
   - eukleides
+  - demokritos
 
 labels:
   - pairs:

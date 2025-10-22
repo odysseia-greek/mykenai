@@ -5,7 +5,6 @@ resources:
   - deployment.yaml
   - scaler.yaml
   - ir.yaml
-  - job.yaml
   - ../../../../base/makedonia/alexandros
 
 components:
