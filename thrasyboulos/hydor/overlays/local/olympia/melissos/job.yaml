@@ -16,7 +16,6 @@ spec:
         odysseia-greek/access: dictionary
         perikles/accesses: solon
     spec:
-      serviceAccountName: melissos
       containers:
         - name: "melissos"
           image: ghcr.io/odysseia-greek/melissos:v0.2.1
