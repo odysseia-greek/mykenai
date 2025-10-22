@@ -5,7 +5,6 @@ REPO_URL := https://github.com/odysseia-greek/mykenai.git
 BRANCH := feat/add-flux
 ENV ?= local
 PATH_IN_REPO := ./themistokles/aer/$(ENV)
-CLUSTER_NAME := themistokles
 NAMESPACE := flux-system
 
 # Check if flux CLI is installed

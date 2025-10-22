@@ -10,7 +10,7 @@ spec:
   timeout: 10m
   sourceRef:
     kind: GitRepository
-    name: flux-system
+    name: thrasyboulos
   path: thrasyboulos/hydor/overlays/local/olympia
   prune: true
   wait: true

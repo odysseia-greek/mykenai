@@ -3,8 +3,8 @@
 # Variables
 REPO_URL := https://github.com/odysseia-greek/mykenai.git
 BRANCH := feat/add-flux
-PATH_IN_REPO := ./thrasyboulos/aer/acc
-CLUSTER_NAME := odysseia
+ENV ?= local
+PATH_IN_REPO := ./thrasyboulos/aer/$(ENV)
 NAMESPACE := flux-system
 
 # Check if flux CLI is installed
@@ -41,31 +41,19 @@ bootstrap-flux-git: check-flux
 		--path=$(PATH_IN_REPO) \
 		--interval=1m
 
-# Check Flux status
-.PHONY: flux-status
-flux-status:
-	@echo "Checking Flux status..."
-	@flux get all
-
 # Default target
 .PHONY: all
 all: bootstrap-flux
 
-# Copy Elasticsearch secret from aristoteles to odysseia namespace
-.PHONY: copy-es-secret
-copy-es-secret:
-	@echo "Copying aristoteles-es-elastic-user secret from aristoteles to odysseia namespace..."
-	@kubectl get secret aristoteles-es-elastic-user -n agora -o jsonpath='{.data.elastic}' | \
-		awk 'BEGIN {print "apiVersion: v1\ndata:\n  elastic: {print $0}"}  END {print "kind: Secret\nmetadata:\n  name: aristoteles-es-elastic-user\n  namespace: delphi\ntype: Opaque"}' > secret.yaml
-
-# Help
 .PHONY: help
 help:
 	@echo "Available targets:"
-	@echo "  all               - Set up everything (default)"
 	@echo "  check-flux        - Check if Flux CLI is installed"
-	@echo "  bootstrap-flux    - Bootstrap Flux manually"
-	@echo "  bootstrap-flux-git - Bootstrap Flux using the git command"
+	@echo "  bootstrap-flux    - Bootstrap Flux manually (ENV=local|acc|prod, default: local)"
 	@echo "  flux-status       - Check Flux status"
-	@echo "  copy-es-secret    - Copy aristoteles-es-elastic-user secret from aristoteles to odysseia namespace"
 	@echo "  help              - Show this help message"
+	@echo ""
+	@echo "Usage examples:"
+	@echo "  make bootstrap-flux              # Uses local environment (default)"
+	@echo "  make bootstrap-flux ENV=acc      # Uses acc environment"
+	@echo "  make bootstrap-flux ENV=prod     # Uses prod environment"

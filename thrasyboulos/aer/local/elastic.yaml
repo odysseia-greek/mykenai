@@ -10,7 +10,7 @@ spec:
   timeout: 10m
   sourceRef:
     kind: GitRepository
-    name: flux-system
+    name: thrasyboulos
   path: thrasyboulos/ge/overlays/local/elastic
   prune: true
   wait: true
