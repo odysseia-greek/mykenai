@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Node
+metadata:
+  name: k3d-byzantium-server-0
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+    kustomize.toolkit.fluxcd.io/ssa: disabled
+  labels:
+    cilium.io/envoy-capable: "true"

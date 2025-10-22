@@ -46,13 +46,6 @@ if ! command -v helm &> /dev/null; then
     exit 1
 fi
 
-# Switch to k0s context
-echo -e "${GREEN} Switching to ctx: ${CONTEXT}...${NC}"
-kubectl config use-context ${CONTEXT}
-echo ""
-
-
-
 # Install Cilium
 echo -e "${GREEN} Installing Cilium ${CILIUM_VERSION} in cilium namespace...${NC}"
 

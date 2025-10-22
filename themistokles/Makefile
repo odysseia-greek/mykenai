@@ -3,7 +3,8 @@
 # Variables
 REPO_URL := https://github.com/odysseia-greek/mykenai.git
 BRANCH := feat/add-flux
-PATH_IN_REPO := ./themistokles/aer/acc
+ENV ?= local
+PATH_IN_REPO := ./themistokles/aer/$(ENV)
 CLUSTER_NAME := themistokles
 NAMESPACE := flux-system
 
@@ -20,7 +21,8 @@ check-flux:
 # Bootstrap Flux
 .PHONY: bootstrap-flux
 bootstrap-flux: check-flux
-	@echo "Bootstrapping Flux..."
+	@echo "Bootstrapping Flux for environment: $(ENV)..."
+	@echo "Using path: $(PATH_IN_REPO)"
 	@flux install
 	@flux create source git themistokles \
 	  --url="${REPO_URL}" \
@@ -45,6 +47,11 @@ flux-status:
 help:
 	@echo "Available targets:"
 	@echo "  check-flux        - Check if Flux CLI is installed"
-	@echo "  bootstrap-flux    - Bootstrap Flux manually"
+	@echo "  bootstrap-flux    - Bootstrap Flux manually (ENV=local|acc|prod, default: local)"
 	@echo "  flux-status       - Check Flux status"
 	@echo "  help              - Show this help message"
+	@echo ""
+	@echo "Usage examples:"
+	@echo "  make bootstrap-flux              # Uses local environment (default)"
+	@echo "  make bootstrap-flux ENV=acc      # Uses acc environment"
+	@echo "  make bootstrap-flux ENV=prod     # Uses prod environment"
