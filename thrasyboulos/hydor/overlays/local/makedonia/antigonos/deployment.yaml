@@ -26,7 +26,7 @@ spec:
         perikles/validity: "10"
     spec:
       containers:
-        - name: "antisthenes"
+        - name: "antigonos"
           image: ghcr.io/odysseia-greek/antigonos:dev
           imagePullPolicy: Always
           env:

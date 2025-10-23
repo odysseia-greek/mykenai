@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ptolemaios
+  labels:
+    app: ptolemaios
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ptolemaios
+  template:
+    metadata:
+      labels:
+        app: ptolemaios
+        release: ptolemaios
+        version: v0.0.1
+      annotations:
+        perikles/accesses: "herodotos"
+        perikles/hostname: "antigonos"
+        perikles/validity: "10"
+    spec:
+      containers:
+        - name: "ptolemaios"
+          image: ghcr.io/odysseia-greek/ptolemaios:v0.0.1
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: ptolemaios
+          ports:
+            - containerPort: 50060

@@ -7,6 +7,7 @@ resources:
   - antigonos
   - eukleides
   - demokritos
+  - ptolemaios
 
 labels:
   - pairs:
