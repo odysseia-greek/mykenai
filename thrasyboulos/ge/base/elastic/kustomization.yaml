@@ -9,4 +9,5 @@ resources:
   - cnp-sokrates.yaml
   - cnp-melissos.yaml
   - cnp-alexandros.yaml
+  - cnp-ptolemaios.yaml
   - ./theofrastos
