@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hefaistion
+  labels:
+    app: hefaistion
+  annotations:
+    mount.odysseia.io/combined: "true"
+    volumes.odysseia.io/combined: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hefaistion
+  template:
+    metadata:
+      labels:
+        app: hefaistion
+        release: hefaistion
+        version: v0.1.0
+      annotations:
+        odysseia-greek/role: api
+        odysseia-greek/access: dictionary
+        perikles/accesses: "solon"
+        perikles/hostname: "hefaistion"
+        perikles/validity: "10"
+    spec:
+      containers:
+        - name: "hefaistion"
+          image: ghcr.io/odysseia-greek/hefaistion:v0.0.1
+          imagePullPolicy: Always
+          env:
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom:
+            - configMapRef:
+                name: hefaistion
+          volumeMounts:
+            - name: hefaistion-certs
+              mountPath: /app/config/hefaistion
+              readOnly: true
+          ports:
+            - containerPort: 50060
+      volumes:
+        - name: hefaistion-certs
+          secret:
+            secretName: hefaistion-tls-certs
