@@ -12,7 +12,7 @@ components:
   - ../../../../../pyr/koinos/deployment/serviceaccount
   - ../../../../../pyr/koinos/services/grpc
   - ../../../../../pyr/koinos/resources/local/low
-  - ../../../../../pyr/koinos/transformers/volumes
+  - ../../../../../pyr/koinos/transformers/volumes/elastic
   - ../../../../../pyr/koinos/common-env/base/deploy
 patches:
   - target:
