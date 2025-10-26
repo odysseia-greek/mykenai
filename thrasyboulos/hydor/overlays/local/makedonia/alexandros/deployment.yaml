@@ -34,6 +34,8 @@ spec:
             - name: graphql
               containerPort: 8080
               protocol: TCP
+            - name: http
+              containerPort: 5000
           readinessProbe:
             tcpSocket:
               port: 8080

@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: alexandros-legacy
+  namespace: makedonia
+spec:
+  ports:
+    - name: http
+      port: 5000
+      targetPort: 5000
+  selector:
+    app: alexandros
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alexandros
+  namespace: makedonia
+spec:
+  ports:
+    - name: gateway
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: alexandros
