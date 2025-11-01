@@ -42,7 +42,7 @@ spec:
             - configMapRef:
                 name: alexandros
           volumeMounts:
-            - name: alexandros-legacy-certs
+            - name: alexandros-certs
               mountPath: /app/config/alexandros
               readOnly: true
           ports:
@@ -61,6 +61,6 @@ spec:
             initialDelaySeconds: 1
             periodSeconds: 20
       volumes:
-        - name: alexandros-legacy-certs
+        - name: alexandros-certs
           secret:
-            secretName: alexandros-legacy-tls-certs
+            secretName: alexandros-tls-certs
