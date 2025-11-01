@@ -4,6 +4,7 @@ namespace: makedonia
 
 resources:
   - deployment.yaml
+  - cnp.yaml
 
 components:
   - ../../../../../pyr/koinos/deployment/aristophanes

@@ -1,0 +1,15 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-all-to-alexandros-lgeacy
+  namespace: makedonia
+spec:
+  endpointSelector:
+    matchLabels:
+      app: alexandros-legacy
+  ingress:
+    - fromEntities:
+        - all
+  egress:
+    - toEntities:
+        - all
