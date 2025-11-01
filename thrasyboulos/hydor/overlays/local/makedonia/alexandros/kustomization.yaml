@@ -16,3 +16,15 @@ components:
   - ../../../../../pyr/koinos/transformers/volumes/combined
   - ../../../../../pyr/koinos/transformers/mounts/combined
   - ../../../../../pyr/koinos/common-env/base/deploy
+
+patches:
+  - target:
+      version: v1
+      kind: Service
+    patch: |-
+      - op: replace
+        path: /metadata/name
+        value: alexandros
+      - op: replace
+        path: /spec/selector/app
+        value: alexandros
