@@ -1,0 +1,15 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-all-to-herodotos
+  namespace: herodotos
+spec:
+  endpointSelector:
+    matchLabels:
+      app: herodotos
+  ingress:
+    - fromEntities:
+        - all
+  egress:
+    - toEntities:
+        - all
