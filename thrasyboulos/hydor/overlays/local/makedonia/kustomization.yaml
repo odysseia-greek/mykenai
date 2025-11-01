@@ -9,6 +9,7 @@ resources:
   - demokritos
   - ptolemaios
   - hefaistion
+  - legacy
 
 labels:
   - pairs:

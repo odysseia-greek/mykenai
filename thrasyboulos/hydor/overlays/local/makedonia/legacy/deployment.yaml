@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alexandros-legacy
+  labels:
+    app: alexandros-legacy
+  annotations:
+    volumes.odysseia.io/existing: "true"
+    mounts.odysseia.io/existing: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alexandros-legacy
+  template:
+    metadata:
+      labels:
+        app: alexandros-legacy
+        release: alexandros-legacy
+        version: v0.2.0
+      annotations:
+        odysseia-greek/role: api
+        odysseia-greek/access: dictionary
+        perikles/accesses: "solon"
+        perikles/hostname: "alexandros-legacy"
+        perikles/validity: "10"
+    spec:
+      containers:
+        - name: "alexandros-legacy"
+          image: ghcr.io/odysseia-greek/alexandros:v0.2.0
+          imagePullPolicy: Always
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom:
+            - configMapRef:
+                name: alexandros
+          volumeMounts:
+            - name: alexandros-legacy-certs
+              mountPath: /app/config/alexandros
+              readOnly: true
+          ports:
+            - containerPort: 5000
+              name: http
+          livenessProbe:
+            httpGet:
+              path: /alexandros/v1/health
+              port: 5000
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /alexandros/v1/ping
+              port: 5000
+            initialDelaySeconds: 1
+            periodSeconds: 20
+      volumes:
+        - name: alexandros-legacy-certs
+          secret:
+            secretName: alexandros-legacy-tls-certs
