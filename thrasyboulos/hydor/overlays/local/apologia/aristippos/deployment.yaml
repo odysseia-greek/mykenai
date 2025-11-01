@@ -21,7 +21,7 @@ spec:
       annotations:
         odysseia-greek/role: api
         odysseia-greek/access: media-quiz
-        perikles/accesses: "alexandros;solon;herodotos"
+        perikles/accesses: "alexandros-legacy;solon;herodotos"
         perikles/hostname: "aristippos"
         perikles/validity: "10"
     spec:

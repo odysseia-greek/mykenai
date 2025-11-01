@@ -21,7 +21,7 @@ spec:
         release: homeros
         version: v0.2.0
       annotations:
-        perikles/accesses: "alexandros;sokrates;dionysios;herodotos"
+        perikles/accesses: "alexandros-legacy;sokrates;dionysios;herodotos"
     spec:
       containers:
         - name: homeros

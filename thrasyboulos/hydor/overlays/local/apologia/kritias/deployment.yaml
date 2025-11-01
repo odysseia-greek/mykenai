@@ -21,7 +21,7 @@ spec:
       annotations:
         odysseia-greek/role: api
         odysseia-greek/access: multiple-choice-quiz
-        perikles/accesses: "alexandros;solon;herodotos"
+        perikles/accesses: "alexandros-legacy;solon;herodotos"
         perikles/hostname: "kritias"
         perikles/validity: "10"
     spec:
