@@ -5,7 +5,7 @@ kind: ConfigMap
 metadata:
   name: homeros
 data:
-  ALEXANDROS_SERVICE: "http://alexandros.makedonia.svc:5000"
+  ALEXANDROS_SERVICE: "http://alexandros-legacy.makedonia.svc:5000"
   DIONYSIOS_SERVICE: "http://dionysios.olympia.svc:5000"
   HERODOTOS_SERVICE: "http://herodotos.olympia.svc:5000"
   SOKRATES_GRAPHQL_ADDRESS: "http://sokrates.apologia.svc:8080/sokrates/graphql"
