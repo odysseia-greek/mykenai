@@ -1,6 +1,6 @@
 all:
   children:
-    poleis-prd:
+    poleis:
       hosts:
         athenai.hellas:
           ansible_user: pi
@@ -21,17 +21,7 @@ all:
           ansible_user: pi
           ansible_ssh_private_key_file: ~/.ssh/id_raspie
           ansible_host: 192.168.1.124
-          arch: rpi4
-        korinth.hellas:
-          ansible_user: pi
-          ansible_ssh_private_key_file: ~/.ssh/id_raspie
-          ansible_host: 192.168.1.125
-          arch: rpi4
-        argos.hellas:
-          ansible_user: pi
-          ansible_ssh_private_key_file: ~/.ssh/id_raspie
-          ansible_host: 192.168.1.126
-          arch: rpi4
+          arch: rpi5
       children:
         servers-prd:
           hosts:
@@ -41,5 +31,3 @@ all:
             athenai.hellas:
             thebai.hellas:
             korinth.hellas:
-            argos.hellas:
-            megara.hellas:

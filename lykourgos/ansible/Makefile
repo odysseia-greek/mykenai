@@ -5,7 +5,7 @@ INVENTORY_SINGLE = inventories/single/hosts.yaml
 .PHONY: ping-acc ping-prd bootstrap-acc bootstrap-prd k0s-acc k3s-acc k0s-single
 
 KUBECONFIG_FILE ?= $(HOME)/.kube/config
-K0S_KUBECONFIG := playbooks/k0s-kubeconfig-pella
+K0S_KUBECONFIG := playbooks/k0s-kubeconfig-athenai
 CLUSTER_NAME := acc-odysseia-single
 CONTEXT_NAME := acc-odysseia-single
 USER_NAME := acc-odysseia-single-admin
@@ -47,7 +47,7 @@ bootstrap-prd:
 	ansible-playbook -i $(INVENTORY_PRD) playbooks/bootstrap-raspies.yaml
 
 bootstrap-single:
-	ansible-playbook -i $(INVETORY_SINGLE) playbooks/bootstrap-raspies.yaml
+	ansible-playbook -i $(INVENTORY_SINGLE) playbooks/bootstrap-raspies.yaml
 
 k0s-acc:
 	ansible-playbook -i $(INVENTORY_ACC) playbooks/k0s-install-acc.yaml
@@ -55,5 +55,10 @@ k0s-acc:
 k3s-acc:
 	ansible-playbook -i $(INVENTORY_ACC) playbooks/k3s-install-acc.yaml
 
+lvm-storage:
+	ansible-playbook -i $(INVENTORY_SINGLE) playbooks/lvm-node-storage.yaml
+
 k0s-single:
-	ansible-playbook -i $(INVENTORY_SINGLE) playbooks/k0s-install-single.yaml
+	ansible-playbook -i $(INVENTORY_SINGLE) playbooks/k0s-single-node.yaml
+
+poc: bootstrap-single lvm-storage k0s-single

@@ -1,6 +1,6 @@
 all:
   children:
-    poleis-acc:
+    poleis:
       children:
         poleis-acc-controller:
           hosts:

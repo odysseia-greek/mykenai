@@ -1,11 +1,10 @@
 ---
 - name: Bootstrap Raspberry Pis for K3s/K0s
-  hosts: poleis-acc,poleis-prd
+  hosts: poleis
   become: yes
   serial: 1
   vars:
     use_cilium: true           # flip to false if you don’t want cgroup2 mount
-    add_util_linux: true       # keep for k3s legacy bits if you like
   tasks:
     # Prefer newer path, then fall back
     - name: Candidate cmdline paths (newer first)
@@ -66,33 +65,7 @@
       loop: "{{ groups['poleis-prd'] | default([]) + groups['poleis-acc'] | default([]) }}"
       when: hostvars[item].ansible_host is defined
 
-    - name: Install Longhorn prerequisites
-      apt:
-        name:
-          - open-iscsi
-          - nfs-common
-          - util-linux
-        state: present
-        update_cache: yes
-
-    - name: Ensure iscsid enabled and started
-      service:
-        name: iscsid
-        state: started
-        enabled: yes
-
-    - name: Load iscsi_tcp module now (idempotent)
-      modprobe:
-        name: iscsi_tcp
-        state: present
-
-    - name: Persist iscsi_tcp module across reboots
-      copy:
-        dest: /etc/modules-load.d/iscsi.conf
-        content: "iscsi_tcp\n"
-        owner: root
-        group: root
-        mode: "0644"
+    # Longhorn prerequisites removed here
 
     - name: Ensure BPF filesystem is mounted
       mount:

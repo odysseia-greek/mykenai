@@ -1,0 +1,34 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: traefik-crds
+  namespace: flux-system
+spec:
+  interval: 4h
+  retryInterval: 2m
+  timeout: 10m
+  sourceRef:
+    kind: GitRepository
+    name: themistokles
+  path: themistokles/ge/base/traefik-crds
+  prune: true
+  wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: traefik
+  namespace: flux-system
+spec:
+  interval: 4h
+  retryInterval: 2m
+  timeout: 10m
+  dependsOn:
+    - name: traefik-crds
+  sourceRef:
+    kind: GitRepository
+    name: themistokles
+  path: themistokles/ge/base/traefik
+  prune: true
+  wait: true

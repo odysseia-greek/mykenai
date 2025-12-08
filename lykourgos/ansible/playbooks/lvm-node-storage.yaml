@@ -1,0 +1,74 @@
+---
+- name: Prepare loop-backed LVM VG for TopoLVM
+  hosts: poleis
+  become: yes
+  vars:
+    topolvm_loop_dir: /var/lib/topolvm
+    topolvm_loop_file: /var/lib/topolvm/topolvm.img
+    topolvm_loop_size_gb: 50        # adjust as you like
+    topolvm_vg_name: vg_topolvm
+
+  tasks:
+    - name: Ensure required packages are installed
+      apt:
+        name:
+          - lvm2
+          - util-linux      # provides losetup
+        state: present
+        update_cache: yes
+
+    - name: Ensure TopoLVM directory exists
+      file:
+        path: "{{ topolvm_loop_dir }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Create sparse loopback file for TopoLVM ({{ topolvm_loop_size_gb }}G)
+      command: >
+        fallocate -l {{ topolvm_loop_size_gb }}G {{ topolvm_loop_file }}
+      args:
+        creates: "{{ topolvm_loop_file }}"
+
+    - name: Check if loop device already exists for {{ topolvm_loop_file }}
+      command: >
+        losetup -j {{ topolvm_loop_file }}
+      register: loop_check
+      changed_when: false
+      failed_when: false
+
+    - name: Derive existing loop device (if any)
+      set_fact:
+        topolvm_loop_device: "{{ loop_check.stdout.split(':')[0] }}"
+      when: loop_check.stdout | length > 0
+
+    - name: Create loop device for TopoLVM backing file if none exists
+      command: >
+        losetup -f --show {{ topolvm_loop_file }}
+      register: loop_create
+      changed_when: true
+      when: loop_check.stdout | length == 0
+
+    - name: Set loop device fact from created device
+      set_fact:
+        topolvm_loop_device: "{{ loop_create.stdout }}"
+      when: loop_check.stdout | length == 0
+
+    - name: Show chosen loop device
+      debug:
+        msg: "Using loop device {{ topolvm_loop_device }} for TopoLVM storage"
+
+    - name: Create or extend LVM volume group for TopoLVM
+      lvg:
+        vg: "{{ topolvm_vg_name }}"
+        pvs: "{{ topolvm_loop_device }}"
+      register: topolvm_vg
+
+    - name: Show VG details
+      command: vgs --noheadings -o vg_name,vg_size,vg_free "{{ topolvm_vg_name }}"
+      register: vgs_output
+      changed_when: false
+
+    - debug:
+        msg: "{{ vgs_output.stdout_lines }}"

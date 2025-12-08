@@ -1,8 +1,8 @@
 all:
   children:
-    poleis-single:
+    poleis:
       hosts:
-        pella:
+        athenai:
           ansible_user: pi
           ansible_ssh_private_key_file: ~/.ssh/id_raspie
           ansible_host: 192.168.1.191
