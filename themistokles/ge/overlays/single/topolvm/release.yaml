@@ -15,22 +15,21 @@ spec:
         namespace: topolvm
   values:
     cert-manager:
-      enabled: true
-
-    # Define a default StorageClass backed by deviceClass "rpi"
+      enabled: false
     storageClasses:
       - name: topo-delete
-        isDefaultClass: true
-        reclaimPolicy: Delete
-        volumeBindingMode: WaitForFirstConsumer
-        allowVolumeExpansion: true
-        fsType: ext4
-        parameters:
-          "topolvm.cybozu.com/device-class": rpi
+        storageClass:
+          isDefaultClass: true
+          reclaimPolicy: Delete
+          volumeBindingMode: WaitForFirstConsumer
+          allowVolumeExpansion: true
+          fsType: ext4
+          parameters:
+            "topolvm.io/device-class": vg_topolvm
 
     lvmd:
       managed: true
       deviceClasses:
-        - name: rpi
+        - name: vg_topolvm
           default: true
           volumeGroup: vg_topolvm   # <- matches your loop-backed VG
