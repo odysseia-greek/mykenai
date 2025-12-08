@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: topolvm
-      version: "15.8.0"              # without the leading "v"
+      version: "15.8.0"
       sourceRef:
         kind: HelmRepository
         name: topolvm
@@ -26,10 +26,11 @@ spec:
 
     storageClasses:
       - name: topo-delete
-        isDefaultClass: true
-        reclaimPolicy: Delete
-        volumeBindingMode: WaitForFirstConsumer
-        allowVolumeExpansion: true
-        fsType: ext4
-        parameters:
-          "topolvm.cybozu.com/device-class": rpi
+        storageClass:
+          isDefaultClass: true
+          reclaimPolicy: Delete
+          volumeBindingMode: WaitForFirstConsumer
+          allowVolumeExpansion: true
+          fsType: ext4
+          parameters:
+            "topolvm.cybozu.com/device-class": rpi
