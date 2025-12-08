@@ -11,8 +11,6 @@ spec:
   sourceRef:
     kind: GitRepository
     name: themistokles
-  dependsOn:
-    - name: node-labels
   path: themistokles/ge/base/cert-manager
   prune: true
   wait: true
