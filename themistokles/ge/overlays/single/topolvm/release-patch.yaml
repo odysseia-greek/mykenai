@@ -5,7 +5,7 @@ metadata:
   namespace: topolvm-system
 spec:
   interval: 10m
-  targetNamespace: topolvm
+  targetNamespace: topolvm-system
   install:
     createNamespace: true
     remediation:
