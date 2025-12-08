@@ -4,4 +4,3 @@ namespace: topolvm
 resources:
   - ns.yaml
   - repo.yaml
-  - release.yaml
