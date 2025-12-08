@@ -4,45 +4,24 @@ metadata:
   name: topolvm
   namespace: topolvm
 spec:
-  interval: 10m
-  targetNamespace: topolvm
-  install:
-    createNamespace: true
-    remediation:
-      retries: -1
-  upgrade:
-    remediation:
-      retries: -1
-  chart:
-    spec:
-      chart: topolvm
-      # optionally pin a version if you want:
-      # version: 0.15.4
-      sourceRef:
-        kind: HelmRepository
-        name: topolvm
-        namespace: topolvm
   values:
-    scheduler:
-      enabled: false
-
-    storageCapacityTracking:
+    cert-manager:
       enabled: true
+
+    # Define a default StorageClass backed by deviceClass "rpi"
+    storageClasses:
+      - name: topo-delete
+        isDefaultClass: true
+        reclaimPolicy: Delete
+        volumeBindingMode: WaitForFirstConsumer
+        allowVolumeExpansion: true
+        fsType: ext4
+        parameters:
+          "topolvm.cybozu.com/device-class": rpi
 
     lvmd:
       managed: true
       deviceClasses:
-        - name: fast              # this is the deviceClass name you'll use in StorageClass
+        - name: rpi
           default: true
-          type: thin              # thin so you can do snapshots/expansion later
-          volumeGroup: vg_topolvm # <- matches your loop-backed VG
-          thinPool:
-            name: thinpool
-            overprovisionRatio: 1.0
-
-    node:
-      tolerations:
-        - operator: Exists
-
-    namespaceLabels:
-      topolvm.io/webhook: "ignore"
+          volumeGroup: vg_topolvm   # <- matches your loop-backed VG

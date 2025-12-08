@@ -5,35 +5,30 @@ metadata:
 spec:
   interval: 10m
   targetNamespace: topolvm
-  install:
-    createNamespace: true
-    remediation: { retries: -1 }
-  upgrade:
-    remediation: { retries: -1 }
   chart:
     spec:
       chart: topolvm
+      version: "v15.8.0"
       sourceRef:
         kind: HelmRepository
         name: topolvm
         namespace: topolvm
   values:
-    scheduler:
+    storageClasses:
+      - name: topo-1
+        storageClass:
+          fsType: xfs
+          reclaimPolicy: Delete
+          isDefaultClass: true
+          volumeBindingMode: WaitForFirstConsumer
+          allowVolumeExpansion: true
+          additionalParameters:
+            topolvm.io/device-class: w1
+    cert-manager:
       enabled: false
-    storageCapacityTracking:
-      enabled: true
     lvmd:
       managed: true
       deviceClasses:
-        - name: fast              # you'll reference this in your StorageClass
+        - name: w1
           default: true
-          type: thin              # thin for snapshots/expansion
           volumeGroup: vg0
-          thinPool:
-            name: thinpool
-            overprovisionRatio: 1.0  # adjust if you want controlled overcommit
-    node:
-      tolerations:
-        - operator: Exists
-    namespaceLabels:
-      topolvm.io/webhook: "ignore"
