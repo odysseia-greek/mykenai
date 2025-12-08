@@ -16,22 +16,24 @@ spec:
   values:
     controller:
       replicaCount: 1
+      storageCapacityTracking:
+        enabled: true
 
     cert-manager:
       enabled: false
 
-    storageCapacityTracking:
-      enabled: true
-
     lvmd:
       managed: true
       deviceClasses:
-        - name: vg_topolvm
+        - name: pyxis
           default: true
-          volume-group: vg_topolvm
+          volume-group: pyxis
+
+    node:
+      kubeletWorkDirectory: /var/lib/k0s/kubelet
 
     storageClasses:
-      - name: topo-delete
+      - name: pyxis-delete
         storageClass:
           isDefaultClass: true
           reclaimPolicy: Delete
@@ -39,4 +41,4 @@ spec:
           allowVolumeExpansion: true
           fsType: ext4
           parameters:
-            "topolvm.cybozu.com/device-class": vg_topolvm
+            "topolvm.cybozu.com/device-class": pyxis
