@@ -23,7 +23,7 @@ spec:
     lvmd:
       managed: true
       deviceClasses:
-        - name: rpi
+        - name: vg_topolvm
           default: true
           volume-group: vg_topolvm
 
@@ -36,4 +36,4 @@ spec:
           allowVolumeExpansion: true
           fsType: ext4
           parameters:
-            "topolvm.cybozu.com/device-class": rpi
+            "topolvm.cybozu.com/device-class": vg_topolvm

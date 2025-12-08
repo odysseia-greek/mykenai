@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: topolvm-test-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: topo-delete     # <-- change if your SC has a different name
+  resources:
+    requests:
+      storage: 1Gi

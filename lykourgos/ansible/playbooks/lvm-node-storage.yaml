@@ -6,7 +6,7 @@
     topolvm_loop_dir: /var/lib/topolvm
     topolvm_loop_file: /var/lib/topolvm/topolvm.img
     topolvm_loop_size_gb: 50        # adjust as you like
-    topolvm_vg_name: vg_topolvm
+    topolvm_vg_name: topo
 
   tasks:
     - name: Ensure required packages are installed
