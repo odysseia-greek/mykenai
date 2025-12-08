@@ -14,6 +14,9 @@ spec:
         name: topolvm
         namespace: topolvm
   values:
+    controller:
+      replicaCount: 1
+
     cert-manager:
       enabled: false
 
