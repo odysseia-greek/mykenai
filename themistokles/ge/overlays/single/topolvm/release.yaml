@@ -30,6 +30,6 @@ spec:
     lvmd:
       managed: true
       deviceClasses:
-        - name: vg_topolvm
+        - name: rpi            # device-class name (can be anything)
           default: true
-          volumeGroup: vg_topolvm   # <- matches your loop-backed VG
+          volume-group: vg_topolvm   # <- MUST be `volume-group`
