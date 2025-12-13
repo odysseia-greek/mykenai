@@ -3,7 +3,7 @@
   hosts: poleis-acc-controller
   become: yes
   vars:
-    k0s_version: "v1.33.4+k0s.0"
+    k0s_version: "v1.34.2+k0s.0"
   tasks:
     - name: Skip disabled hosts
       meta: end_host
@@ -121,26 +121,6 @@
     - name: Skip disabled hosts
       meta: end_host
       when: hostvars[inventory_hostname].disabled | default(false) | bool
-
-    - name: Ensure basic packages present
-      apt:
-        name: [ curl, iptables, open-iscsi, nfs-common ]
-        state: present
-        update_cache: yes
-
-    - name: Ensure iscsid running
-      service:
-        name: iscsid
-        state: started
-        enabled: yes
-
-    - name: Persist iscsi_tcp module
-      copy:
-        dest: /etc/modules-load.d/iscsi.conf
-        content: "iscsi_tcp\n"
-        owner: root
-        group: root
-        mode: "0644"
 
     - name: Ensure controller resolves in /etc/hosts
       lineinfile:

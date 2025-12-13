@@ -6,7 +6,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: topo-delete     # <-- change if your SC has a different name
+  storageClassName: pyxis-delete
   resources:
     requests:
       storage: 1Gi

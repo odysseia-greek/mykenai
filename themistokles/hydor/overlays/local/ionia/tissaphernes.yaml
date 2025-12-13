@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: tissaphernes
+  labels:
+    app: tissaphernes
+spec:
+  template:
+    metadata:
+      labels:
+        app: tissaphernes
+        release: tissaphernes
+        version: v0.0.1
+    spec:
+      serviceAccountName: tissaphernes
+      restartPolicy: Never
+      containers:
+        - name: tissaphernes
+          image: ghcr.io/odysseia-greek/tissaphernes:v0.0.1
+          imagePullPolicy: Always
+
+          command: ["sh", "-lc"]
+          args:
+            - |
+              set -eu
+              mkdir -p /results/run
+              gotestsum \
+                --junitfile /results/run/results.xml \
+                --raw-command -- \
+                /app/tissaphernes.test -test.v
+
+          volumeMounts:
+            - name: results
+              mountPath: /results
+      volumes:
+        - name: results
+          persistentVolumeClaim:
+            claimName: tissaphernes-results
+  backoffLimit: 3
