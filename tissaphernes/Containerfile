@@ -5,32 +5,38 @@ ARG project_name
 ARG TARGETOS
 ARG TARGETARCH
 
-ENV project_name=${project_name}
-ENV TARGETOS=${TARGETOS}
-ENV TARGETARCH=${TARGETARCH}
-
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 RUN go install gotest.tools/gotestsum@latest
 COPY . .
 
-# Build binary with Go
 FROM base as builder
 ENV CGO_ENABLED=0
 
 ARG project_name
-ENV project_name=${project_name}
+ARG TARGETOS
+ARG TARGETARCH
 
-RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go test -c -o /app/${project_name} ./tests/e2e
+RUN GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH:-amd64} \
+    go test -c -o /out/${project_name} ./tests/e2e
 
-# Production build
 FROM alpine:3.20.0 as prod
 WORKDIR /app
 
 ARG project_name
-ENV project_name=${project_name}
 
-COPY --from=builder /app/${project_name} .
-ENV TMPDIR=/tmp
+RUN apk add --no-cache ca-certificates tzdata
+
+# compiled test binary
+COPY --from=builder /out/${project_name} /app/${project_name}
+
+# gotestsum
+COPY --from=base /go/bin/gotestsum /usr/local/bin/gotestsum
+
+# ✅ copy Go toolchain so `go tool test2json` exists
+COPY --from=base /usr/local/go /usr/local/go
+ENV GOROOT=/usr/local/go
+ENV PATH=/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
 ENTRYPOINT [ "sh", "-c", "/app/${project_name}" ]

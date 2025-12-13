@@ -19,15 +19,20 @@ spec:
           image: ghcr.io/odysseia-greek/tissaphernes:v0.0.1
           imagePullPolicy: Always
 
-          command: ["sh", "-lc"]
+          command: ["sh", "-c"]
           args:
             - |
               set -eu
-              mkdir -p /results/run
+              ts="$(date -u +%Y%m%dT%H%M%SZ)"
+              out="/results/${ts}"
+              mkdir -p "$out"
+          
               gotestsum \
-                --junitfile /results/run/results.xml \
+                --junitfile "$out/results.xml" \
                 --raw-command -- \
-                /app/tissaphernes.test -test.v
+                go tool test2json -t -p tissaphernes /app/tissaphernes -test.v
+          
+              echo "$ts" > /results/latest.txt
 
           volumeMounts:
             - name: results
