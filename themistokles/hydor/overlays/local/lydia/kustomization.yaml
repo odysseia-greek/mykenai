@@ -5,3 +5,4 @@ resources:
   - ../../../base/lydia
   - tissaphernes.yaml
   - rbac.yaml
+  - pvc.yaml
