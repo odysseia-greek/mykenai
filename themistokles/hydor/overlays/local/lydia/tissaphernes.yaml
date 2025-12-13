@@ -30,7 +30,7 @@ spec:
               gotestsum \
                 --junitfile "$out/results.xml" \
                 --raw-command -- \
-                go tool test2json -t -p tissaphernes /app/tissaphernes -test.v
+                go tool test2json -t -p tissaphernes /app/tissaphernes.test -test.v
           
               echo "$ts" > /results/latest.txt
 
