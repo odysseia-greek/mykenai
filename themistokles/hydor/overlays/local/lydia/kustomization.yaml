@@ -6,3 +6,4 @@ resources:
   - tissaphernes.yaml
   - rbac.yaml
   - pvc.yaml
+  - lysandros.yaml
