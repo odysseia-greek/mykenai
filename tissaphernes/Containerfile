@@ -8,7 +8,6 @@ ARG TARGETARCH
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
-RUN go install gotest.tools/gotestsum@latest
 COPY . .
 
 # Build test binary + extract test2json
@@ -33,7 +32,6 @@ ARG project_name
 RUN apk add --no-cache ca-certificates tzdata
 
 COPY --from=builder /out/${project_name}.test /app/${project_name}.test
-COPY --from=base /go/bin/gotestsum /usr/local/bin/gotestsum
 
 ENV TMPDIR=/tmp
 ENTRYPOINT [ "sh", "-c", "/app/${project_name}.test" ]

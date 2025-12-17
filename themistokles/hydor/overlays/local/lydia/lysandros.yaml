@@ -1,28 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tissaphernes-results-viewer
+  name: lysandros
   labels:
-    app: tissaphernes-results-viewer
+    app: lysandros
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: tissaphernes-results-viewer
+      app: lysandros
   template:
     metadata:
       labels:
-        app: tissaphernes-results-viewer
+        app: lysandros
     spec:
       restartPolicy: Always
       containers:
-        - name: viewer
-          image: busybox:1.36
-          command: ["sh", "-c"]
-          args:
-            - |
-              echo "[viewer] mounted /results, sleeping forever";
-              sleep infinity
+        - name: lysandros
+          image: ghcr.io/odysseia-greek/lysandros:v0.0.1
+          imagePullPolicy: Always
+          env:
+            - name: LYSANDROS_RESULTS_DIR
+              value: "/results"
+            - name: LYSANDROS_ADDR
+              value: ":8080"
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
           volumeMounts:
             - name: results
               mountPath: /results
@@ -30,3 +35,15 @@ spec:
         - name: results
           persistentVolumeClaim:
             claimName: tissaphernes-results
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lysandros
+spec:
+  selector:
+    app: lysandros
+  ports:
+    - name: "http"
+      port: 8080
+      targetPort: 8080

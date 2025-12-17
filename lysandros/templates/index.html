@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Lysandros</title>
+    <link rel="stylesheet" href="/static/theme.css">
+</head>
+<body>
+<h1>Lysandros</h1>
+<div class="muted">Last refresh: {{.Now}} (showing last 10 runs)</div>
+<div class="hero">
+    <div class="muted">
+        A lightweight report page for Tissaphernes runs (reads <code>/results/&lt;id&gt;/results.json</code> and summarizes cluster health).
+    </div>
+</div>
+
+<div class="kpis">
+    <div class="kpi">
+        <div class="label">Runs shown</div>
+        <div class="value">{{.TotalRunsShown}}</div>
+        <div class="sub">{{.PassedRuns}} pass · {{.FailedRuns}} fail</div>
+    </div>
+
+    <div class="kpi">
+        <div class="label">Pass rate</div>
+        <div class="value">{{.PassRatePct}}%</div>
+        <div class="sub">of last {{.TotalRunsShown}} runs</div>
+    </div>
+
+    <div class="kpi">
+        <div class="label">Latest run</div>
+        <div class="value">
+            {{if .LatestID}}
+            <a href="/{{.LatestID}}"><code>{{.LatestID}}</code></a>
+            {{else}}
+            —
+            {{end}}
+        </div>
+        <div class="sub">
+            {{if eq .LatestStatus "PASS"}}<span class="badge ok">PASS</span>{{end}}
+            {{if eq .LatestStatus "FAIL"}}<span class="badge bad">FAIL</span>{{end}}
+        </div>
+    </div>
+
+    <div class="kpi">
+        <div class="label">Pass streak</div>
+        <div class="value">{{.PassStreak}}</div>
+        <div class="sub">consecutive passing runs</div>
+    </div>
+</div>
+<table>
+    <thead>
+    <tr>
+        <th>Run</th>
+        <th>Timestamp</th>
+        <th>Passed</th>
+        <th>Failed</th>
+        <th>Duration</th>
+        <th>Status</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{range .Runs}}
+    <tr>
+        <td><a href="/{{.ID}}">{{.ID}}</a></td>
+        <td>{{.Timestamp}}</td>
+        <td>{{.Passed}}</td>
+        <td>{{.Failed}}</td>
+        <td>{{.DurationMS}} ms</td>
+        <td>
+            {{if eq .Failed 0}}<span class="ok">PASS</span>{{else}}<span class="bad">FAIL</span>{{end}}
+        </td>
+    </tr>
+    {{end}}
+    {{if not .Runs}}
+    <tr><td colspan="6" class="muted">No runs found in /results yet.</td></tr>
+    {{end}}
+    </tbody>
+</table>
+
+</body>
+</html>

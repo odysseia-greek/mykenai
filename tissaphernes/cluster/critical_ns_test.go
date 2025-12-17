@@ -13,20 +13,16 @@ import (
 	"sigs.k8s.io/e2e-framework/pkg/features"
 )
 
-func TestPodsReadyInCriticalNamespaces(t *testing.T) {
-	// tweak this list to match your cluster layout
-	namespaces := []string{
-		"kube-system",
-	}
+const kubeSystem = "kube-system"
 
-	f := features.New("pods are Ready in critical namespaces").
+func TestPodsReadyInKubeSystem(t *testing.T) {
+
+	f := features.New("pods are Ready in kube-system").
 		WithLabel("suite", "tissaphernes").
 		Assess("all pods Ready", func(ctx context.Context, t *testing.T, cfg *envconf.Config) context.Context {
-			for _, ns := range namespaces {
-				t.Run(ns, func(t *testing.T) {
-					assertAllPodsReady(ctx, t, cfg, ns, 60*time.Second)
-				})
-			}
+			t.Run(kubeSystem, func(t *testing.T) {
+				assertAllPodsReady(ctx, t, cfg, kubeSystem, 2*time.Second)
+			})
 			return ctx
 		}).Feature()
 
