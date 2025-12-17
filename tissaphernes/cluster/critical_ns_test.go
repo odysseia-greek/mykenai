@@ -13,15 +13,16 @@ import (
 	"sigs.k8s.io/e2e-framework/pkg/features"
 )
 
-const kubeSystem = "kube-system"
+const kubeSystemNs = "kube-system"
+const ciliumNs = "cilium"
+const fluxNs = "flux-system"
 
 func TestPodsReadyInKubeSystem(t *testing.T) {
-
 	f := features.New("pods are Ready in kube-system").
-		WithLabel("suite", "tissaphernes").
+		WithLabel("suite", "system").
 		Assess("all pods Ready", func(ctx context.Context, t *testing.T, cfg *envconf.Config) context.Context {
-			t.Run(kubeSystem, func(t *testing.T) {
-				assertAllPodsReady(ctx, t, cfg, kubeSystem, 2*time.Second)
+			t.Run(kubeSystemNs, func(t *testing.T) {
+				assertAllPodsReady(ctx, t, cfg, kubeSystemNs, 2*time.Second)
 			})
 			return ctx
 		}).Feature()
