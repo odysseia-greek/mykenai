@@ -5,7 +5,7 @@ metadata:
   name: lydia
   namespace: flux-system
 spec:
-  interval: 4h
+  interval: 30s
   retryInterval: 30s
   timeout: 10m
   sourceRef:
