@@ -24,6 +24,10 @@ func TestFluxSystemNamespace(t *testing.T) {
 			assertAllPodsReady(ctx, t, cfg, fluxNs, 2*time.Second)
 			return ctx
 		}).
+		Assess("deleted pod gets recreated", func(ctx context.Context, t *testing.T, cfg *envconf.Config) context.Context {
+
+			return ctx
+		}).
 		Feature()
 
 	testenv.Test(t, f)
