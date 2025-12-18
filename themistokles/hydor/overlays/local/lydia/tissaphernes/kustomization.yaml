@@ -3,3 +3,4 @@ kind: Kustomization
 namespace: lydia
 resources:
   - cronjob.yaml
+  - pvc.yaml

@@ -3,7 +3,7 @@ kind: Kustomization
 namespace: lydia
 resources:
   - rbac.yaml
-  - pvc.yaml
+  - ../tissaphernes/pvc.yaml
   - deploy.yaml
   - service.yaml
   - ir.yaml
