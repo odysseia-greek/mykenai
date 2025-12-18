@@ -16,6 +16,7 @@ import (
 const kubeSystemNs = "kube-system"
 const ciliumNs = "cilium"
 const fluxNs = "flux-system"
+const lydiaNs = "lydia"
 
 func TestPodsReadyInKubeSystem(t *testing.T) {
 	f := features.New("pods are Ready in kube-system").

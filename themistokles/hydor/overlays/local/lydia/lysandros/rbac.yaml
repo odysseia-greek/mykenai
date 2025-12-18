@@ -10,8 +10,12 @@ metadata:
 rules:
 
   - apiGroups: [""]
-    resources: ["pods", "namespaces"]
+    resources: ["namespaces"]
     verbs: ["get", "list", "watch"]
+
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch", "delete", "create"]
   # Optional but often useful for troubleshooting:
   # - apiGroups: [""]
   #   resources: ["pods/log"]
