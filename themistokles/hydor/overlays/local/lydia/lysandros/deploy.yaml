@@ -20,9 +20,9 @@ spec:
           image: ghcr.io/odysseia-greek/lysandros:v0.0.1
           imagePullPolicy: Always
           env:
-            - name: LYSANDROS_RESULTS_DIR
+            - name: RESULTS_DIR
               value: "/results"
-            - name: LYSANDROS_ADDR
+            - name: PORT
               value: ":8080"
           ports:
             - name: http
@@ -36,14 +36,3 @@ spec:
           persistentVolumeClaim:
             claimName: tissaphernes-results
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: lysandros
-spec:
-  selector:
-    app: lysandros
-  ports:
-    - name: "http"
-      port: 8080
-      targetPort: 8080

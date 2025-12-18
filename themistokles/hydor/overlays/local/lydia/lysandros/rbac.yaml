@@ -8,8 +8,9 @@ kind: ClusterRole
 metadata:
   name: tissaphernes
 rules:
+
   - apiGroups: [""]
-    resources: ["pods"]
+    resources: ["pods", "namespaces"]
     verbs: ["get", "list", "watch"]
   # Optional but often useful for troubleshooting:
   # - apiGroups: [""]
