@@ -5,7 +5,7 @@ metadata:
   labels:
     app: tissaphernes
 spec:
-  schedule: "*/10 * * * *"
+  schedule: "*/20 * * * *"
   jobTemplate:
     spec:
       template:
