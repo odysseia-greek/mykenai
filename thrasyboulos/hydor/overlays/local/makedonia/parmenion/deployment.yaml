@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: antigonos
+  name: parmenion
   labels:
-    app: antigonos
+    app: parmenion
   annotations:
     mount.odysseia.io/combined: "true"
     volumes.odysseia.io/combined: "true"
