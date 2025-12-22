@@ -23,8 +23,6 @@ spec:
     kind: GitRepository
     name: thrasyboulos
   dependsOn:
-    - name: cilium
     - name: elastic-operator
-    - name: external-secrets
   prune: true
   wait: true
