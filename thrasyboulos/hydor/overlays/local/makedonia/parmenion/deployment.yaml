@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: antigonos
+  labels:
+    app: antigonos
+  annotations:
+    mount.odysseia.io/combined: "true"
+    volumes.odysseia.io/combined: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: parmenion
+  template:
+    metadata:
+      labels:
+        app: parmenion
+        release: parmenion
+        version: v0.1.0
+      annotations:
+        odysseia-greek/role: api
+        odysseia-greek/access: dictionary
+        perikles/accesses: "solon"
+        perikles/hostname: "parmenion"
+        perikles/validity: "10"
+    spec:
+      containers:
+        - name: "parmenion"
+          image: ghcr.io/odysseia-greek/parmenion:v0.0.1
+          imagePullPolicy: Always
+          env:
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom:
+            - configMapRef:
+                name: parmenion
+          volumeMounts:
+            - name: parmenion-certs
+              mountPath: /app/config/parmenion
+              readOnly: true
+          ports:
+            - containerPort: 50060
+      volumes:
+        - name: parmenion-certs
+          secret:
+            secretName: parmenion-tls-certs

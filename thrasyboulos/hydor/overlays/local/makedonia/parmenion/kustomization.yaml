@@ -1,0 +1,32 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: makedonia
+
+resources:
+  - deployment.yaml
+  - ../../../../base/makedonia/parmenion
+
+components:
+  - ../../../../../pyr/koinos/deployment/aristophanes
+  - ../../../../../pyr/koinos/deployment/periandros
+  - ../../../../../pyr/koinos/deployment/sophokles
+  - ../../../../../pyr/koinos/deployment/aristides
+  - ../../../../../pyr/koinos/deployment/serviceaccount
+  - ../../../../../pyr/koinos/services/grpc
+  - ../../../../../pyr/koinos/resources/local/low
+  - ../../../../../pyr/koinos/transformers/volumes/existing
+  - ../../../../../pyr/koinos/transformers/mounts/existing
+  - ../../../../../pyr/koinos/transformers/volumes/combined
+  - ../../../../../pyr/koinos/transformers/mounts/combined
+  - ../../../../../pyr/koinos/common-env/base/deploy
+patches:
+  - target:
+      version: v1
+      kind: Service
+    patch: |-
+      - op: replace
+        path: /metadata/name
+        value: parmenion
+      - op: replace
+        path: /spec/selector/app
+        value: parmenion
