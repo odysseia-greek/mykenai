@@ -35,3 +35,6 @@ rules:
   - apiGroups: [ "batch" ]
     resources: [ "jobs" ]
     verbs: [ "update", "get", "list", "watch" ]
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "list", "watch"]
