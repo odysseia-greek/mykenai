@@ -2,11 +2,12 @@ package command
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+
 	"github.com/odysseia-greek/agora/plato/logging"
 	"github.com/odysseia-greek/mykenai/archimedes/util"
 	"github.com/spf13/cobra"
-	"os"
-	"path/filepath"
 )
 
 func CreateSingleImage() *cobra.Command {
@@ -121,7 +122,7 @@ func BuildImage(rootPath, tag, destRepo, target string, multi bool) error {
 	_, projectName := filepath.Split(rootPath)
 
 	for _, innerFile := range innerFiles {
-		if innerFile.Name() == "Dockerfile" {
+		if innerFile.Name() == "Dockerfile" || innerFile.Name() == "Containerfile" {
 			logging.Info(fmt.Sprintf(fmt.Sprintf("working on project: %s", projectName)))
 			if multi {
 				if err := buildImageMultiArch(rootPath, projectName, tag, destRepo, target); err != nil {

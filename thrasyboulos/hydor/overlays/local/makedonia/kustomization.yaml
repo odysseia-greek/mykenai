@@ -10,6 +10,7 @@ resources:
   - ptolemaios
   - hefaistion
   - parmenion
+  - perdikkas
   - legacy
 
 labels:

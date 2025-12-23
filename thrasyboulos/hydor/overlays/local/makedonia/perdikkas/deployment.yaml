@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: perdikkas
+  labels:
+    app: perdikkas
+  annotations:
+    mount.odysseia.io/combined: "true"
+    volumes.odysseia.io/combined: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: perdikkas
+  template:
+    metadata:
+      labels:
+        app: perdikkas
+        release: perdikkas
+        version: v0.0.1
+      annotations:
+        odysseia-greek/role: api
+        odysseia-greek/access: dictionary
+        perikles/accesses: "solon"
+        perikles/hostname: "perdikkas"
+        perikles/validity: "10"
+    spec:
+      containers:
+        - name: "perdikkas"
+          image: ghcr.io/odysseia-greek/perdikkas:v0.0.1
+          imagePullPolicy: Always
+          env:
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom:
+            - configMapRef:
+                name: perdikkas
+          volumeMounts:
+            - name: perdikkas-certs
+              mountPath: /app/config/perdikkas
+              readOnly: true
+          ports:
+            - containerPort: 50060
+      volumes:
+        - name: perdikkas-certs
+          secret:
+            secretName: perdikkas-tls-certs
