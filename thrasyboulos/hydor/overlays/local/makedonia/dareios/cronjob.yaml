@@ -15,7 +15,6 @@ spec:
             release: dareios
             version: v0.0.1
         spec:
-          serviceAccountName: dareios
           restartPolicy: Never
           containers:
             - name: dareios
