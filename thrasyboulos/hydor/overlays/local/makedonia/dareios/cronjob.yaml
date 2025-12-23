@@ -20,4 +20,7 @@ spec:
             - name: dareios
               image: ghcr.io/odysseia-greek/dareios:v0.0.1
               imagePullPolicy: Always
+              env:
+                - name: ALEXANDROS_URL
+                  value: "http://alexandros:8080/alexandros/graphql"
       backoffLimit: 3
