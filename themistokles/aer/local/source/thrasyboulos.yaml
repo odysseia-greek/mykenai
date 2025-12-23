@@ -4,7 +4,7 @@ metadata:
   name: thrasyboulos
   namespace: flux-system
 spec:
-  interval: 20m
+  interval: 1m0s
   ref:
     branch: feat/add-flux
   url: https://github.com/odysseia-greek/mykenai.git
