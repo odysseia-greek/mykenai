@@ -19,8 +19,8 @@ aiskhylos:
   interval: 300
 
 thermopulai:
-  host: k3d-odysseia.greek
-  apiHost: k3d-odysseia.api.greek
+  host: byzantium.odysseia-greek
+  apiHost: int.byzantium.odysseia-greek
 
 # Default values for Odysseia.
 # This is a YAML-formatted file.
