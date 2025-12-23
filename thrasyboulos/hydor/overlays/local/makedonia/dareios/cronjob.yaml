@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: dareios
+  labels:
+    app: dareios
+spec:
+  schedule: "*/20 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: dareios
+            release: dareios
+            version: v0.0.1
+        spec:
+          serviceAccountName: dareios
+          restartPolicy: Never
+          containers:
+            - name: dareios
+              image: ghcr.io/odysseia-greek/dareios:v0.0.1
+              imagePullPolicy: Always
+      backoffLimit: 3

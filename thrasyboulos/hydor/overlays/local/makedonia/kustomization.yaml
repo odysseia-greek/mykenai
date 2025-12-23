@@ -11,6 +11,7 @@ resources:
   - hefaistion
   - parmenion
   - perdikkas
+  - dareios
   - legacy
 
 labels:
