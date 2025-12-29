@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: hippokrates
+  labels:
+    app: hippokrates
+spec:
+  schedule: "*/20 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: hippokrates
+            release: hippokrates
+            version: v0.0.1
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: hippokrates
+              image: ghcr.io/odysseia-greek/hippokrates:v0.2.0
+              imagePullPolicy: Always
+              envFrom:
+                - configMapRef:
+                    name: hippokrates
+      backoffLimit: 3
