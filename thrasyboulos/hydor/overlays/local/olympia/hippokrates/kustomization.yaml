@@ -4,3 +4,4 @@ namespace: olympia
 resources:
   - cronjob.yaml
   - configmap.yaml
+  - cnp.yaml
