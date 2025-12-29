@@ -64,6 +64,26 @@ data:
           "score": 100
         },
         {
+          "operation": "fuzzy",
+          "score": 100
+        },
+        {
+          "operation": "exact",
+          "score": 100
+        },
+        {
+          "operation": "phrase",
+          "score": 100
+        },
+        {
+          "operation": "partial",
+          "score": 100
+        },
+        {
+          "operation": "counterTopFive",
+          "score": 100
+        },
+        {
           "operation": "status",
           "score": 1
         }

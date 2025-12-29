@@ -9,3 +9,4 @@ data:
   DIONYSIOS_SERVICE: "http://dionysios.olympia.svc:5000"
   HERODOTOS_SERVICE: "http://herodotos.olympia.svc:5000"
   SOKRATES_GRAPHQL_ADDRESS: "http://sokrates.apologia.svc:8080/sokrates/graphql"
+  ALEXANDROS_GRAPHQL_ADDRESS: "http://alexandros.makedonia.svc:8080/alexandros/graphql"
