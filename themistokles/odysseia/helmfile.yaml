@@ -11,31 +11,19 @@ environments:
 
 ---
 releases:
-    ## Tests ##
-  - name: hippokrates
-    namespace: odysseia
-    chart: ./charts/hippokrates
-    version: 0.1.1
-    missingFileHandler: Error
-    labels:
-      tier: tests
-    values:
-      - values/{{ .Environment.Name }}.yaml
-      - images:
-          job:
-            repo: hippokrates
-            tag: v0.1.2
+  ## Quiz
 
-  - name: ktesias
+
+  - name: meletos
     namespace: odysseia
-    chart: ./charts/ktesias
-    version: 0.0.1
+    chart: ./charts/meletos
+    version: 0.1.0
     missingFileHandler: Error
     labels:
-      tier: tests
+      tier: quiz
     values:
       - values/{{ .Environment.Name }}.yaml
       - images:
           job:
-            repo: ktesias
-            tag: v0.0.2
+            repo: meletos
+            tag: v0.1.0

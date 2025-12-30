@@ -1,33 +1,33 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: hippokrates
+  name: meletos
   labels:
-    app: hippokrates
+    app: meletos
 spec:
   schedule: "*/20 * * * *"
   jobTemplate:
     metadata:
       labels:
-        app: hippokrates
-        release: hippokrates
-        version: v0.0.1
+        app: meletos
+        release: meletos
+        version: v0.1.1
       annotations:
-        perikles/accesses: "homeros"
+        perikles/accesses: "sokrates"
     spec:
       template:
         metadata:
           labels:
-            app: hippokrates
-            release: hippokrates
-            version: v0.0.1
+            app: meletos
+            release: meletos
+            version: v0.1.1
         spec:
           restartPolicy: Never
           containers:
-            - name: hippokrates
-              image: ghcr.io/odysseia-greek/hippokrates:v0.2.0
+            - name: meletos
+              image: ghcr.io/odysseia-greek/meletos:v0.1.1
               imagePullPolicy: Always
               envFrom:
                 - configMapRef:
-                    name: hippokrates
+                    name: meletos
       backoffLimit: 3
