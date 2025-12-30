@@ -12,10 +12,6 @@ components:
   - ../../../../../pyr/koinos/deployment/serviceaccount
   - ../../../../../pyr/koinos/services/grpc
   - ../../../../../pyr/koinos/resources/local/mid
-  - ../../../../../pyr/koinos/transformers/volumes/existing
-  - ../../../../../pyr/koinos/transformers/mounts/existing
-  - ../../../../../pyr/koinos/transformers/volumes/combined
-  - ../../../../../pyr/koinos/transformers/mounts/combined
   - ../../../../../pyr/koinos/common-env/base/deploy
 patches:
   - target:

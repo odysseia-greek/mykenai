@@ -4,9 +4,6 @@ metadata:
   name: aspasia
   labels:
     app: aspasia
-  annotations:
-    volumes.odysseia.io/existing: "true"
-    mounts.odysseia.io/existing: "true"
 spec:
   replicas: 1
   selector:
@@ -24,19 +21,11 @@ spec:
         perikles/validity: "10"
     spec:
       containers:
-        - name: "kriton"
+        - name: "aspasia"
           image: ghcr.io/odysseia-greek/aspasia:v0.0.1
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: aspasia
-          volumeMounts:
-            - name: aspasia-certs
-              mountPath: /app/config/aspasia
-              readOnly: true
           ports:
             - containerPort: 50060
-      volumes:
-        - name: aspasia-certs
-          secret:
-            secretName: aspasia-tls-certs
