@@ -14,7 +14,7 @@ components:
   - ../../../../../pyr/koinos/deployment/aristides
   - ../../../../../pyr/koinos/deployment/serviceaccount
   - ../../../../../pyr/koinos/services/grpc
-  - ../../../../../pyr/koinos/resources/local/low
+  - ../../../../../pyr/koinos/resources/local/mid
   - ../../../../../pyr/koinos/resources/local/job
   - ../../../../../pyr/koinos/transformers/volumes/existing
   - ../../../../../pyr/koinos/transformers/mounts/existing
