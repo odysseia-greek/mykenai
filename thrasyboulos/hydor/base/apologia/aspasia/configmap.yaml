@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aspasia
+data:
+  VERSION: "v0.0.1"
+  HERODOTOS_SERVICE: "http://herodotos.olympia.svc:5000"
+  ANTIGONOS_SERVICE: "antigonos.makedonia.svc:50060"

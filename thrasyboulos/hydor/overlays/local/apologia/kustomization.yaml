@@ -11,6 +11,7 @@ resources:
   - kriton
   - xenofon
   - meletos
+  - aspasia
 
 labels:
   - pairs:
