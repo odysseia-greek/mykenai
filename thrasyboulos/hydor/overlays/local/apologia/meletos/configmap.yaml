@@ -4,4 +4,4 @@ metadata:
   name: meletos
 data:
   ENV: "k3d"
-  SOKRATES_SERVICE: "http://sokrates.apologia.svc:8080/sokrates/graphql"
+  SOKRATES_SERVICE: "http://sokrates.apologia.svc:8080"
