@@ -11,3 +11,8 @@ spec:
       services:
         - name: sokrates
           port: 8080
+    - match: Host(`byzantium.odysseia-greek`) && PathPrefix(`/sokrates/v1/ping`)
+      kind: Rule
+      services:
+        - name: sokrates
+          port: 8080
