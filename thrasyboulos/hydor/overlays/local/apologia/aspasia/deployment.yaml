@@ -4,6 +4,9 @@ metadata:
   name: aspasia
   labels:
     app: aspasia
+  annotations:
+    volumes.odysseia.io/combined: "true"
+    mounts.odysseia.io/combined: "true"
 spec:
   replicas: 1
   selector:
