@@ -1,0 +1,170 @@
+
+---
+# Source: ktesias/templates/job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ktesias
+  namespace: odysseia
+  labels:
+    heritage: "Helm"
+    release: "ktesias"
+    chart: "ktesias"
+    env: k3d
+    variant: k3d
+    app: ktesias
+    domain: "backend"
+spec:
+  template:
+    metadata:
+      labels:
+        app: ktesias
+        release: ktesias
+        version: v0.0.2
+      annotations:
+        odysseia-greek/role: "api"
+        odysseia-greek/access: "dictionary"
+        perikles/accesses: "solon"
+    spec:
+      serviceAccountName: ktesiassa
+      initContainers:        
+        - name: "periandros"
+          image: ghcr.io/odysseia-greek/periandros:v0.1.3
+            
+          imagePullPolicy: Always
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: ELASTIC_ROLE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/role']
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+            - name: SOLON_SERVICE
+              value: https://solon:5443
+          envFrom:
+            - configMapRef:
+                name: ktesias
+          volumeMounts:
+            - name: solon-certs
+              mountPath: /app/config/solon
+              readOnly: true
+      containers:        
+        - name: "aristides"
+          image: ghcr.io/odysseia-greek/aristides:v0.0.1
+          
+          env:
+            - name: VAULT_SERVICE
+              value: https://vault:8200
+            - name: VAULT_TLS
+              value:  "true"
+            - name: SOLON_SERVICE
+              value: https://solon:5443
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          envFrom:
+            - configMapRef:
+                name: ktesias
+          ports:
+            - containerPort: 50051
+          volumeMounts:
+            - name: vault-server-tls
+              mountPath: /app/config/vault
+              readOnly: true
+            - name: solon-certs
+              mountPath: /app/config/solon
+              readOnly: true
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: 32Mi
+            limits:
+              memory: 64Mi
+              cpu: 
+        - name: "ktesias"
+          image: ghcr.io/odysseia-greek/ktesias:v0.0.2
+          imagePullPolicy: Always
+              
+          command:
+            - sh
+            - -c
+            - /app/ktesias
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: ELASTIC_ROLE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/role']
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom:
+            - configMapRef:
+                name: ktesias
+          volumeMounts:
+            - name: solon-certs
+              mountPath: /app/config/solon
+              readOnly: true
+            - name: vault-server-tls
+              mountPath: /app/config/vault
+              readOnly: true
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 500m
+            limits:
+              memory: 128Mi
+      volumes:
+        - name: vault-server-tls
+          secret:
+            secretName: vault-server-tls
+        - name: elastic-internal-tls
+          secret:
+            secretName: aristoteles-es-http-certs-public
+        - name: solon-certs
+          secret:
+            secretName: solon-tls-certs
+      restartPolicy: Never
+  backoffLimit: 5
+---
+# Source: ktesias/templates/cronjob.yaml
+
+---
+# Source: ktesias/templates/np-to-elastic.yaml
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-all-elasticsearch-access-ktesias
+  namespace: odysseia
+spec:
+  endpointSelector:
+    matchLabels:
+      elasticsearch.k8s.elastic.co/cluster-name: aristoteles
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app: ktesias
+      toPorts:
+        - ports:
+            - port: "9200"
+              protocol: TCP
+

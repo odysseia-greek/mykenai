@@ -1,0 +1,75 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ktesias
+spec:
+  schedule: "0 */2 * * *"
+  jobTemplate:
+    metadata:
+      labels:
+        app: ktesias
+        release: ktesias
+        version: v0.0.2
+      annotations:
+        odysseia-greek/role: "api"
+        odysseia-greek/access: "dictionary"
+        perikles/accesses: "solon"
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          serviceAccountName: ktesiassa
+          containers:
+            - name: "ktesias"
+              image: ghcr.io/odysseia-greek/ktesias:v0.0.2
+              imagePullPolicy: Always
+              command:
+                - sh
+                - -c
+                - /app/ktesias
+              env:
+                - name: POD_NAME
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.name
+                - name: NAMESPACE
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.namespace
+                - name: ELASTIC_ROLE
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.annotations['odysseia-greek/role']
+                - name: ELASTIC_ACCESS
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.annotations['odysseia-greek/access']
+              envFrom:
+                - configMapRef:
+                    name: ktesias
+              volumeMounts:
+                - name: solon-certs
+                  mountPath: /app/config/solon
+                  readOnly: true
+                - name: vault-server-tls
+                  mountPath: /app/config/vault
+                  readOnly: true
+              resources:
+                requests:
+                  memory: 64Mi
+                  cpu: 500m
+                limits:
+                  memory: 128Mi
+          volumes:
+            - name: vault-server-tls
+              secret:
+                secretName: vault-server-tls
+            - name: elastic-internal-tls
+              secret:
+                secretName: aristoteles-es-http-certs-public
+            - name: solon-certs
+              secret:
+                secretName: solon-tls-certs
+          restartPolicy: OnFailure
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1

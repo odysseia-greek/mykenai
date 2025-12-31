@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: delphi
+
+resources:
+  - cronjob.yaml
+  - ../../../base/ktesias
+
+components:
+  - ../../../../pyr/koinos/resources/local/mid
+  - ../../../../pyr/koinos/common-env/base/cronjob
+  - ../../../../pyr/koinos/cronjob/periandros
+  - ../../../../pyr/koinos/cronjob/aristides
