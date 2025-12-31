@@ -17,7 +17,7 @@ spec:
       labels:
         app: antigonos
         release: antigonos
-        version: v0.1.0
+        version: v0.0.1
       annotations:
         odysseia-greek/role: api
         odysseia-greek/access: dictionary
@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: "antigonos"
-          image: ghcr.io/odysseia-greek/antigonos:dev
+          image: ghcr.io/odysseia-greek/antigonos:v0.0.1
           imagePullPolicy: Always
           env:
             - name: ELASTIC_ACCESS
