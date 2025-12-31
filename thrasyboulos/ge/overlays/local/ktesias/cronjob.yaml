@@ -21,7 +21,7 @@ spec:
           serviceAccountName: ktesiassa
           containers:
             - name: "ktesias"
-              image: ghcr.io/odysseia-greek/ktesias:v0.0.2
+              image: ghcr.io/odysseia-greek/ktesias:v0.0.3
               imagePullPolicy: Always
               command:
                 - sh
