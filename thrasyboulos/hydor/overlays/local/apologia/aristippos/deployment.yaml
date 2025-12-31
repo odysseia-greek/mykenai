@@ -17,17 +17,17 @@ spec:
       labels:
         app: aristippos
         release: aristippos
-        version: v0.1.0
+        version: v0.1.1
       annotations:
         odysseia-greek/role: api
         odysseia-greek/access: media-quiz
-        perikles/accesses: "alexandros-legacy;solon;herodotos"
+        perikles/accesses: "solon"
         perikles/hostname: "aristippos"
         perikles/validity: "10"
     spec:
       containers:
         - name: "aristippos"
-          image: ghcr.io/odysseia-greek/aristippos:v0.1.0
+          image: ghcr.io/odysseia-greek/aristippos:v0.1.1
 
           imagePullPolicy: Always
           env:

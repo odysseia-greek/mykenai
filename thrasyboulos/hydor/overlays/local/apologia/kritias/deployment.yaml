@@ -17,17 +17,17 @@ spec:
       labels:
         app: kritias
         release: kritias
-        version: v0.1.0
+        version: v0.1.1
       annotations:
         odysseia-greek/role: api
         odysseia-greek/access: multiple-choice-quiz
-        perikles/accesses: "alexandros-legacy;solon;herodotos"
+        perikles/accesses: "solon"
         perikles/hostname: "kritias"
         perikles/validity: "10"
     spec:
       containers:
         - name: "kritias"
-          image: ghcr.io/odysseia-greek/kritias:v0.1.0
+          image: ghcr.io/odysseia-greek/kritias:v0.1.1
 
           imagePullPolicy: Always
           env:

@@ -8,4 +8,5 @@ data:
   KRITIAS_SERVICE: "kritias:50060"
   KRITON_SERVICE: "kriton:50060"
   XENOFON_SERVICE: "xenofon:50060"
-  VERSION: "v0.2.0"
+  ASPASIA_SERVICE: "aspasia:50060"
+  VERSION: "v0.2.1"

@@ -17,15 +17,15 @@ spec:
       labels:
         app: sokrates
         release: sokrates
-        version: v0.2.0
+        version: v0.2.1
       annotations:
-        perikles/accesses: "aristippos;xenofon;kriton;kritias;alkibiades;antisthenes"
+        perikles/accesses: "aristippos;xenofon;kriton;kritias;alkibiades;antisthenes;aspasia"
         perikles/hostname: "sokrates"
         perikles/validity: "10"
     spec:
       containers:
         - name: sokrates
-          image: ghcr.io/odysseia-greek/sokrates:v0.2.0
+          image: ghcr.io/odysseia-greek/sokrates:v0.2.1
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
