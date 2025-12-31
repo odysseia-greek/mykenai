@@ -10,4 +10,5 @@ resources:
   - cnp-melissos.yaml
   - cnp-alexandros.yaml
   - cnp-ptolemaios.yaml
+  - cnp-aspasia.yaml
   - ./theofrastos
