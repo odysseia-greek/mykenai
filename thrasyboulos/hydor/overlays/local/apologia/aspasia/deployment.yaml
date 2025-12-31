@@ -5,8 +5,7 @@ metadata:
   labels:
     app: aspasia
   annotations:
-    volumes.odysseia.io/combined: "true"
-    mounts.odysseia.io/combined: "true"
+    volumes.odysseia.io/elastic-only: "true"
 spec:
   replicas: 1
   selector:

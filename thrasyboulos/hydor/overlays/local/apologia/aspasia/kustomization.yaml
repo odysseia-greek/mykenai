@@ -11,10 +11,10 @@ components:
   - ../../../../../pyr/koinos/deployment/sophokles
   - ../../../../../pyr/koinos/deployment/serviceaccount
   - ../../../../../pyr/koinos/services/grpc
-  - ../../../../../pyr/koinos/resources/local/mid
-  - ../../../../../pyr/koinos/transformers/volumes/combined
-  - ../../../../../pyr/koinos/transformers/mounts/combined
+  - ../../../../../pyr/koinos/resources/local/low
+  - ../../../../../pyr/koinos/transformers/volumes/elastic
   - ../../../../../pyr/koinos/common-env/base/deploy
+
 patches:
   - target:
       version: v1
