@@ -7,13 +7,6 @@ metadata:
 spec:
   schedule: "*/20 * * * *"
   jobTemplate:
-    metadata:
-      labels:
-        app: meletos
-        release: meletos
-        version: v0.1.1
-      annotations:
-        perikles/accesses: "sokrates"
     spec:
       template:
         metadata:
@@ -21,6 +14,8 @@ spec:
             app: meletos
             release: meletos
             version: v0.1.1
+          annotations:
+            perikles/accesses: "sokrates"
         spec:
           restartPolicy: Never
           containers:

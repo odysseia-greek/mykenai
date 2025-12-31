@@ -5,18 +5,18 @@ metadata:
 spec:
   schedule: "0 */2 * * *"
   jobTemplate:
-    metadata:
-      labels:
-        app: ktesias
-        release: ktesias
-        version: v0.0.2
-      annotations:
-        odysseia-greek/role: "api"
-        odysseia-greek/access: "dictionary"
-        perikles/accesses: "solon"
     spec:
       backoffLimit: 2
       template:
+        metadata:
+          labels:
+            app: ktesias
+            release: ktesias
+            version: v0.0.2
+          annotations:
+            odysseia-greek/role: "api"
+            odysseia-greek/access: "dictionary"
+            perikles/accesses: "solon"
         spec:
           serviceAccountName: ktesiassa
           containers:
