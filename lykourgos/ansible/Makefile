@@ -1,8 +1,9 @@
 INVENTORY_ACC = inventories/acc/hosts.yaml
 INVENTORY_PRD = inventories/prd/hosts.yaml
 INVENTORY_SINGLE = inventories/single/hosts.yaml
+INVENTORY_LIMA = inventories/lima/hosts.yaml
 
-.PHONY: ping-acc ping-prd bootstrap-acc bootstrap-prd k0s-acc k3s-acc k0s-single
+.PHONY: ping-acc ping-prd bootstrap-acc bootstrap-prd k0s-acc k3s-acc k0s-single k0s-lima-single k0s-lima-ha
 
 KUBECONFIG_FILE ?= $(HOME)/.kube/config
 K0S_KUBECONFIG := playbooks/k0s-kubeconfig-athenai
@@ -60,5 +61,11 @@ lvm-storage:
 
 k0s-single:
 	ansible-playbook -i $(INVENTORY_SINGLE) playbooks/k0s-single-node.yaml
+
+k0s-lima-single: ## Install k0s single-node on Lima VM
+	ansible-playbook -i $(INVENTORY_LIMA) playbooks/k0s-lima-single.yaml
+
+k0s-lima-ha: ## Install k0s HA cluster on Lima VMs
+	ansible-playbook -i $(INVENTORY_LIMA) playbooks/k0s-lima-ha.yaml
 
 poc: bootstrap-single lvm-storage k0s-single

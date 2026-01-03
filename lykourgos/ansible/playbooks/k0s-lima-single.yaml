@@ -1,0 +1,210 @@
+---
+# Install k0s single-node cluster on Lima VM
+# Usage: ansible-playbook -i inventories/lima/hosts.yaml playbooks/k0s-lima-single.yaml
+
+- name: Install k0s single-node on Lima VM
+  hosts: k0s_lima_single
+  gather_facts: yes
+  vars:
+    lima_user: "{{ ansible_env.USER }}"
+    k0s_version: "v1.34.2+k0s.0"
+  tasks:
+    - name: Check Lima VM exists
+      shell: limactl list --format '{{ "{{.Name}}" }}' | grep -x "{{ lima_vm_name }}"
+      register: lima_check
+      failed_when: false
+      changed_when: false
+      delegate_to: localhost
+
+    - name: Ensure Lima VM is running
+      shell: limactl start {{ lima_vm_name }}
+      when: lima_check.rc != 0
+      delegate_to: localhost
+
+    - name: Wait for Lima VM to be ready
+      shell: limactl shell {{ lima_vm_name }} echo ready
+      register: lima_ready
+      until: lima_ready.rc == 0
+      retries: 30
+      delay: 5
+      delegate_to: localhost
+
+    - name: Get actual VM IP address
+      shell: limactl shell {{ lima_vm_name }} hostname -I | awk '{print $1}'
+      register: vm_ip_result
+      delegate_to: localhost
+      changed_when: false
+
+    - name: Set VM IP fact
+      set_fact:
+        vm_ip: "{{ vm_ip_result.stdout | trim }}"
+
+    - name: Display detected IP
+      debug:
+        msg: "Detected VM IP: {{ vm_ip }}"
+
+    - name: Install required packages in Lima VM
+      shell: |
+        limactl shell {{ lima_vm_name }} sudo sh -c '
+        export DEBIAN_FRONTEND=noninteractive
+        apt-get update
+        apt-get install -y curl iptables socat conntrack lvm2
+        '
+      delegate_to: localhost
+
+    - name: Download and install k0s
+      shell: |
+        limactl shell {{ lima_vm_name }} sudo sh -c '
+        curl -sSLf https://get.k0s.sh | K0S_VERSION={{ k0s_version }} sh
+        '
+      delegate_to: localhost
+
+    - name: Create k0s config directory
+      shell: limactl shell {{ lima_vm_name }} sudo mkdir -p /etc/k0s
+      delegate_to: localhost
+
+    - name: Generate k0s config
+      shell: |
+        cat <<EOF | limactl shell {{ lima_vm_name }} sudo tee /etc/k0s/k0s.yaml
+        apiVersion: k0s.k0sproject.io/v1beta1
+        kind: ClusterConfig
+        metadata:
+          name: {{ cluster_name }}
+        spec:
+          api:
+            address: {{ vm_ip }}
+            port: 6443
+            k0sApiPort: 9443
+            sans:
+              - {{ vm_ip }}
+              - {{ cluster_name }}.odysseia-greek
+              - k0s-{{ cluster_name }}.odysseia-greek
+              - localhost
+              - 127.0.0.1
+          network:
+            provider: custom
+            kubeProxy:
+              mode: iptables
+            podCIDR: {{ pod_cidr }}
+            serviceCIDR: {{ service_cidr }}
+          storage:
+            type: etcd
+            etcd:
+              peerAddress: {{ vm_ip }}
+        EOF
+      delegate_to: localhost
+
+    - name: Check if k0s is already installed
+      shell: limactl shell {{ lima_vm_name }} test -f /etc/systemd/system/k0scontroller.service
+      register: k0s_installed
+      failed_when: false
+      changed_when: false
+      delegate_to: localhost
+
+    - name: Install k0s as single-node controller
+      shell: limactl shell {{ lima_vm_name }} sudo k0s install controller --single -c /etc/k0s/k0s.yaml
+      delegate_to: localhost
+      when: k0s_installed.rc != 0
+
+    - name: Remove old certificates to regenerate with new SANs
+      shell: limactl shell {{ lima_vm_name }} sudo rm -rf /var/lib/k0s/pki
+      delegate_to: localhost
+      when: k0s_installed.rc == 0
+
+    - name: Start and enable k0s
+      shell: |
+        limactl shell {{ lima_vm_name }} sudo systemctl daemon-reload
+        limactl shell {{ lima_vm_name }} sudo systemctl enable k0scontroller
+        limactl shell {{ lima_vm_name }} sudo systemctl restart k0scontroller
+      delegate_to: localhost
+
+    - name: Wait for k0s API to be ready
+      shell: limactl shell {{ lima_vm_name }} sudo k0s kubectl get --raw /healthz
+      register: k0s_health
+      until: k0s_health.rc == 0
+      retries: 60
+      delay: 5
+      delegate_to: localhost
+
+    - name: Generate kubeconfig with renamed context and 127.0.0.1 server
+      shell: |
+        limactl shell {{ lima_vm_name }} sudo k0s kubeconfig admin | \
+        sed -e 's|https://.*:6443|https://127.0.0.1:6443|' \
+            -e 's/name: local/name: {{ lima_vm_name }}/g' \
+            -e 's/cluster: local/cluster: {{ lima_vm_name }}/g' \
+            -e 's/name: Default/name: {{ lima_vm_name }}/g' \
+            -e 's/context: Default/context: {{ lima_vm_name }}/g' \
+            -e 's/name: user/name: admin/g' \
+            -e 's/user: user/user: admin/g' \
+            > /tmp/k0s-kubeconfig-{{ lima_vm_name }}-renamed.yaml
+      delegate_to: localhost
+
+    - name: Backup existing kubeconfig
+      copy:
+        src: "{{ ansible_env.HOME }}/.kube/config"
+        dest: "{{ ansible_env.HOME }}/.kube/config.backup-{{ ansible_date_time.epoch }}"
+        mode: "0600"
+      delegate_to: localhost
+      when: lookup('file', ansible_env.HOME + '/.kube/config', errors='ignore') is not none
+      ignore_errors: yes
+
+    - name: Remove old k0s-byzantium entries from kubeconfig
+      shell: |
+        if [ -f {{ ansible_env.HOME }}/.kube/config ]; then
+          kubectl config delete-cluster {{ lima_vm_name }} 2>/dev/null || true
+          kubectl config delete-context {{ lima_vm_name }} 2>/dev/null || true
+          kubectl config delete-user admin 2>/dev/null || true
+        fi
+      delegate_to: localhost
+      ignore_errors: yes
+
+    - name: Merge kubeconfig into ~/.kube/config
+      shell: |
+        mkdir -p {{ ansible_env.HOME }}/.kube
+        NEW_CONFIG="/tmp/k0s-kubeconfig-{{ lima_vm_name }}-renamed.yaml"
+
+        if [ ! -f {{ ansible_env.HOME }}/.kube/config ] || [ ! -s {{ ansible_env.HOME }}/.kube/config ]; then
+          # No existing config, just copy
+          cp "$NEW_CONFIG" {{ ansible_env.HOME }}/.kube/config
+        else
+          # Merge configs using KUBECONFIG environment variable
+          KUBECONFIG={{ ansible_env.HOME }}/.kube/config:"$NEW_CONFIG" kubectl config view --raw > {{ ansible_env.HOME }}/.kube/config.tmp
+          mv {{ ansible_env.HOME }}/.kube/config.tmp {{ ansible_env.HOME }}/.kube/config
+        fi
+        chmod 600 {{ ansible_env.HOME }}/.kube/config
+
+        # Switch to new context
+        kubectl config use-context {{ lima_vm_name }}
+      delegate_to: localhost
+
+    - name: Clean up temp files
+      file:
+        path: "/tmp/k0s-kubeconfig-{{ lima_vm_name }}-renamed.yaml"
+        state: absent
+      delegate_to: localhost
+
+    - name: Get cluster status
+      shell: limactl shell {{ lima_vm_name }} sudo k0s kubectl get nodes -o wide
+      register: cluster_status
+      delegate_to: localhost
+
+    - name: Display cluster info
+      debug:
+        msg:
+          - "✓ k0s cluster ready!"
+          - ""
+          - "VM: {{ lima_vm_name }}"
+          - "IP: {{ vm_ip }}"
+          - "Context: {{ lima_vm_name }}"
+          - "User: admin"
+          - ""
+          - "Kubeconfig merged into ~/.kube/config"
+          - "Current context switched to: {{ lima_vm_name }}"
+          - ""
+          - "Test with: kubectl get nodes"
+          - ""
+          - "/etc/hosts updated:"
+          - "{{ vm_ip }} {{ lima_vm_name }}.odysseia-greek {{ cluster_name }}.odysseia-greek"
+          - ""
+          - "Cluster nodes:"
+          - "{{ cluster_status.stdout_lines }}"

@@ -1,0 +1,228 @@
+---
+# Install k0s HA cluster on Lima VMs (1 controller + workers)
+# Usage: ansible-playbook -i inventories/lima/hosts.yaml playbooks/k0s-lima-ha.yaml
+
+- name: Install k0s controller on Lima VM
+  hosts: k0s_lima_ha_controllers
+  gather_facts: yes
+  vars:
+    lima_user: "{{ ansible_env.USER }}"
+  tasks:
+    - name: Check Lima VM exists
+      shell: limactl list --format '{{ "{{.Name}}" }}' | grep -x "{{ lima_vm_name }}"
+      register: lima_check
+      failed_when: false
+      changed_when: false
+      delegate_to: localhost
+
+    - name: Ensure Lima VM is running
+      shell: limactl start {{ lima_vm_name }}
+      when: lima_check.rc != 0
+      delegate_to: localhost
+
+    - name: Wait for Lima VM to be ready
+      shell: limactl shell {{ lima_vm_name }} echo ready
+      register: lima_ready
+      until: lima_ready.rc == 0
+      retries: 30
+      delay: 5
+      delegate_to: localhost
+
+    - name: Install required packages
+      shell: |
+        limactl shell {{ lima_vm_name }} sudo sh -c '
+        export DEBIAN_FRONTEND=noninteractive
+        apt-get update
+        apt-get install -y curl iptables socat conntrack
+        '
+      delegate_to: localhost
+
+    - name: Download and install k0s
+      shell: |
+        limactl shell {{ lima_vm_name }} sudo sh -c '
+        curl -sSLf https://get.k0s.sh | K0S_VERSION={{ k0s_version }} sh
+        '
+      delegate_to: localhost
+
+    - name: Create k0s config directory
+      shell: limactl shell {{ lima_vm_name }} sudo mkdir -p /etc/k0s
+      delegate_to: localhost
+
+    - name: Generate k0s config
+      shell: |
+        cat <<EOF | limactl shell {{ lima_vm_name }} sudo tee /etc/k0s/k0s.yaml
+        apiVersion: k0s.k0sproject.io/v1beta1
+        kind: ClusterConfig
+        metadata:
+          name: {{ cluster_name }}
+        spec:
+          api:
+            address: {{ ansible_host }}
+            port: 6443
+            k0sApiPort: 9443
+            sans:
+              - {{ ansible_host }}
+              - {{ cluster_name }}.odysseia-greek
+              - k0s-{{ cluster_name }}.odysseia-greek
+              - k0s-controller
+              - localhost
+              - 127.0.0.1
+          network:
+            provider: custom
+            kubeProxy:
+              mode: iptables
+            podCIDR: {{ pod_cidr }}
+            serviceCIDR: {{ service_cidr }}
+          storage:
+            type: etcd
+            etcd:
+              peerAddress: {{ ansible_host }}
+        EOF
+      delegate_to: localhost
+
+    - name: Install k0s controller (without worker)
+      shell: |
+        limactl shell {{ lima_vm_name }} sudo sh -c '
+        test -f /etc/systemd/system/k0scontroller.service || \
+        k0s install controller -c /etc/k0s/k0s.yaml
+        '
+      delegate_to: localhost
+
+    - name: Start and enable k0s controller
+      shell: |
+        limactl shell {{ lima_vm_name }} sudo systemctl daemon-reload
+        limactl shell {{ lima_vm_name }} sudo systemctl enable k0scontroller
+        limactl shell {{ lima_vm_name }} sudo systemctl start k0scontroller
+      delegate_to: localhost
+
+    - name: Wait for k0s API to be ready
+      shell: limactl shell {{ lima_vm_name }} sudo k0s kubectl get --raw /healthz
+      register: k0s_health
+      until: k0s_health.rc == 0
+      retries: 60
+      delay: 5
+      delegate_to: localhost
+
+    - name: Fetch kubeconfig
+      shell: limactl shell {{ lima_vm_name }} sudo k0s kubeconfig admin
+      register: kubeconfig_output
+      delegate_to: localhost
+
+    - name: Save kubeconfig locally
+      copy:
+        content: "{{ kubeconfig_output.stdout }}"
+        dest: "{{ playbook_dir }}/k0s-kubeconfig-{{ lima_vm_name }}"
+        mode: "0600"
+      delegate_to: localhost
+
+    - name: Generate worker join token
+      shell: limactl shell {{ lima_vm_name }} sudo k0s token create --role=worker --expiry=24h
+      register: worker_token
+      delegate_to: localhost
+
+    - name: Save worker token as fact
+      set_fact:
+        k0s_worker_token: "{{ worker_token.stdout }}"
+
+- name: Join workers to k0s cluster
+  hosts: k0s_lima_ha_workers
+  gather_facts: yes
+  vars:
+    lima_user: "{{ ansible_env.USER }}"
+    controller_host: "{{ groups['k0s_lima_ha_controllers'][0] }}"
+    controller_ip: "{{ hostvars[controller_host].ansible_host }}"
+  tasks:
+    - name: Check Lima worker VM exists
+      shell: limactl list --format '{{ "{{.Name}}" }}' | grep -x "{{ lima_vm_name }}"
+      register: lima_check
+      failed_when: false
+      changed_when: false
+      delegate_to: localhost
+
+    - name: Ensure Lima worker VM is running
+      shell: limactl start {{ lima_vm_name }}
+      when: lima_check.rc != 0
+      delegate_to: localhost
+
+    - name: Wait for Lima worker VM to be ready
+      shell: limactl shell {{ lima_vm_name }} echo ready
+      register: lima_ready
+      until: lima_ready.rc == 0
+      retries: 30
+      delay: 5
+      delegate_to: localhost
+
+    - name: Install required packages on worker
+      shell: |
+        limactl shell {{ lima_vm_name }} sudo sh -c '
+        export DEBIAN_FRONTEND=noninteractive
+        apt-get update
+        apt-get install -y curl iptables socat conntrack
+        '
+      delegate_to: localhost
+
+    - name: Download and install k0s on worker
+      shell: |
+        limactl shell {{ lima_vm_name }} sudo sh -c '
+        curl -sSLf https://get.k0s.sh | K0S_VERSION={{ k0s_version }} sh
+        '
+      delegate_to: localhost
+
+    - name: Add controller to worker /etc/hosts
+      shell: |
+        limactl shell {{ lima_vm_name }} sudo sh -c '
+        grep -q "k0s-controller" /etc/hosts || \
+        echo "{{ controller_ip }} k0s-controller" >> /etc/hosts
+        '
+      delegate_to: localhost
+
+    - name: Write worker token to VM
+      shell: |
+        echo "{{ hostvars[controller_host].k0s_worker_token }}" | \
+        limactl shell {{ lima_vm_name }} sudo tee /tmp/worker-token.txt > /dev/null
+      delegate_to: localhost
+
+    - name: Install k0s worker
+      shell: |
+        limactl shell {{ lima_vm_name }} sudo sh -c '
+        test -f /etc/systemd/system/k0sworker.service || \
+        k0s install worker --token-file /tmp/worker-token.txt
+        '
+      delegate_to: localhost
+
+    - name: Start and enable k0s worker
+      shell: |
+        limactl shell {{ lima_vm_name }} sudo systemctl daemon-reload
+        limactl shell {{ lima_vm_name }} sudo systemctl enable k0sworker
+        limactl shell {{ lima_vm_name }} sudo systemctl start k0sworker
+      delegate_to: localhost
+
+    - name: Wait for worker to be ready
+      shell: limactl shell {{ lima_vm_name }} sudo systemctl is-active k0sworker
+      register: worker_status
+      until: worker_status.stdout == "active"
+      retries: 30
+      delay: 5
+      delegate_to: localhost
+
+- name: Display cluster status
+  hosts: k0s_lima_ha_controllers
+  gather_facts: no
+  tasks:
+    - name: Get cluster nodes
+      shell: limactl shell {{ lima_vm_name }} sudo k0s kubectl get nodes -o wide
+      register: cluster_status
+      delegate_to: localhost
+
+    - name: Display cluster info
+      debug:
+        msg:
+          - "k0s HA cluster ready!"
+          - "Controller: {{ lima_vm_name }} ({{ ansible_host }})"
+          - "Kubeconfig: {{ playbook_dir }}/k0s-kubeconfig-{{ lima_vm_name }}"
+          - ""
+          - "Add to /etc/hosts:"
+          - "{{ ansible_host }} k0s-{{ cluster_name }}.odysseia-greek {{ cluster_name }}.odysseia-greek"
+          - ""
+          - "Cluster nodes:"
+          - "{{ cluster_status.stdout_lines }}"

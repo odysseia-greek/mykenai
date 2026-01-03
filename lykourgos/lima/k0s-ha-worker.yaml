@@ -1,0 +1,93 @@
+# Lima configuration for k0s HA worker nodes
+# Start multiple workers with different names and MAC addresses
+#
+# Worker 1:
+#   limactl start --name=k0s-worker1 --set='.networks[0].macAddress="52:55:55:12:34:61"' lykourgos/lima/k0s-ha-worker.yaml
+# Worker 2:
+#   limactl start --name=k0s-worker2 --set='.networks[0].macAddress="52:55:55:12:34:62"' lykourgos/lima/k0s-ha-worker.yaml
+
+vmType: "vz"
+os: "Linux"
+
+images:
+  - location: "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-genericcloud-arm64.qcow2"
+    arch: "aarch64"
+
+cpus: 3
+memory: "6GiB"
+disk: "40GiB"
+
+networks:
+  - lima: shared
+    macAddress: "52:55:55:12:34:61"  # Change for each worker
+    interface: "lima0"
+
+mounts:
+  - location: "~"
+    writable: false
+
+dns:
+  - 8.8.8.8
+  - 1.1.1.1
+
+additionalDisks:
+  - name: pyxis-worker
+    format: false
+
+env:
+  CONTROLLER_IP: "192.168.105.10"
+  WORKER_TOKEN: ""  # Set via --set or manually after start
+
+provision:
+  - mode: system
+    script: |
+      #!/bin/bash
+      set -eux -o pipefail
+
+      export DEBIAN_FRONTEND=noninteractive
+      apt-get update
+      apt-get install -y curl iptables socat conntrack python3 lvm2
+
+      # Install k0s
+      curl -sSLf https://get.k0s.sh | K0S_VERSION=v1.34.2+k0s.0 sh
+
+      # Add controller to /etc/hosts
+      CONTROLLER_IP="${CONTROLLER_IP:-192.168.105.10}"
+      grep -q "k0s-controller" /etc/hosts || echo "$CONTROLLER_IP k0s-controller k0s-byzantium.odysseia-greek" >> /etc/hosts
+
+      echo "k0s worker VM ready"
+      echo "To join the cluster:"
+      echo "  1. Get token from controller: limactl shell k0s-controller cat /tmp/worker-token.txt"
+      echo "  2. Copy token to this VM: limactl copy <token-file> k0s-worker1:/tmp/worker-token.txt"
+      echo "  3. Join cluster: limactl shell k0s-worker1 sudo k0s install worker --token-file /tmp/worker-token.txt"
+      echo "  4. Start worker: limactl shell k0s-worker1 sudo systemctl start k0sworker"
+
+probes:
+  - mode: readiness
+    description: k0s worker
+    script: |
+      #!/bin/bash
+      # Worker is ready when k0s binary is installed
+      test -x /usr/local/bin/k0s
+    hint: |
+      Worker needs manual join after token is provided
+      See "/var/log/cloud-init-output.log"
+
+message: |
+  k0s worker VM is ready!
+
+  To join the cluster:
+
+  1. Get token from controller:
+     TOKEN=$(limactl shell k0s-controller cat /tmp/worker-token.txt)
+
+  2. Write token to worker:
+     echo "$TOKEN" | limactl shell {{.Name}} sudo tee /tmp/worker-token.txt > /dev/null
+
+  3. Join cluster:
+     limactl shell {{.Name}} sudo k0s install worker --token-file /tmp/worker-token.txt
+     limactl shell {{.Name}} sudo systemctl start k0sworker
+     limactl shell {{.Name}} sudo systemctl enable k0sworker
+
+  4. Verify from controller:
+     limactl shell k0s-controller sudo k0s kubectl get nodes
