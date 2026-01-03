@@ -126,6 +126,54 @@
       delay: 5
       delegate_to: localhost
 
+    - name: Detect additional disk device
+      shell: limactl shell {{ lima_vm_name }} lsblk -ndo NAME,SIZE | grep -E '(30G|29\.[0-9]G)' | head -1 | awk '{print $1}'
+      register: disk_device
+      delegate_to: localhost
+      changed_when: false
+
+    - name: Set disk device fact
+      set_fact:
+        pyxis_disk: "/dev/{{ disk_device.stdout | trim }}"
+      when: disk_device.stdout | length > 0
+
+    - name: Check if LVM volume group exists
+      shell: limactl shell {{ lima_vm_name }} sudo vgs pyxis
+      register: vg_check
+      failed_when: false
+      changed_when: false
+      delegate_to: localhost
+      when: disk_device.stdout | length > 0
+
+    - name: Create LVM physical volume on pyxis disk
+      shell: limactl shell {{ lima_vm_name }} sudo pvcreate {{ pyxis_disk }}
+      delegate_to: localhost
+      when:
+        - disk_device.stdout | length > 0
+        - vg_check.rc != 0
+
+    - name: Create LVM volume group named pyxis
+      shell: limactl shell {{ lima_vm_name }} sudo vgcreate pyxis {{ pyxis_disk }}
+      delegate_to: localhost
+      when:
+        - disk_device.stdout | length > 0
+        - vg_check.rc != 0
+
+    - name: Verify volume group creation
+      shell: limactl shell {{ lima_vm_name }} sudo vgs pyxis
+      register: vg_verify
+      delegate_to: localhost
+      when: disk_device.stdout | length > 0
+
+    - name: Display LVM setup
+      debug:
+        msg:
+          - "LVM volume group 'pyxis' created on {{ pyxis_disk }}"
+          - "{{ vg_verify.stdout_lines }}"
+      when:
+        - disk_device.stdout | length > 0
+        - vg_verify is defined
+
     - name: Generate kubeconfig with renamed context and 127.0.0.1 server
       shell: |
         limactl shell {{ lima_vm_name }} sudo k0s kubeconfig admin | \
@@ -200,6 +248,8 @@
           - ""
           - "Kubeconfig merged into ~/.kube/config"
           - "Current context switched to: {{ lima_vm_name }}"
+          - ""
+          - "LVM volume group 'pyxis' created for TopoLVM"
           - ""
           - "Test with: kubectl get nodes"
           - ""
