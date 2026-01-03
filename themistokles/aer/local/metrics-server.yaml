@@ -1,0 +1,18 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: metrics-server
+  namespace: flux-system
+spec:
+  interval: 4h
+  retryInterval: 2m
+  timeout: 10m
+  sourceRef:
+    kind: GitRepository
+    name: themistokles
+  path: themistokles/ge/overlays/base/metrics-server
+  dependsOn:
+    - name: cert-manager
+  prune: true
+  wait: true
