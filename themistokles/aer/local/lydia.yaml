@@ -11,6 +11,8 @@ spec:
   sourceRef:
     kind: GitRepository
     name: themistokles
+  dependsOn:
+    - name: traefik
   path: themistokles/hydor/overlays/local/lydia
   prune: true
   wait: true
