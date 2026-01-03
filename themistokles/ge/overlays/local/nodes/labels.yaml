@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Node
 metadata:
-  name: k3d-byzantium-server-0
+  name: lima-k0s-byzantium
   annotations:
     kustomize.toolkit.fluxcd.io/prune: disabled
     kustomize.toolkit.fluxcd.io/ssa: disabled
