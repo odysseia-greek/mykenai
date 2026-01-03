@@ -3,6 +3,8 @@ kind: Kustomization
 namespace: cilium
 resources:
   - ../../../base/cilium
+  - ir-path.yaml
+  - ir.yaml
 
 patches:
   - target:

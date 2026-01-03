@@ -1,0 +1,24 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: hubble-strip
+spec:
+  stripPrefix:
+    prefixes:
+      - /hubble
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: hubble-ui-path
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`int.byzantium.odysseia-greek`) && PathPrefix(`/hubble`)
+      kind: Rule
+      middlewares:
+        - name: hubble-strip
+      services:
+        - name: hubble-ui
+          port: 80
