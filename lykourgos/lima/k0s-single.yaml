@@ -6,7 +6,7 @@ os: "Linux"
 images:
   - location: "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-genericcloud-arm64.qcow2"
 
-cpus: 8
+cpus: 12
 memory: "12GiB"
 disk: "25GiB"
 

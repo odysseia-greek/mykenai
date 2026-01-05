@@ -146,14 +146,6 @@ clean:
 	$(MAKE) delete-disks
 	@echo "Cleanup complete"
 
-update-hosts:
-	@echo "Adding k0s entries to /etc/hosts..."
-	@grep -q "k0s-byzantium.odysseia-greek" /etc/hosts 2>/dev/null || \
-		echo "192.168.105.2 k0s-byzantium.odysseia-greek byzantium.odysseia-greek  # k0s single" | sudo tee -a /etc/hosts
-	@grep -q "192.168.105.10" /etc/hosts 2>/dev/null || \
-		echo "192.168.105.10 k0s-byzantium.odysseia-greek byzantium.odysseia-greek  # k0s HA" | sudo tee -a /etc/hosts
-	@echo "/etc/hosts updated"
-
 # Node operations
 shell-single:
 	limactl shell k0s-byzantium
