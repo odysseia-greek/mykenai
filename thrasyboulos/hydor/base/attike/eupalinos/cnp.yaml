@@ -4,7 +4,7 @@ metadata:
   name: trace-to-eupalinos
   namespace: attike
 spec:
-  description: "Allow all pods in attike namespace to access Eupalinos"
+  description: "Allow all pods in attike namespace to access Eupalinos for tracing"
   endpointSelector:
     matchLabels:
       app: eupalinos-attike
@@ -23,7 +23,7 @@ metadata:
   name: trace-to-eupalinos
   namespace: attike
 spec:
-  description: "Allow all pods in olympia namespace to access Eupalinos"
+  description: "Allow all pods in olympia namespace to access Eupalinos for tracing"
   endpointSelector:
     matchLabels:
       app: eupalinos-attike
