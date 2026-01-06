@@ -3,9 +3,9 @@ kind: Kustomization
 
 resources:
   - ../../../base/attike
-  - euripides
-  - praxiteles
   - aiskhylos
+  - sophokles
+  - eupalinos
 
 labels:
   - pairs:
