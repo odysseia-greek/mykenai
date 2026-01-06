@@ -3,7 +3,7 @@
   path: /spec/jobTemplate/spec/template/spec/containers/-
   value:
       name: "aristophanes"
-      image: ghcr.io/odysseia-greek/aristophanes:v0.7.0
+      image: ghcr.io/odysseia-greek/aristophanes:v0.7.1
       env:
           - name: POD_NAME
             valueFrom:
