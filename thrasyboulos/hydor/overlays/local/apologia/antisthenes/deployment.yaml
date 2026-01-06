@@ -17,7 +17,7 @@ spec:
       labels:
         app: antisthenes
         release: antisthenes
-        version: v0.1.1
+        version: v0.1.2
       annotations:
         odysseia-greek/role: api
         odysseia-greek/access: grammar-quiz
@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: "antisthenes"
-          image: ghcr.io/odysseia-greek/antisthenes:v0.1.1
+          image: ghcr.io/odysseia-greek/antisthenes:v0.1.2
 
           imagePullPolicy: Always
           env:
