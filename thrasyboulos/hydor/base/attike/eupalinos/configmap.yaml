@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: eupalinos
+  name: eupalinos-attike
 data:
   ENV: "OVERWRITE"
   TLS_ENABLED: "false"
