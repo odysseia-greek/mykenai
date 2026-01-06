@@ -10,7 +10,6 @@ resources:
 
 components:
   - ../../../../../pyr/koinos/deployment/aristophanes
-  - ../../../../../pyr/koinos/deployment/sophokles
   - ../../../../../pyr/koinos/deployment/serviceaccount
   - ../../../../../pyr/koinos/services/graphql
   - ../../../../../pyr/koinos/resources/local/mid

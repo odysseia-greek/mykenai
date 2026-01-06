@@ -3,7 +3,7 @@
   path: /spec/jobTemplate/spec/template/spec/containers/-
   value:
       name: "aristophanes"
-      image: ghcr.io/odysseia-greek/aristophanes:v0.6.3
+      image: ghcr.io/odysseia-greek/aristophanes:v0.7.0
       env:
           - name: POD_NAME
             valueFrom:
@@ -13,16 +13,6 @@
             valueFrom:
                 fieldRef:
                     fieldPath: metadata.namespace
-          - name: ELASTIC_SEARCH_USER
-            valueFrom:
-                secretKeyRef:
-                    name: agreus-elastic
-                    key: user
-          - name: ELASTIC_SEARCH_PASSWORD
-            valueFrom:
-                secretKeyRef:
-                    name: agreus-elastic
-                    key: password
       ports:
           - containerPort: 50052
       envFrom:

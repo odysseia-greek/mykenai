@@ -8,7 +8,6 @@ resources:
 components:
   - ../../../../../pyr/koinos/deployment/aristophanes
   - ../../../../../pyr/koinos/deployment/periandros
-  - ../../../../../pyr/koinos/deployment/sophokles
   - ../../../../../pyr/koinos/deployment/aristides
   - ../../../../../pyr/koinos/deployment/serviceaccount
   - ../../../../../pyr/koinos/services/grpc

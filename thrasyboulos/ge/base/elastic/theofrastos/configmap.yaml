@@ -19,6 +19,7 @@ data:
         - text
         - tracing
         - metrics
+        - metrics_rollup
       role:
         privileges:
           - read
@@ -62,6 +63,7 @@ data:
       indices:
         - tracing
         - metrics
+        - metrics_rollup
       role:
         privileges:
           - create_index
@@ -75,6 +77,7 @@ data:
     creator:
       indices:
         - metrics
+        - metrics_rollup
         - tracing
       role:
         privileges:
@@ -106,5 +109,11 @@ data:
       rollover:
         - name: hot_30d
           max_age: "30"
+        - name: hot_14d
+          max_age: "14"
+        - name: hot_7d
+          max_age: "7"
+        - name: hot_3d
+          max_age: "3"
         - name: hot_plain
           max_age: ""

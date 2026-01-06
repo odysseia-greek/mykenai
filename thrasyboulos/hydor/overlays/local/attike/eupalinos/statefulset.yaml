@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: eupalinos
+spec:
+  replicas: 1
+  serviceName: eupalinos
+  selector:
+    matchLabels:
+      app: eupalinos-attike
+  template:
+    metadata:
+      labels:
+        app: eupalinos-attike
+        release: eupalinos
+        version: v0.2.0
+      annotations:
+        perikles/hostname: "eupalinos-attike"
+        perikles/validity: "60"
+    spec:
+      terminationGracePeriodSeconds: 3
+      containers:
+        - name: eupalinos-attike
+          image: ghcr.io/odysseia-greek/eupalinos:v0.2.1
+          ports:
+            - containerPort: 50060
+          envFrom:
+            - configMapRef:
+                name: eupalinos-attike
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "100m"
+            limits:
+              memory: "32Mi"

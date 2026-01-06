@@ -9,8 +9,8 @@ resources:
 
 labels:
   - pairs:
-      environment: "k3d"
-      variant: "k3d"
+      environment: "local"
+      variant: "k0s"
       domain: "tracing"
     includeSelectors: false
     includeTemplates: true

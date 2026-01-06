@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: sophokles
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sophokles
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: sophokles
+        app.kubernetes.io/part-of: attike
+    spec:
+      serviceAccountName: sophokles
+      tolerations:
+        - operator: Exists
+      containers:
+        - name: sophokles
+          image: ghcr.io/odysseia-greek/sophokles:v0.3.1
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: sophokles
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName

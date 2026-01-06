@@ -10,6 +10,7 @@ data:
   ELASTIC_SEARCH_SERVICE: "http://aristoteles-es-http.agora.svc:9200"
   VAULT_SERVICE: "https://vault.delphi.svc:8200"
   EUPALINOS_SERVICE: "eupalinos.agora.svc:50060"
+  EUPALINOS_TRACING_SERVICE: "eupalinos.agora.svc:50060"
   VAULT_TLS: "true"
   GATHER_METRICS: "true"
   TLS_FILES: "/app/config"
