@@ -4,7 +4,7 @@ metadata:
   annotations:
     gitops.ignore: "true"
   name: allow-apologia-namespace-to-aristarchos
-  namespace: olympia
+  namespace: alexandreia
 spec:
   endpointSelector:
     matchLabels:

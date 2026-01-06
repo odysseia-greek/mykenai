@@ -3,9 +3,8 @@ kind: Kustomization
 
 resources:
   - ../../../base/olympia
-  - homeros
-  - herodotos
-  - pheidias
+  - dionysios
+  - aristarchos
 
 labels:
   - pairs:
