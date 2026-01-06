@@ -25,7 +25,7 @@ spec:
       annotations:
         perikles/hostname: "solon"
         perikles/validity: "365"
-        solon/namespaces: "attike;olympia;makedonia;apologia"
+        solon/namespaces: "attike;olympia;makedonia;apologia;alexandreia"
     spec:
       serviceAccountName: solon-access-sa
       initContainers:
