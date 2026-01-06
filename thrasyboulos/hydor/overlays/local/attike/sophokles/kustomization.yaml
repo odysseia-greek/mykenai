@@ -4,6 +4,7 @@ namespace: attike
 resources:
   - ../../../../base/attike/sophokles
   - daemonset.yaml
+  - job.yaml
 
 components:
   - ../../../../../pyr/koinos/resources/local/low
