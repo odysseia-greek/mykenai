@@ -6,12 +6,12 @@ spec:
   entryPoints:
     - web
   routes:
-    - match: Host(`byzantium.odysseia-greek`) && PathPrefix(`/homeros/v1`)
+    - match: Host(`homeros.byzantium.odysseia-greek`) && PathPrefix(`/homeros/v1`)
       kind: Rule
       services:
         - name: homeros
           port: 8080
-    - match: Host(`byzantium.odysseia-greek`) && PathPrefix(`/graphql`)
+    - match: Host(`homeros.byzantium.odysseia-greek`) && PathPrefix(`/graphql`)
       kind: Rule
       services:
         - name: homeros
