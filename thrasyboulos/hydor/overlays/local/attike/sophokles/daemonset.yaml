@@ -19,7 +19,7 @@ spec:
         - operator: Exists
       containers:
         - name: sophokles
-          image: ghcr.io/odysseia-greek/sophokles:v0.3.1
+          image: ghcr.io/odysseia-greek/sophokles:v0.3.2
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
