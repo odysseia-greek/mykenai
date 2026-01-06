@@ -1,7 +1,8 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: attike-to-eupalinos-trace
+  name: trace-to-eupalinos
+  namespace: attike
 spec:
   description: "Allow all pods in attike namespace to access Eupalinos"
   endpointSelector:
@@ -19,7 +20,8 @@ spec:
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: olympia-to-eupalinos-trace
+  name: trace-to-eupalinos
+  namespace: attike
 spec:
   description: "Allow all pods in olympia namespace to access Eupalinos"
   endpointSelector:
