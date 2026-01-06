@@ -5,6 +5,6 @@ metadata:
 data:
   SCRAPE_INTERVAL: "10s"
   EXCLUDE_NAMESPACES: "kube-system,kube-public,kube-node-lease"
-  EUPALINOS_SERVICE: "eupalinos.attike.svc:50060"
+  EUPALINOS_TRACING_SERVICE: "eupalinos.attike.svc:50060"
   EUPALINOS_CHANNEL: "sophokles"
   KUBERNETES_API_ENDPOINT: "https://kubernetes.default.svc"
