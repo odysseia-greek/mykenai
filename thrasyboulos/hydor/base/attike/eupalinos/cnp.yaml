@@ -1,6 +1,24 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
+  name: attike-to-eupalinos-attike
+spec:
+  description: "Allow all pods in attike namespace to access Eupalinos attike"
+  endpointSelector:
+    matchLabels:
+      app: eupalinos-attike
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: attike
+      toPorts:
+        - ports:
+            - port: "50060"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
   name: apologia-to-eupalinos-attike
 spec:
   description: "Allow all pods in apologia namespace to access Eupalinos attike"

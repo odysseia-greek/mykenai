@@ -54,7 +54,7 @@ spec:
               readOnly: true
       containers:
         - name: "solon"
-          image: ghcr.io/odysseia-greek/solon:v0.2.1
+          image: ghcr.io/odysseia-greek/solon:v0.2.2
           imagePullPolicy: Always
           env:
             - name: NAMESPACE
