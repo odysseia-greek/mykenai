@@ -17,7 +17,7 @@ spec:
       labels:
         app: eukleides
         release: eukleides
-        version: v0.0.1
+        version: v0.0.3
       annotations:
         perikles/hostname: "eukleides"
         perikles/validity: "10"
@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
         - name: "eukleides"
-          image: ghcr.io/odysseia-greek/eukleides:v0.0.1
+          image: ghcr.io/odysseia-greek/eukleides:v0.0.3
           imagePullPolicy: Always
           envFrom:
             - configMapRef:

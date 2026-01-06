@@ -16,7 +16,7 @@ spec:
       labels:
         app: aspasia
         release: aspasia
-        version: v0.0.1
+        version: v0.0.2
       annotations:
         perikles/accesses: "herodotos;antigonos"
         perikles/hostname: "aspasia"
@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: "aspasia"
-          image: ghcr.io/odysseia-greek/aspasia:v0.0.1
+          image: ghcr.io/odysseia-greek/aspasia:v0.0.2
           imagePullPolicy: Always
           envFrom:
             - configMapRef:

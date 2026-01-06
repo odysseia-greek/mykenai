@@ -17,7 +17,7 @@ spec:
       labels:
         app: xenofon
         release: xenofon
-        version: v0.1.0
+        version: v0.1.1
       annotations:
         odysseia-greek/role: api
         odysseia-greek/access: author-based-quiz
@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: "xenofon"
-          image: ghcr.io/odysseia-greek/xenofon:v0.1.0
+          image: ghcr.io/odysseia-greek/xenofon:v0.1.1
 
           imagePullPolicy: Always
           env:

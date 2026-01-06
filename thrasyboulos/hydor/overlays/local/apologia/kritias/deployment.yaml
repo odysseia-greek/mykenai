@@ -17,7 +17,7 @@ spec:
       labels:
         app: kritias
         release: kritias
-        version: v0.1.1
+        version: v0.1.2
       annotations:
         odysseia-greek/role: api
         odysseia-greek/access: multiple-choice-quiz
@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: "kritias"
-          image: ghcr.io/odysseia-greek/kritias:v0.1.1
+          image: ghcr.io/odysseia-greek/kritias:v0.1.2
 
           imagePullPolicy: Always
           env:
