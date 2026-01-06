@@ -1,12 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: alexandros-legacy
+  annotations:
+    mounts.odysseia.io/existing: "true"
+    volumes.odysseia.io/existing: "true"
   labels:
     app: alexandros-legacy
-  annotations:
-    volumes.odysseia.io/existing: "true"
-    mounts.odysseia.io/existing: "true"
+  name: alexandros-legacy
+  namespace: makedonia
 spec:
   replicas: 1
   selector:
@@ -14,22 +15,19 @@ spec:
       app: alexandros-legacy
   template:
     metadata:
+      annotations:
+        odysseia-greek/access: dictionary
+        odysseia-greek/role: api
+        perikles/accesses: solon
+        perikles/hostname: alexandros-legacy
+        perikles/validity: "10"
       labels:
         app: alexandros-legacy
         release: alexandros-legacy
         version: v0.2.0
-      annotations:
-        odysseia-greek/role: api
-        odysseia-greek/access: dictionary
-        perikles/accesses: "solon"
-        perikles/hostname: "alexandros-legacy"
-        perikles/validity: "10"
     spec:
       containers:
-        - name: "alexandros-legacy"
-          image: ghcr.io/odysseia-greek/alexandros:v0.2.0
-          imagePullPolicy: Always
-          env:
+        - env:
             - name: POD_NAME
               valueFrom:
                 fieldRef:
@@ -41,26 +39,121 @@ spec:
           envFrom:
             - configMapRef:
                 name: alexandros
-          volumeMounts:
-            - name: alexandros-certs
-              mountPath: /app/config/alexandros
-              readOnly: true
-          ports:
-            - containerPort: 5000
-              name: http
+            - configMapRef:
+                name: odysseia-common-env
+          image: ghcr.io/odysseia-greek/alexandros:v0.2.0
+          imagePullPolicy: Always
           livenessProbe:
             httpGet:
               path: /alexandros/v1/health
               port: 5000
             initialDelaySeconds: 20
             periodSeconds: 20
+          name: alexandros-legacy
+          ports:
+            - containerPort: 5000
+              name: http
           readinessProbe:
             httpGet:
               path: /alexandros/v1/ping
               port: 5000
             initialDelaySeconds: 1
             periodSeconds: 20
+          resources:
+            limits:
+              memory: 32Mi
+            requests:
+              cpu: 200m
+              memory: 32Mi
+          volumeMounts:
+            - mountPath: /app/config/alexandros
+              name: alexandros-certs
+              readOnly: true
+        - env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          envFrom:
+            - configMapRef:
+                name: odysseia-common-env
+          image: ghcr.io/odysseia-greek/aristophanes:v0.6.3
+          imagePullPolicy: Always
+          name: aristophanes
+          ports:
+            - containerPort: 50052
+          resources:
+            limits:
+              memory: 32Mi
+            requests:
+              memory: 32Mi
+        - env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          envFrom:
+            - configMapRef:
+                name: odysseia-common-env
+          image: ghcr.io/odysseia-greek/aristides:v0.0.2
+          imagePullPolicy: Always
+          name: aristides
+          ports:
+            - containerPort: 50051
+          resources:
+            limits:
+              memory: 32Mi
+            requests:
+              memory: 32Mi
+          volumeMounts:
+            - mountPath: /app/config/vault
+              name: vault-server-tls
+              readOnly: true
+            - mountPath: /app/config/solon
+              name: solon-certs
+              readOnly: true
+      initContainers:
+        - env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: ELASTIC_ROLE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/role']
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom:
+            - configMapRef:
+                name: odysseia-common-env
+          image: ghcr.io/odysseia-greek/periandros:v0.1.4
+          imagePullPolicy: Always
+          name: periandros
+          volumeMounts:
+            - mountPath: /app/config/solon
+              name: solon-certs
+              readOnly: true
       volumes:
         - name: alexandros-certs
           secret:
             secretName: alexandros-tls-certs
+        - name: elastic-internal-tls
+          secret:
+            secretName: aristoteles-es-http-certs-public
+        - name: solon-certs
+          secret:
+            secretName: solon-tls-certs
+        - name: vault-server-tls
+          secret:
+            secretName: vault-server-tls
