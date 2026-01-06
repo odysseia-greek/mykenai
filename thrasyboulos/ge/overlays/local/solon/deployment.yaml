@@ -21,7 +21,7 @@ spec:
       labels:
         app: solon
         release: solon
-        version: v0.1.4
+        version: v0.2.2
       annotations:
         perikles/hostname: "solon"
         perikles/validity: "365"

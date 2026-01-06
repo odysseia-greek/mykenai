@@ -8,7 +8,7 @@ resources:
 components:
   - ../../../../../pyr/koinos/deployment/periandros
   - ../../../../../pyr/koinos/deployment/aristides
-  - ../../../../../pyr/koinos/deployment/serviceaccount
+
   - ../../../../../pyr/koinos/services/graphql
   - ../../../../../pyr/koinos/resources/local/low
   - ../../../../../pyr/koinos/transformers/volumes/combined

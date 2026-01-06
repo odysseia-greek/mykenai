@@ -12,7 +12,7 @@ components:
   - ../../../../../pyr/koinos/deployment/aristophanes
   - ../../../../../pyr/koinos/deployment/periandros
   - ../../../../../pyr/koinos/deployment/aristides
-  - ../../../../../pyr/koinos/deployment/serviceaccount
+
   - ../../../../../pyr/koinos/services/http
   - ../../../../../pyr/koinos/resources/local/mid
   - ../../../../../pyr/koinos/resources/local/job
