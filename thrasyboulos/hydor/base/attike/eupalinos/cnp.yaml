@@ -51,3 +51,21 @@ spec:
         - ports:
             - port: "50060"
               protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: delphi-to-eupalinos-attike
+spec:
+  description: "Allow all pods in delphi namespace to access Eupalinos attike"
+  endpointSelector:
+    matchLabels:
+      app: eupalinos-attike
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: delphi
+      toPorts:
+        - ports:
+            - port: "50060"
+              protocol: TCP
