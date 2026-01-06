@@ -8,3 +8,5 @@ data:
   EUPALINOS_TRACING_SERVICE: "eupalinos.attike.svc:50060"
   EUPALINOS_CHANNEL: "sophokles"
   KUBERNETES_API_ENDPOINT: "https://kubernetes.default.svc"
+  MAX_AGE: "5"
+  HOT_POLICY_NAME: "hot_30d"

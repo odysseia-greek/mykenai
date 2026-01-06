@@ -32,6 +32,6 @@ spec:
                   fieldPath: metadata.annotations['odysseia-greek/access']
           envFrom:
             - configMapRef:
-                name: euripides
+                name: sophokles
       restartPolicy: Never
   backoffLimit: 3
