@@ -5,5 +5,5 @@ kind: ConfigMap
 metadata:
   name: protagoras
 data:
-  DIONYSIOS_SERVICE: "http://dionysios.olympia.svc:5000"
+  DIONYSIOS_SERVICE: "http://dionysios.alexandreia.svc:5000"
   HERODOTOS_SERVICE: "http://herodotos.olympia.svc:5000"

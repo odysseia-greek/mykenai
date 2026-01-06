@@ -4,4 +4,4 @@ metadata:
   name: xenofon
 data:
   VERSION: "v0.1.0"
-  ARISTARCHOS_SERVICE: "aristarchos.olympia.svc:50060"
+  ARISTARCHOS_SERVICE: "aristarchos.alexandreia.svc:50060"

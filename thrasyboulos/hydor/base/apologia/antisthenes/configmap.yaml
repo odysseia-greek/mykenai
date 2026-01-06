@@ -4,4 +4,4 @@ metadata:
   name: antisthenes
 data:
   VERSION: "v0.1.1"
-  ARISTARCHOS_SERVICE: "aristarchos.olympia.svc:50060"
+  ARISTARCHOS_SERVICE: "aristarchos.alexandreia.svc:50060"
