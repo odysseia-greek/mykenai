@@ -17,9 +17,9 @@ spec:
         - name: kibana
           resources:
             requests:
-              memory: 128Mi
+              memory: 256Mi
             limits:
-              memory: 512Mi
+              memory: 1Gi
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
