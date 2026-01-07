@@ -6,6 +6,8 @@ resources:
   - homeros
   - herodotos
   - pheidias
+  - melissos
+  - protagoras
 
 labels:
   - pairs:
