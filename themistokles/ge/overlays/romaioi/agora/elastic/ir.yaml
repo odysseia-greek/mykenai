@@ -4,7 +4,7 @@ metadata:
   name: kibana-ui
 spec:
   entryPoints:
-    - websecure
+    - web
   routes:
     - match: Host(`kibana.byzantium.odysseia-greek`)
       kind: Rule
@@ -12,4 +12,3 @@ spec:
         - name: kibana-kb-http
           port: 5601
           scheme: https
-          serversTransport: skip
