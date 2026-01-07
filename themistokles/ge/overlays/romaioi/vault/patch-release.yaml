@@ -33,10 +33,9 @@ spec:
           disable_mlock = true
       resources:
         requests:
-          memory: "64Mi"
-          cpu: "100m"
+          memory: "128Mi"
         limits:
-          memory: "64Mi"
+          memory: "128Mi"
       dataStorage:
         enabled: true
-        size: 4Gi
+        size: 5Gi
