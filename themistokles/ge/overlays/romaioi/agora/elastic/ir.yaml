@@ -11,3 +11,5 @@ spec:
       services:
         - name: kibana-kb-http
           port: 5601
+          scheme: https
+          serversTransport: skip
