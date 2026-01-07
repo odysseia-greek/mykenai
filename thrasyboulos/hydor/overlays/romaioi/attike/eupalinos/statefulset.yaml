@@ -13,7 +13,7 @@ spec:
       labels:
         app: eupalinos-attike
         release: eupalinos
-        version: v0.2.6
+        version: v0.2.7
       annotations:
         perikles/hostname: "eupalinos-attike"
         perikles/validity: "60"
@@ -21,7 +21,7 @@ spec:
       terminationGracePeriodSeconds: 3
       containers:
         - name: eupalinos-attike
-          image: ghcr.io/odysseia-greek/eupalinos:v0.2.6
+          image: ghcr.io/odysseia-greek/eupalinos:v0.2.7
           ports:
             - containerPort: 50060
           envFrom:
