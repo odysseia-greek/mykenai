@@ -61,7 +61,18 @@ cilium install \
   --set envoy.enabled=false \
   --wait
 
-kubens ciliun
+echo "Waiting for cilium namespace to exist..."
+for i in {1..60}; do
+  kubectl get namespace cilium >/dev/null 2>&1 && break
+  sleep 2
+done
+
+kubectl get namespace cilium >/dev/null 2>&1 || {
+  echo "ERROR: cilium namespace did not appear in time"
+  exit 1
+}
+
+kubens cilium
 
 echo ""
 echo "Waiting for Cilium to be ready..."

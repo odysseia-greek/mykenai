@@ -46,11 +46,11 @@ flux-status:
 help:
 	@echo "Available targets:"
 	@echo "  check-flux        - Check if Flux CLI is installed"
-	@echo "  bootstrap-flux    - Bootstrap Flux manually (ENV=local|acc|s, default: local)"
+	@echo "  bootstrap-flux    - Bootstrap Flux manually (ENV=romaioi|hellenistike|hellas, default: local)"
 	@echo "  flux-status       - Check Flux status"
 	@echo "  help              - Show this help message"
 	@echo ""
 	@echo "Usage examples:"
 	@echo "  make bootstrap-flux              # Uses romaioi environment (default)"
 	@echo "  make bootstrap-flux ENV=acc      # Uses hellenistike environment"
-	@echo "  make bootstrap-flux ENV=s     # Uses hellas environment"
+	@echo "  make bootstrap-flux ENV=hellas     # Uses hellas environment"
