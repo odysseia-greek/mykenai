@@ -10,3 +10,5 @@ data:
   HEFASTION_SERVICE: "hefaistion:50060"
   PTOLEMAIOS_SERVICE: "ptolemaios:50060"
   EUKLEIDES_SERVICE: "eukleides:50060"
+  PERDIKKAS_SERVICE: "perdikkas:50060"
+  PARMENION_SERVICE: "parmenion:50060"
