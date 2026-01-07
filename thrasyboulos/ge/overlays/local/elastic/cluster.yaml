@@ -3,8 +3,8 @@ kind: Elasticsearch
 metadata:
   name: aristoteles
   labels:
-    env: k3d
-    variant: k3d
+    env: local
+    variant: k0s
     app: aristoteles
     version: 9.2.2
 spec:
