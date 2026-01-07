@@ -7,7 +7,7 @@ spec:
   chart:
     spec:
       chart: vault
-      version: "0.31.0"
+      version: "0.32.0"
       sourceRef:
         kind: HelmRepository
         name: hashicorp
@@ -45,7 +45,7 @@ spec:
       resources:
         requests:
           memory: "64Mi"
-          cpu: "20m"
+          cpu: "100m"
         limits:
           memory: "64Mi"
       dataStorage:
