@@ -4,7 +4,7 @@ metadata:
   name: kibana-ui
 spec:
   entryPoints:
-    - web
+    - websecure
   routes:
     - match: Host(`kibana.byzantium.odysseia-greek`)
       kind: Rule
@@ -12,3 +12,11 @@ spec:
         - name: kibana-kb-http
           port: 5601
           scheme: https
+          serversTransport: insecure-backend
+---
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: insecure-backend
+spec:
+  insecureSkipVerify: true
