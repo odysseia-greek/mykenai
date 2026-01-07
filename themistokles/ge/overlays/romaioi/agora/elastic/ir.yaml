@@ -4,7 +4,7 @@ metadata:
   name: kibana-ui
 spec:
   entryPoints:
-    - web
+    - websecure
   routes:
     - match: Host(`kibana.byzantium.odysseia-greek`)
       kind: Rule
