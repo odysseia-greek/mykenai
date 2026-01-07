@@ -10,7 +10,7 @@ spec:
       labels:
         app: melissos
         release: melissos
-        version: v0.2.1
+        version: v0.2.2
       annotations:
         odysseia-greek/role: hybrid
         odysseia-greek/access: dictionary
@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: "melissos"
-          image: ghcr.io/odysseia-greek/melissos:v0.2.1
+          image: ghcr.io/odysseia-greek/melissos:v0.2.2
           imagePullPolicy: Always
           env:
             - name: POD_NAME
