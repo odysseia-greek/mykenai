@@ -29,16 +29,10 @@ spec:
                 - name: herodotos-certs
                   mountPath: /app/config/herodotos
                   readOnly: true
-                - name: dionysios-certs
-                  mountPath: /app/config/dionysios
-                  readOnly: true
           volumes:
             - name: herodotos-certs
               secret:
                 secretName: herodotos-tls-certs
-            - name: dionysios-certs
-              secret:
-                secretName: dionysios-tls-certs
           restartPolicy: OnFailure
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
