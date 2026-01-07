@@ -17,7 +17,7 @@ spec:
       labels:
         app: aristippos
         release: aristippos
-        version: v0.1.1
+        version: v0.1.2
       annotations:
         odysseia-greek/role: api
         odysseia-greek/access: media-quiz
@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: "aristippos"
-          image: ghcr.io/odysseia-greek/aristippos:v0.1.1
+          image: ghcr.io/odysseia-greek/aristippos:v0.1.2
 
           imagePullPolicy: Always
           env:
