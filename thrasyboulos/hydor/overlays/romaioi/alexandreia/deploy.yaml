@@ -1,0 +1,682 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    domain: backend
+    environment: local
+    variant: k0s
+  name: alexandreia
+---
+apiVersion: v1
+data:
+  ALEXANDROS_SERVICE: http://alexandros-legacy.makedonia.svc:5000
+kind: ConfigMap
+metadata:
+  labels:
+    domain: backend
+    environment: local
+    variant: k0s
+  name: dionysios
+  namespace: alexandreia
+---
+apiVersion: v1
+data:
+  CERT_ROOT: /app/config
+  ELASTIC_SEARCH_SERVICE: http://aristoteles-es-http.agora.svc:9200
+  ENV: k3d
+  EUPALINOS_SERVICE: eupalinos.agora.svc:50060
+  EUPALINOS_TRACING_SERVICE: eupalinos.attike.svc:50060
+  GATHER_METRICS: "true"
+  HOT_POLICY_NAME: hot_plain
+  SOLON_SERVICE: https://solon.delphi.svc:5443
+  TLS_ENABLED: "true"
+  TLS_FILES: /app/config
+  VAULT_SERVICE: https://vault.delphi.svc:8200
+  VAULT_TLS: "true"
+kind: ConfigMap
+metadata:
+  labels:
+    domain: backend
+    environment: local
+    variant: k0s
+  name: odysseia-common-env
+  namespace: alexandreia
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    domain: backend
+    environment: local
+    variant: k0s
+  name: aristarchos
+  namespace: alexandreia
+spec:
+  ports:
+  - name: grpc
+    port: 50060
+    targetPort: 50060
+  selector:
+    app: aristarchos
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    domain: backend
+    environment: local
+    variant: k0s
+  name: dionysios
+  namespace: alexandreia
+spec:
+  ports:
+  - name: http
+    port: 5000
+    targetPort: 5000
+  selector:
+    app: dionysios
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    mounts.odysseia.io/existing: "true"
+    volumes.odysseia.io/existing: "true"
+  labels:
+    app: aristarchos
+    domain: backend
+    environment: local
+    variant: k0s
+  name: aristarchos
+  namespace: alexandreia
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aristarchos
+  template:
+    metadata:
+      annotations:
+        odysseia-greek/access: aggregator
+        odysseia-greek/role: hybrid
+        perikles/accesses: solon
+        perikles/hostname: aristarchos
+        perikles/validity: "10"
+      labels:
+        app: aristarchos
+        domain: backend
+        environment: local
+        release: aristarchos
+        variant: k0s
+        version: v0.2.1
+    spec:
+      containers:
+      - env:
+        - name: ELASTIC_ACCESS
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['odysseia-greek/access']
+        envFrom:
+        - configMapRef:
+            name: odysseia-common-env
+        image: ghcr.io/odysseia-greek/aristarchos:v0.2.1
+        imagePullPolicy: Always
+        name: aristarchos
+        ports:
+        - containerPort: 50060
+        resources:
+          limits:
+            memory: 32Mi
+          requests:
+            cpu: 100m
+            memory: 32Mi
+        volumeMounts:
+        - mountPath: /app/config/aristarchos
+          name: aristarchos-certs
+          readOnly: true
+      - env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        envFrom:
+        - configMapRef:
+            name: odysseia-common-env
+        image: ghcr.io/odysseia-greek/aristophanes:v0.7.1
+        imagePullPolicy: Always
+        name: aristophanes
+        ports:
+        - containerPort: 50052
+        resources:
+          limits:
+            memory: 32Mi
+          requests:
+            memory: 32Mi
+      - env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        envFrom:
+        - configMapRef:
+            name: odysseia-common-env
+        image: ghcr.io/odysseia-greek/aristides:v0.0.2
+        imagePullPolicy: Always
+        name: aristides
+        ports:
+        - containerPort: 50051
+        resources:
+          limits:
+            memory: 32Mi
+          requests:
+            memory: 32Mi
+        volumeMounts:
+        - mountPath: /app/config/vault
+          name: vault-server-tls
+          readOnly: true
+        - mountPath: /app/config/solon
+          name: solon-certs
+          readOnly: true
+      initContainers:
+      - env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: ELASTIC_ROLE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['odysseia-greek/role']
+        - name: ELASTIC_ACCESS
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['odysseia-greek/access']
+        envFrom:
+        - configMapRef:
+            name: odysseia-common-env
+        image: ghcr.io/odysseia-greek/periandros:v0.1.4
+        imagePullPolicy: Always
+        name: periandros
+        volumeMounts:
+        - mountPath: /app/config/solon
+          name: solon-certs
+          readOnly: true
+      volumes:
+      - name: aristarchos-certs
+        secret:
+          secretName: aristarchos-tls-certs
+      - name: elastic-internal-tls
+        secret:
+          secretName: aristoteles-es-http-certs-public
+      - name: solon-certs
+        secret:
+          secretName: solon-tls-certs
+      - name: vault-server-tls
+        secret:
+          secretName: vault-server-tls
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    mounts.odysseia.io/existing: "true"
+    volumes.odysseia.io/existing: "true"
+  labels:
+    app: dionysios
+    domain: backend
+    environment: local
+    variant: k0s
+  name: dionysios
+  namespace: alexandreia
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dionysios
+  template:
+    metadata:
+      annotations:
+        odysseia-greek/access: grammar
+        odysseia-greek/role: api
+        perikles/accesses: solon;alexandros;aristarchos
+        perikles/hostname: dionysios
+        perikles/validity: "10"
+      labels:
+        app: dionysios
+        domain: backend
+        environment: local
+        release: dionysios
+        variant: k0s
+        version: v0.2.2
+    spec:
+      containers:
+      - env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: ELASTIC_ACCESS
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['odysseia-greek/access']
+        envFrom:
+        - configMapRef:
+            name: dionysios
+        - configMapRef:
+            name: odysseia-common-env
+        image: ghcr.io/odysseia-greek/dionysios:v0.2.2
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /dionysios/v1/health
+            port: 5000
+          initialDelaySeconds: 20
+          periodSeconds: 20
+        name: dionysios
+        ports:
+        - containerPort: 5000
+          name: http
+        readinessProbe:
+          httpGet:
+            path: /dionysios/v1/ping
+            port: 5000
+          initialDelaySeconds: 1
+          periodSeconds: 20
+        resources:
+          limits:
+            memory: 128Mi
+          requests:
+            cpu: 500m
+            memory: 128Mi
+        volumeMounts:
+        - mountPath: /app/config/dionysios
+          name: dionysios-certs
+          readOnly: true
+      - env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        envFrom:
+        - configMapRef:
+            name: odysseia-common-env
+        image: ghcr.io/odysseia-greek/aristophanes:v0.7.1
+        imagePullPolicy: Always
+        name: aristophanes
+        ports:
+        - containerPort: 50052
+        resources:
+          limits:
+            memory: 32Mi
+          requests:
+            memory: 32Mi
+      - env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        envFrom:
+        - configMapRef:
+            name: odysseia-common-env
+        image: ghcr.io/odysseia-greek/aristides:v0.0.2
+        imagePullPolicy: Always
+        name: aristides
+        ports:
+        - containerPort: 50051
+        resources:
+          limits:
+            memory: 32Mi
+          requests:
+            memory: 32Mi
+        volumeMounts:
+        - mountPath: /app/config/vault
+          name: vault-server-tls
+          readOnly: true
+        - mountPath: /app/config/solon
+          name: solon-certs
+          readOnly: true
+      initContainers:
+      - env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: ELASTIC_ROLE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['odysseia-greek/role']
+        - name: ELASTIC_ACCESS
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['odysseia-greek/access']
+        envFrom:
+        - configMapRef:
+            name: odysseia-common-env
+        image: ghcr.io/odysseia-greek/periandros:v0.1.4
+        imagePullPolicy: Always
+        name: periandros
+        volumeMounts:
+        - mountPath: /app/config/solon
+          name: solon-certs
+          readOnly: true
+      volumes:
+      - name: dionysios-certs
+        secret:
+          secretName: dionysios-tls-certs
+      - name: elastic-internal-tls
+        secret:
+          secretName: aristoteles-es-http-certs-public
+      - name: solon-certs
+        secret:
+          secretName: solon-tls-certs
+      - name: vault-server-tls
+        secret:
+          secretName: vault-server-tls
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  labels:
+    domain: backend
+    environment: local
+    variant: k0s
+  name: dionysios
+  namespace: alexandreia
+spec:
+  behavior:
+    scaleDown:
+      policies:
+      - periodSeconds: 30
+        type: Pods
+        value: 2
+      stabilizationWindowSeconds: 120
+    scaleUp:
+      policies:
+      - periodSeconds: 10
+        type: Pods
+        value: 2
+      selectPolicy: Max
+      stabilizationWindowSeconds: 0
+  maxReplicas: 5
+  metrics:
+  - resource:
+      name: cpu
+      target:
+        averageUtilization: 40
+        type: Utilization
+    type: Resource
+  - resource:
+      name: cpu
+      target:
+        averageUtilization: 80
+        type: Utilization
+    type: Resource
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: dionysios
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    mounts.odysseia.io/combined: "true"
+    volumes.odysseia.io/combined: "true"
+  labels:
+    app: anaximander
+    domain: backend
+    environment: local
+    variant: k0s
+  name: anaximander
+  namespace: alexandreia
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      annotations:
+        odysseia-greek/access: grammar
+        odysseia-greek/role: seeder
+        perikles/accesses: solon
+      labels:
+        app: anaximander
+        domain: backend
+        environment: local
+        release: herodotos
+        variant: k0s
+        version: v0.2.0
+    spec:
+      containers:
+      - env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: ELASTIC_ACCESS
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['odysseia-greek/access']
+        envFrom:
+        - configMapRef:
+            name: dionysios
+        - configMapRef:
+            name: odysseia-common-env
+        image: ghcr.io/odysseia-greek/anaximander:v0.2.0
+        imagePullPolicy: Always
+        name: anaximander
+        resources:
+          limits:
+            memory: 64Mi
+          requests:
+            cpu: 200m
+            memory: 64Mi
+      - env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        envFrom:
+        - configMapRef:
+            name: odysseia-common-env
+        image: ghcr.io/odysseia-greek/aristides:v0.0.2
+        imagePullPolicy: Always
+        name: aristides
+        ports:
+        - containerPort: 50051
+        resources:
+          limits:
+            memory: 32Mi
+          requests:
+            memory: 32Mi
+        volumeMounts:
+        - mountPath: /app/config/vault
+          name: vault-server-tls
+          readOnly: true
+        - mountPath: /app/config/solon
+          name: solon-certs
+          readOnly: true
+      initContainers:
+      - env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: ELASTIC_ROLE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['odysseia-greek/role']
+        - name: ELASTIC_ACCESS
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['odysseia-greek/access']
+        envFrom:
+        - configMapRef:
+            name: odysseia-common-env
+        image: ghcr.io/odysseia-greek/periandros:v0.1.4
+        imagePullPolicy: Always
+        name: periandros
+        volumeMounts:
+        - mountPath: /app/config/solon
+          name: solon-certs
+          readOnly: true
+      restartPolicy: Never
+      volumes:
+      - name: elastic-internal-tls
+        secret:
+          secretName: aristoteles-es-http-certs-public
+      - name: solon-certs
+        secret:
+          secretName: solon-tls-certs
+      - name: vault-server-tls
+        secret:
+          secretName: vault-server-tls
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  labels:
+    domain: backend
+    environment: local
+    variant: k0s
+  name: aristarchos-tls-certs
+  namespace: alexandreia
+spec:
+  data:
+  - remoteRef:
+      key: aristarchos-tls-certs
+      property: tls.pem
+    secretKey: tls.pem
+  - remoteRef:
+      key: aristarchos-tls-certs
+      property: tls.crt
+    secretKey: tls.crt
+  - remoteRef:
+      key: aristarchos-tls-certs
+      property: tls.key
+    secretKey: tls.key
+  refreshInterval: 1m
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: delphi
+  target:
+    creationPolicy: Owner
+    name: aristarchos-tls-certs
+    template:
+      type: kubernetes.io/tls
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  labels:
+    domain: backend
+    environment: local
+    variant: k0s
+  name: dionysios-tls-certs
+  namespace: alexandreia
+spec:
+  data:
+  - remoteRef:
+      key: dionysios-tls-certs
+      property: tls.pem
+    secretKey: tls.pem
+  - remoteRef:
+      key: dionysios-tls-certs
+      property: tls.crt
+    secretKey: tls.crt
+  - remoteRef:
+      key: dionysios-tls-certs
+      property: tls.key
+    secretKey: tls.key
+  refreshInterval: 1m
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: delphi
+  target:
+    creationPolicy: Owner
+    name: dionysios-tls-certs
+    template:
+      type: kubernetes.io/tls
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  labels:
+    domain: backend
+    environment: local
+    variant: k0s
+  name: solon-tls-certs
+  namespace: alexandreia
+spec:
+  data:
+  - remoteRef:
+      key: solon-tls-certs
+      property: tls.pem
+    secretKey: tls.pem
+  - remoteRef:
+      key: solon-tls-certs
+      property: tls.crt
+    secretKey: tls.crt
+  - remoteRef:
+      key: solon-tls-certs
+      property: tls.key
+    secretKey: tls.key
+  refreshInterval: 1m
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: delphi
+  target:
+    creationPolicy: Owner
+    name: solon-tls-certs
+    template:
+      type: kubernetes.io/tls
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  labels:
+    domain: backend
+    environment: local
+    variant: k0s
+  name: vault-server-tls
+  namespace: alexandreia
+spec:
+  data:
+  - remoteRef:
+      key: vault-server-tls
+      property: vault.ca
+    secretKey: vault.ca
+  - remoteRef:
+      key: vault-server-tls
+      property: vault.crt
+    secretKey: vault.crt
+  - remoteRef:
+      key: vault-server-tls
+      property: vault.key
+    secretKey: vault.key
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: delphi
+  target:
+    creationPolicy: Owner
+    name: vault-server-tls

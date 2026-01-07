@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: tissaphernes
+  labels:
+    app: tissaphernes
+spec:
+  schedule: "*/20 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: tissaphernes
+            release: tissaphernes
+            version: v0.0.1
+        spec:
+          serviceAccountName: tissaphernes
+          restartPolicy: Never
+          containers:
+            - name: tissaphernes
+              image: ghcr.io/odysseia-greek/tissaphernes:v0.0.1
+              imagePullPolicy: Always
+              command: ["sh", "-c"]
+              args:
+                - |
+                  set -eu
+                  ts="$(date -u +%Y%m%dT%H%M%SZ)"
+                  out="/results/${ts}"
+                  mkdir -p "$out"
+                  
+                  go tool test2json -t  \
+                    /app/tissaphernes.test -test.v \
+                    > "$out/results.json"
+
+              volumeMounts:
+                - name: results
+                  mountPath: /results
+          volumes:
+            - name: results
+              persistentVolumeClaim:
+                claimName: tissaphernes-results
+      backoffLimit: 3

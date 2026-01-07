@@ -13,6 +13,6 @@ spec:
     name: themistokles
   dependsOn:
     - name: cert-manager
-  path: themistokles/ge/overlays/local/topolvm
+  path: themistokles/ge/overlays/romaioi/topolvm
   prune: true
   wait: true

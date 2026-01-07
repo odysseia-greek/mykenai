@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lysandros
+  labels:
+    app: lysandros
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lysandros
+  template:
+    metadata:
+      labels:
+        app: lysandros
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: lysandros
+          image: ghcr.io/odysseia-greek/lysandros:v0.0.1
+          imagePullPolicy: Always
+          env:
+            - name: RESULTS_DIR
+              value: "/results"
+            - name: PORT
+              value: ":8080"
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - name: results
+              mountPath: /results
+      volumes:
+        - name: results
+          persistentVolumeClaim:
+            claimName: tissaphernes-results
+---

@@ -3,7 +3,7 @@
 # Variables
 REPO_URL := https://github.com/odysseia-greek/mykenai.git
 BRANCH := feat/add-flux
-ENV ?= local
+ENV ?= romaioi
 PATH_IN_REPO := ./themistokles/aer/$(ENV)
 NAMESPACE := flux-system
 
@@ -46,11 +46,11 @@ flux-status:
 help:
 	@echo "Available targets:"
 	@echo "  check-flux        - Check if Flux CLI is installed"
-	@echo "  bootstrap-flux    - Bootstrap Flux manually (ENV=local|acc|prod, default: local)"
+	@echo "  bootstrap-flux    - Bootstrap Flux manually (ENV=local|acc|s, default: local)"
 	@echo "  flux-status       - Check Flux status"
 	@echo "  help              - Show this help message"
 	@echo ""
 	@echo "Usage examples:"
-	@echo "  make bootstrap-flux              # Uses local environment (default)"
-	@echo "  make bootstrap-flux ENV=acc      # Uses acc environment"
-	@echo "  make bootstrap-flux ENV=prod     # Uses prod environment"
+	@echo "  make bootstrap-flux              # Uses romaioi environment (default)"
+	@echo "  make bootstrap-flux ENV=acc      # Uses hellenistike environment"
+	@echo "  make bootstrap-flux ENV=s     # Uses hellas environment"

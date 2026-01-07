@@ -13,6 +13,6 @@ spec:
     name: themistokles
   dependsOn:
     - name: traefik
-  path: themistokles/hydor/overlays/local/lydia
+  path: themistokles/hydor/overlays/romaioi/lydia
   prune: true
   wait: true

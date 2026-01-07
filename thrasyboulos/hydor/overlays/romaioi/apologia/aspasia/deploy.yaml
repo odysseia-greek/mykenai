@@ -1,0 +1,132 @@
+apiVersion: v1
+data:
+  ANTIGONOS_SERVICE: antigonos.makedonia.svc:50060
+  HERODOTOS_SERVICE: http://herodotos.olympia.svc:5000
+  VERSION: v0.0.1
+kind: ConfigMap
+metadata:
+  name: aspasia
+  namespace: apologia
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aspasia
+  namespace: apologia
+spec:
+  ports:
+  - name: grpc
+    port: 50060
+    targetPort: 50060
+  selector:
+    app: aspasia
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    volumes.odysseia.io/elastic-only: "true"
+  labels:
+    app: aspasia
+  name: aspasia
+  namespace: apologia
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aspasia
+  template:
+    metadata:
+      annotations:
+        perikles/accesses: herodotos;antigonos
+        perikles/hostname: aspasia
+        perikles/validity: "10"
+      labels:
+        app: aspasia
+        release: aspasia
+        version: v0.0.1
+    spec:
+      containers:
+      - envFrom:
+        - configMapRef:
+            name: aspasia
+        - configMapRef:
+            name: odysseia-common-env
+        image: ghcr.io/odysseia-greek/aspasia:v0.0.1
+        imagePullPolicy: Always
+        name: aspasia
+        ports:
+        - containerPort: 50060
+        resources:
+          limits:
+            memory: 32Mi
+          requests:
+            cpu: 200m
+            memory: 32Mi
+      - env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: ELASTIC_SEARCH_USER
+          valueFrom:
+            secretKeyRef:
+              key: user
+              name: agreus-elastic
+        - name: ELASTIC_SEARCH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: agreus-elastic
+        envFrom:
+        - configMapRef:
+            name: odysseia-common-env
+        image: ghcr.io/odysseia-greek/aristophanes:v0.6.3
+        imagePullPolicy: Always
+        name: aristophanes
+        ports:
+        - containerPort: 50052
+        resources:
+          limits:
+            memory: 32Mi
+          requests:
+            memory: 32Mi
+        volumeMounts:
+        - mountPath: /app/config/elastic
+          name: elastic-internal-tls
+          readOnly: true
+      - env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        envFrom:
+        - configMapRef:
+            name: odysseia-common-env
+        image: ghcr.io/odysseia-greek/sophokles:v0.1.0
+        imagePullPolicy: Always
+        name: sophokles
+        ports:
+        - containerPort: 50053
+        resources:
+          limits:
+            memory: 32Mi
+          requests:
+            memory: 32Mi
+        volumeMounts:
+        - mountPath: /app/config/elastic
+          name: elastic-internal-tls
+          readOnly: true
+      serviceAccountName: sophokles-access
+      volumes:
+      - name: elastic-internal-tls
+        secret:
+          secretName: aristoteles-es-http-certs-public

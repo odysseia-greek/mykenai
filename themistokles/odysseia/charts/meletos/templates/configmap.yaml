@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ .Values.name }}
-  namespace: {{ .Values.commonConfig.namespace }}
-data:
-  ENV: "{{ .Values.commonConfig.config.environment }}"
-  SOKRATES_SERVICE: "{{ .Values.envVariables.sokratesService }}"

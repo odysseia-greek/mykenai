@@ -1,0 +1,69 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vault
+  namespace: delphi
+spec:
+  chart:
+    spec:
+      chart: vault
+      sourceRef:
+        kind: HelmRepository
+        name: hashicorp
+        namespace: delphi
+      version: 0.31.0
+  interval: 5m
+  values:
+    global:
+      tlsDisable: false
+    injector:
+      enabled: false
+    readinessProbe:
+      enabled: true
+    server:
+      dataStorage:
+        enabled: true
+        size: 2Gi
+      extraEnvironmentVars:
+        VAULT_CACERT: /vault/userconfig/vault-server-tls/vault.ca
+      resources:
+        limits:
+          memory: 32Mi
+        requests:
+          cpu: 100m
+          memory: 32Mi
+      standalone:
+        config: |
+          ui = true
+          listener "tcp" {
+            address = "[::]:8200"
+            cluster_address = "[::]:8201"
+            tls_cert_file = "/vault/userconfig/vault-server-tls/vault.crt"
+            tls_key_file  = "/vault/userconfig/vault-server-tls/vault.key"
+            tls_client_ca_file = "/vault/userconfig/vault-server-tls/vault.ca"
+          }
+          storage "file" {
+            path = "/vault/data"
+          }
+          disable_mlock = true
+        enabled: true
+      volumeMounts:
+      - mountPath: /vault/userconfig/vault-server-tls
+        name: userconfig-vault-server-tls
+        readOnly: true
+      volumes:
+      - name: userconfig-vault-server-tls
+        secret:
+          defaultMode: 420
+          secretName: vault-server-tls
+    ui:
+      enabled: true
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: hashicorp
+  namespace: delphi
+spec:
+  interval: 1h
+  url: https://helm.releases.hashicorp.com

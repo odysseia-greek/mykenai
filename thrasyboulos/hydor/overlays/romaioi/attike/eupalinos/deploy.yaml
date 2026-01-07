@@ -1,0 +1,107 @@
+apiVersion: v1
+data:
+  CERT_ROOT: /app/config
+  ENV: local
+  TLS_ENABLED: "false"
+  TOTAL_REPLICAS: "1"
+kind: ConfigMap
+metadata:
+  name: eupalinos-attike
+  namespace: attike
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eupalinos
+  namespace: attike
+spec:
+  ports:
+  - name: grpc
+    port: 50060
+    targetPort: 50060
+  selector:
+    app: eupalinos
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: eupalinos
+  namespace: attike
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eupalinos-attike
+  serviceName: eupalinos
+  template:
+    metadata:
+      annotations:
+        perikles/hostname: eupalinos-attike
+        perikles/validity: "60"
+      labels:
+        app: eupalinos-attike
+        release: eupalinos
+        version: v0.2.0
+    spec:
+      containers:
+      - env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        envFrom:
+        - configMapRef:
+            name: eupalinos-attike
+        image: ghcr.io/odysseia-greek/eupalinos:v0.2.1
+        name: eupalinos-attike
+        ports:
+        - containerPort: 50060
+        resources:
+          limits:
+            memory: 32Mi
+          requests:
+            cpu: 100m
+            memory: 32Mi
+      terminationGracePeriodSeconds: 3
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: apologia-to-eupalinos-attike
+  namespace: attike
+spec:
+  description: Allow all pods in apologia namespace to access Eupalinos attike
+  endpointSelector:
+    matchLabels:
+      app: eupalinos-attike
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.kubernetes.pod.namespace: apologia
+    toPorts:
+    - ports:
+      - port: "50060"
+        protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: olympia-to-eupalinos-attike
+  namespace: attike
+spec:
+  description: Allow all pods in olympia namespace to access Eupalinos attike
+  endpointSelector:
+    matchLabels:
+      app: eupalinos-attike
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.kubernetes.pod.namespace: olympia
+    toPorts:
+    - ports:
+      - port: "50060"
+        protocol: TCP
