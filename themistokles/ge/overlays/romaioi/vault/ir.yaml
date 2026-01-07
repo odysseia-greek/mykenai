@@ -4,7 +4,7 @@ metadata:
   name: vault-ui
 spec:
   entryPoints:
-    - web
+    - websecure
   routes:
     - match: Host(`vault.byzantium.odysseia-greek`)
       kind: Rule
