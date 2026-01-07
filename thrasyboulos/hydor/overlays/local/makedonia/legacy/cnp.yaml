@@ -1,7 +1,7 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: allow-all-to-alexandros-lgeacy
+  name: allow-all-to-alexandros-legacy
   namespace: makedonia
 spec:
   endpointSelector:

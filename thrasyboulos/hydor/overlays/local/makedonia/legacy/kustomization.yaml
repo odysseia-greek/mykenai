@@ -6,6 +6,10 @@ resources:
   - deployment.yaml
   - cnp.yaml
 
+components:
+  - ../../../../../pyr/koinos/services/http
+  - ../../../../../pyr/koinos/common-env/base/deploy
+
 patches:
   - target:
       version: v1
