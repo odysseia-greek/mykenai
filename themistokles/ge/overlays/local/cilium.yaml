@@ -2,7 +2,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: longhorn
+  name: cilium
   namespace: flux-system
 spec:
   interval: 4h
@@ -11,6 +11,8 @@ spec:
   sourceRef:
     kind: GitRepository
     name: themistokles
-  path: themistokles/ge/base/longhorn
+  dependsOn:
+    - name: node-labels
+  path: themistokles/ge/overlays/local/cilium
   prune: true
   wait: true

@@ -61,6 +61,8 @@ cilium install \
   --set envoy.enabled=false \
   --wait
 
+kubens ciliun
+
 echo ""
 echo "Waiting for Cilium to be ready..."
 cilium status --wait --namespace cilium

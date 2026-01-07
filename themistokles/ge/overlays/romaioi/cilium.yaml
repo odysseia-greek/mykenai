@@ -13,6 +13,6 @@ spec:
     name: themistokles
   dependsOn:
     - name: node-labels
-  path: themistokles/ge/base/cilium
+  path: themistokles/ge/overlays/local/cilium
   prune: true
   wait: true

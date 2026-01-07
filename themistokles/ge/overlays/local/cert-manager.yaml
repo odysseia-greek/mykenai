@@ -2,7 +2,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: node-labels
+  name: cert-manager
   namespace: flux-system
 spec:
   interval: 4h
@@ -11,6 +11,6 @@ spec:
   sourceRef:
     kind: GitRepository
     name: themistokles
-  path: themistokles/ge/overlays/single/nodes
+  path: themistokles/ge/base/cert-manager
   prune: true
   wait: true

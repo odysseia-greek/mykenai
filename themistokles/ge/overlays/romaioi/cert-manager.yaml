@@ -2,7 +2,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: topolvm
+  name: cert-manager
   namespace: flux-system
 spec:
   interval: 4h
@@ -11,8 +11,6 @@ spec:
   sourceRef:
     kind: GitRepository
     name: themistokles
-  dependsOn:
-    - name: cert-manager
-  path: themistokles/ge/overlays/single/topolvm
+  path: themistokles/ge/base/cert-manager
   prune: true
   wait: true
