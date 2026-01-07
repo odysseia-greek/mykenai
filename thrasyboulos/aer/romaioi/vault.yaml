@@ -14,3 +14,5 @@ spec:
   path: thrasyboulos/ge/overlays/romaioi/vault
   prune: true
   wait: true
+  dependsOn:
+    - name: perikles

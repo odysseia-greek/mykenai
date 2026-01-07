@@ -26,5 +26,6 @@ spec:
     - name: elastic-operator
     - name: topolvm
     - name: traefik
+    - name: external-secrets
   prune: true
   wait: true
