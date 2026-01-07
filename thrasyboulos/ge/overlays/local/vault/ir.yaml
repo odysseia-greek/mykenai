@@ -1,0 +1,13 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: vault-ui
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`vault.byzantium.odysseia-greek`)
+      kind: Rule
+      services:
+        - name: vault-ui
+          port: 8200

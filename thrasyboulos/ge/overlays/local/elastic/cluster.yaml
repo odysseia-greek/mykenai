@@ -6,9 +6,9 @@ metadata:
     env: k3d
     variant: k3d
     app: aristoteles
-    version: 8.14.0
+    version: 9.2.2
 spec:
-  version: 8.14.0
+  version: 9.2.2
   http:
     tls:
       selfSignedCertificate:
@@ -26,8 +26,5 @@ spec:
           resources:
             requests:
               memory: 2Gi
-              cpu: 1000m
             limits:
-              memory: 3Gi
-
-
+              memory: 2Gi

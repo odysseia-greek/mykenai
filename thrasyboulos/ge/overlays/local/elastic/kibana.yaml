@@ -4,13 +4,22 @@ metadata:
   name: kibana
   labels:
     app: kibana
-    version: 8.14.0
+    version: 9.2.2
 spec:
-  version: 8.14.0
+  version: 9.2.2
   count: 1
   elasticsearchRef:
     name: aristoteles
     namespace: agora
+  podTemplate:
+    spec:
+      containers:
+        - name: kibana
+          resources:
+            requests:
+              memory: 128Mi
+            limits:
+              memory: 512Mi
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
