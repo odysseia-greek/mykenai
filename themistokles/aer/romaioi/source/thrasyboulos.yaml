@@ -23,9 +23,6 @@ spec:
     kind: GitRepository
     name: thrasyboulos
   dependsOn:
-    - name: elastic-operator
-    - name: topolvm
-    - name: traefik
-    - name: external-secrets
+    - name: solon
   prune: true
   wait: true

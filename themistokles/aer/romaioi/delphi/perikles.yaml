@@ -1,0 +1,18 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: perikles
+  namespace: flux-system
+spec:
+  interval: 4h
+  retryInterval: 2m
+  timeout: 10m
+  sourceRef:
+    kind: GitRepository
+    name: themistokles
+  path: themistokles/ge/overlays/romaioi/perikles
+  prune: true
+  wait: true
+  dependsOn:
+    - name: delphi
