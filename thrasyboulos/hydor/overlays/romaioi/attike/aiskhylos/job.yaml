@@ -5,7 +5,7 @@ metadata:
   labels:
     app: anaximenes
   annotations:
-    volumes.odysseia.io/combined: "true"
+    volumes.odysseia.io/secrets: "true"
 spec:
   template:
     metadata:
