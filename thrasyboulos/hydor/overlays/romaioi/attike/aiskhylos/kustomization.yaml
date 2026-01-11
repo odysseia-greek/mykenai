@@ -8,8 +8,6 @@ resources:
 
 components:
   - ../../../../../pyr/koinos/resources/local/mid
-  - ../../../../../pyr/koinos/job/periandros
-  - ../../../../../pyr/koinos/job/aristides
   - ../../../../../pyr/koinos/deployment/aristophanes
   - ../../../../../pyr/koinos/deployment/periandros
   - ../../../../../pyr/koinos/deployment/aristides
