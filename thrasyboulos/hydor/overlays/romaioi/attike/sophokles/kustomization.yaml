@@ -4,13 +4,8 @@ namespace: attike
 resources:
   - ../../../../base/attike/sophokles
   - daemonset.yaml
-  - job.yaml
 
 components:
   - ../../../../../pyr/koinos/resources/local/low
-  - ../../../../../pyr/koinos/job/periandros
-  - ../../../../../pyr/koinos/job/aristides
-  - ../../../../../pyr/koinos/resources/local/job
   - ../../../../../pyr/koinos/transformers/volumes/combined
   - ../../../../../pyr/koinos/transformers/mounts/combined
-  - ../../../../../pyr/koinos/common-env/base/job

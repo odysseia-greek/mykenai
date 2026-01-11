@@ -5,8 +5,8 @@ metadata:
   labels:
     app: aiskhylos
   annotations:
-    volumes.odysseia.io/init: "true"
-    volumes.odysseia.io/elastic: "true"
+    volumes.odysseia.io/existing: "true"
+    mounts.odysseia.io/existing: "true"
 spec:
   replicas: 1
   selector:
@@ -17,33 +17,20 @@ spec:
       labels:
         app: aiskhylos
         release: aiskhylos
-        version: v0.1.0
+        version: v0.2.0
       annotations:
         odysseia-greek/role: creator
-        odysseia-greek/access: metrics
+        odysseia-greek/access: tracing;metrics;metrics_rollup
+        perikles/accesses: solon
+        perikles/hostname: "aiskhylos"
+        perikles/validity: "10"
     spec:
-      serviceAccountName: aiskhylos-access
       containers:
         - name: "aiskhylos"
-          image: ghcr.io/odysseia-greek/aiskhylos:v0.1.0
+          image: ghcr.io/odysseia-greek/aiskhylos:v0.2.0
           imagePullPolicy: Always
           env:
-            - name: NAMESPACE
+            - name: ELASTIC_ACCESS
               valueFrom:
                 fieldRef:
-                  fieldPath: metadata.namespace
-            - name: WAIT_TIME
-              value: "300"
-            - name: ELASTIC_SEARCH_USER
-              valueFrom:
-                secretKeyRef:
-                  name: eumetros-elastic
-                  key: user
-            - name: ELASTIC_SEARCH_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: eumetros-elastic
-                  key: password
-          envFrom:
-            - configMapRef:
-                name: aiskhylos
+                  fieldPath: metadata.annotations['odysseia-greek/access']

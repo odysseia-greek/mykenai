@@ -5,6 +5,7 @@ resources:
   - ../../../base/attike
   - sophokles
   - eupalinos
+  - aiskhylos
 
 labels:
   - pairs:
