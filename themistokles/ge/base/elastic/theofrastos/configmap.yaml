@@ -63,6 +63,7 @@ data:
       indices:
         - tracing
         - metrics
+        - metrics-*
         - metrics_rollup
       role:
         privileges:
