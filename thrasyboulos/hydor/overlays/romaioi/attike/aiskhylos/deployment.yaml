@@ -28,6 +28,9 @@ spec:
         - name: "aiskhylos"
           image: ghcr.io/odysseia-greek/aiskhylos:v0.2.0
           imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: aiskhylos
           env:
             - name: ELASTIC_ACCESS
               valueFrom:

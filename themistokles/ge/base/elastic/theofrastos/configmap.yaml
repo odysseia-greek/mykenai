@@ -86,6 +86,7 @@ data:
           - create_index
         cluster:
           - monitor
+          - manage
 
     user_admin:
       indices: []
