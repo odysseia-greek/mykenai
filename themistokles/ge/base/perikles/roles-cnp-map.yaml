@@ -66,4 +66,8 @@ data:
   creator: |
     cnp_rules:
       - method: "^PUT$"
-        path: "^/%%index%%/_create/.*$"
+        path: "^/%%index%%/_create$"
+      - method: "^POST$"
+        path: "^/%%index%%/_bulk$"
+      - method: "^POST$"
+        path: "^/%%index%%/_doc(\\?.*)?$"
