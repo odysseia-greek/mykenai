@@ -4,7 +4,7 @@ metadata:
   name: perikles
   labels:
     env: k3d
-    variant: k3d
+    variant: k0s
     app: perikles
     domain: "backend"
   annotations:
