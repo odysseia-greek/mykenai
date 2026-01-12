@@ -101,7 +101,7 @@ If no root path is specified through the "-r" flag or positional argument, the c
 			}
 			return fmt.Errorf("invalid platform specified: %s", target)
 		},
-		ValidArgs: []string{"debug", "prod"},
+		ValidArgs: []string{"dev", "debug", "test", "prod"},
 	}
 
 	cmd.PersistentFlags().StringVarP(&rootPath, "root", "r", "", "Root path to start building from. Interprets '.' as current directory. Defaults to current directory when no value or positional argument is provided.")

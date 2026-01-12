@@ -20,7 +20,7 @@ spec:
       labels:
         app: perikles
         release: perikles
-        version: v0.1.5
+        version: v0.1.10
     spec:
       serviceAccountName: periklessa
       initContainers:
@@ -38,7 +38,7 @@ spec:
                   fieldPath: metadata.namespace
       containers:
         - name: perikles
-          image: ghcr.io/odysseia-greek/perikles:v0.1.9
+          image: ghcr.io/odysseia-greek/perikles:v0.1.10
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
