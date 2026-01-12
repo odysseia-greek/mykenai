@@ -16,7 +16,7 @@ spec:
       labels:
         app: aiskhylos
         release: aiskhylos
-        version: v0.2.0
+        version: v0.2.1
       annotations:
         odysseia-greek/role: creator
         odysseia-greek/access: tracing;metrics;metrics_rollup
@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
         - name: "aiskhylos"
-          image: ghcr.io/odysseia-greek/aiskhylos:v0.2.0
+          image: ghcr.io/odysseia-greek/aiskhylos:v0.2.1
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
