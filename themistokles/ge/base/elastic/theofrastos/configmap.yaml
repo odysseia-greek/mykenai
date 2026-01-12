@@ -99,10 +99,6 @@ data:
   users: |
     solon:
       role: user_admin
-    eumetros:
-      role: creator
-    agreus:
-      role: creator
 
   policies: |
     hot:

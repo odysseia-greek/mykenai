@@ -74,16 +74,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-            - name: ELASTIC_SEARCH_USER
-              valueFrom:
-                secretKeyRef:
-                  name: agreus-elastic
-                  key: user
-            - name: ELASTIC_SEARCH_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: agreus-elastic
-                  key: password
           envFrom:
             - configMapRef:
                 name: odysseia-common-env
@@ -136,9 +126,6 @@ spec:
         - name: alexandros-certs
           secret:
             secretName: alexandros-tls-certs
-        - name: elastic-internal-tls
-          secret:
-            secretName: aristoteles-es-http-certs-public
         - name: solon-certs
           secret:
             secretName: solon-tls-certs

@@ -64,9 +64,6 @@ spec:
             - name: vault-server-tls
               secret:
                 secretName: vault-server-tls
-            - name: elastic-internal-tls
-              secret:
-                secretName: aristoteles-es-http-certs-public
             - name: solon-certs
               secret:
                 secretName: solon-tls-certs
