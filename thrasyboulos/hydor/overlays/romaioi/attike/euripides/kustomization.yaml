@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: attike
 resources:
   - deployment.yaml
+  - ir.yaml
   - ../../../../base/attike/euripides
 
 components:

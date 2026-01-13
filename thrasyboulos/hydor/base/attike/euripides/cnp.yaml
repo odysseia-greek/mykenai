@@ -1,0 +1,15 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-all-to-euripides
+  namespace: attike
+spec:
+  endpointSelector:
+    matchLabels:
+      app: euripides
+  ingress:
+    - fromEntities:
+        - all
+  egress:
+    - toEntities:
+        - all
