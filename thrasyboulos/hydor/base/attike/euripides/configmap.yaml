@@ -5,5 +5,5 @@ kind: ConfigMap
 metadata:
   name: euripides
 data:
-  MAX_AGE: "5"
-  HOT_POLICY_NAME: "hot_30d"
+  EUPALINOS_TRACING_SERVICE: "eupalinos.attike.svc:50060"
+  TRACE_ID_CHANNEL: "euripides"

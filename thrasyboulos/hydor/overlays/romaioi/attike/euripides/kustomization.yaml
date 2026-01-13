@@ -10,7 +10,7 @@ components:
   - ../../../../../pyr/koinos/deployment/aristides
   - ../../../../../pyr/koinos/services/graphql
   - ../../../../../pyr/koinos/resources/local/low
-  - ../../../../../pyr/koinos/transformers/volumes/combined
+  - ../../../../../pyr/koinos/transformers/volumes/secrets
   - ../../../../../pyr/koinos/common-env/base/deploy
 
 patches:

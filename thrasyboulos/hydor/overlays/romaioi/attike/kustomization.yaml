@@ -6,6 +6,7 @@ resources:
   - sophokles
   - eupalinos
   - aiskhylos
+  - euripides
 
 labels:
   - pairs:
