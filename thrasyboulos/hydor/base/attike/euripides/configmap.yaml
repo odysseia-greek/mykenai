@@ -7,3 +7,4 @@ metadata:
 data:
   EUPALINOS_TRACING_SERVICE: "eupalinos.attike.svc:50060"
   TRACE_ID_CHANNEL: "euripides"
+  VERSION: "0.2.0g"
