@@ -13,8 +13,7 @@ components:
   - ../../../../../pyr/koinos/resources/local/low
   - ../../../../../pyr/koinos/transformers/volumes/existing
   - ../../../../../pyr/koinos/transformers/mounts/existing
-  - ../../../../../pyr/koinos/transformers/volumes/combined
-  - ../../../../../pyr/koinos/transformers/mounts/combined
+  - ../../../../../pyr/koinos/transformers/volumes/secrets
   - ../../../../../pyr/koinos/common-env/base/deploy
   - ../../../../../pyr/koinos/downwardapi/version/deploy
 
