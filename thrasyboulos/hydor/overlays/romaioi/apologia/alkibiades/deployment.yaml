@@ -17,7 +17,7 @@ spec:
       labels:
         app: alkibiades
         release: alkibiades
-        version: v0.1.2
+        version: v0.1.3
       annotations:
         odysseia-greek/role: api
         odysseia-greek/access: journey-quiz
@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: "alkibiades"
-          image: ghcr.io/odysseia-greek/alkibiades:v0.1.2
+          image: ghcr.io/odysseia-greek/alkibiades:v0.1.3
 
           imagePullPolicy: Always
           env:
