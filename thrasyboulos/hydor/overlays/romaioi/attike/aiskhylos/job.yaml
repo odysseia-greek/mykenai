@@ -34,4 +34,5 @@ spec:
             - configMapRef:
                 name: sophokles
       restartPolicy: Never
+      volumes: []
   backoffLimit: 3
