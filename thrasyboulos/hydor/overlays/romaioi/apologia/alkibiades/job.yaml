@@ -32,8 +32,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.annotations['odysseia-greek/access']
-          envFrom:
-            - configMapRef:
-                name: alkibiades
+          envFrom: []
       restartPolicy: Never
   backoffLimit: 3
