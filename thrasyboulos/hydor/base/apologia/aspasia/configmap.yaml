@@ -4,4 +4,4 @@ metadata:
   name: aspasia
 data:
   HERODOTOS_SERVICE: "http://herodotos.olympia.svc:5000"
-  ANTIGONOS_SERVICE: "antigonos.makedonia.svc:50060"
+  ALEXANDROS_GATEWAY: "http://alexandros.makedonia.svc:8080/alexandros/graphq"
