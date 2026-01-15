@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: praxiteles
+  name: polykleitos
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: "praxiteles"
+      app: "polykleitos"
   template:
     metadata:
       labels:
-        app: "praxiteles"
-        release: praxiteles
+        app: "polykleitos"
+        release: polykleitos
         version:
     spec:
       containers:
-        - name: "praxiteles"
-          image: ghcr.io/odysseia-greek/praxiteles:v0.1.0
+        - name: "polykleitos"
+          image: ghcr.io/odysseia-greek/polykleitos:v0.0.1
           imagePullPolicy: Always
           env:
             - name: ENV

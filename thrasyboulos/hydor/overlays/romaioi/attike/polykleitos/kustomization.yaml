@@ -14,7 +14,7 @@ patches:
     patch: |-
       - op: replace
         path: /metadata/name
-        value: praxiteles
+        value: polykleitos
       - op: replace
         path: /spec/selector/app
-        value: praxiteles
+        value: polykleitos
