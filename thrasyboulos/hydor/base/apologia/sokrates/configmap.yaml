@@ -9,4 +9,3 @@ data:
   KRITON_SERVICE: "kriton:50060"
   XENOFON_SERVICE: "xenofon:50060"
   ASPASIA_SERVICE: "aspasia:50060"
-  VERSION: "v0.2.1"

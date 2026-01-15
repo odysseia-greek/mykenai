@@ -17,7 +17,7 @@ spec:
       labels:
         app: kriton
         release: kriton
-        version: v0.1.1
+        version: v0.1.2
       annotations:
         odysseia-greek/role: api
         odysseia-greek/access: dialogue-quiz
@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: "kriton"
-          image: ghcr.io/odysseia-greek/kriton:v0.1.1
+          image: ghcr.io/odysseia-greek/kriton:v0.1.2
 
           imagePullPolicy: Always
           env:
@@ -35,9 +35,7 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.annotations['odysseia-greek/access']
-          envFrom:
-            - configMapRef:
-                name: kriton
+          envFrom: []
           volumeMounts:
             - name: kriton-certs
               mountPath: /app/config/kriton

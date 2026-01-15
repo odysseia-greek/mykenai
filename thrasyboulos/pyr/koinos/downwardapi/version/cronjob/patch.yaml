@@ -1,0 +1,15 @@
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: add-version-label-to-cronjob
+patch: |
+  - op: add
+    path: /spec/jobTemplate/spec/template/spec/containers/0/env/-
+    value:
+      name: VERSION
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.labels['version']
+target:
+  kind: CronJob
+  name: ".*"

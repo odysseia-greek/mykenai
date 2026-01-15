@@ -13,6 +13,7 @@ components:
   - ../../../../../pyr/koinos/resources/local/low
   - ../../../../../pyr/koinos/transformers/volumes/elastic
   - ../../../../../pyr/koinos/common-env/base/deploy
+  - ../../../../../pyr/koinos/downwardapi/version/deploy
 
 patches:
   - target:

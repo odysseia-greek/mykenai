@@ -17,7 +17,7 @@ spec:
       labels:
         app: sokrates
         release: sokrates
-        version: v0.2.2
+        version: v0.2.3
       annotations:
         perikles/accesses: "aristippos;xenofon;kriton;kritias;alkibiades;antisthenes;aspasia"
         perikles/hostname: "sokrates"
@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
         - name: sokrates
-          image: ghcr.io/odysseia-greek/sokrates:v0.2.2
+          image: ghcr.io/odysseia-greek/sokrates:v0.2.3
           imagePullPolicy: Always
           envFrom:
             - configMapRef:

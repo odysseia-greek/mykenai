@@ -13,7 +13,7 @@ spec:
       labels:
         app: parmenides-alkibiades
         release: alkibiades
-        version: v0.2.0
+        version: v0.2.1
       annotations:
         odysseia-greek/role: seeder
         odysseia-greek/access: journey-quiz
