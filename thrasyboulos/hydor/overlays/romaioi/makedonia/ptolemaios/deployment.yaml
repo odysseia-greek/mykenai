@@ -16,7 +16,7 @@ spec:
       labels:
         app: ptolemaios
         release: ptolemaios
-        version: v0.0.2
+        version: v0.0.3
       annotations:
         perikles/accesses: "herodotos"
         perikles/hostname: "ptolemaios"
@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: "ptolemaios"
-          image: ghcr.io/odysseia-greek/ptolemaios:v0.0.2
+          image: ghcr.io/odysseia-greek/ptolemaios:v0.0.3
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
