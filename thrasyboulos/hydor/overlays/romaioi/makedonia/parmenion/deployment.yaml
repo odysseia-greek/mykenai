@@ -34,9 +34,7 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.annotations['odysseia-greek/access']
-          envFrom:
-            - configMapRef:
-                name: parmenion
+          envFrom: []
           volumeMounts:
             - name: parmenion-certs
               mountPath: /app/config/parmenion

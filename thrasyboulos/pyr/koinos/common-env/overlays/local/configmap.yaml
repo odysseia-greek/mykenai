@@ -4,7 +4,7 @@ metadata:
   name: odysseia-common-env
 data:
   SOLON_SERVICE: "https://solon.delphi.svc:5443"
-  ENV: "k3d"
+  ENV: "romaioi"
   TLS_ENABLED: "true"
   CERT_ROOT: "/app/config"
   ELASTIC_SEARCH_SERVICE: "http://aristoteles-es-http.agora.svc:9200"

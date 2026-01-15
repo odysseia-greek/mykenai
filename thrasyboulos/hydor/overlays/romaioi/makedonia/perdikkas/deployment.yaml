@@ -17,7 +17,7 @@ spec:
       labels:
         app: perdikkas
         release: perdikkas
-        version: v0.0.3
+        version: v0.0.4
       annotations:
         odysseia-greek/role: api
         odysseia-greek/access: dictionary
@@ -27,16 +27,14 @@ spec:
     spec:
       containers:
         - name: "perdikkas"
-          image: ghcr.io/odysseia-greek/perdikkas:v0.0.3
+          image: ghcr.io/odysseia-greek/perdikkas:v0.0.4
           imagePullPolicy: Always
           env:
             - name: ELASTIC_ACCESS
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.annotations['odysseia-greek/access']
-          envFrom:
-            - configMapRef:
-                name: perdikkas
+          envFrom: []
           volumeMounts:
             - name: perdikkas-certs
               mountPath: /app/config/perdikkas

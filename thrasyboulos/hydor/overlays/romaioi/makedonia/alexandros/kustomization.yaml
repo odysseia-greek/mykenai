@@ -15,6 +15,7 @@ components:
   - ../../../../../pyr/koinos/transformers/volumes/combined
   - ../../../../../pyr/koinos/transformers/mounts/combined
   - ../../../../../pyr/koinos/common-env/base/deploy
+  - ../../../../../pyr/koinos/downwardapi/version/deploy
 
 patches:
   - target:

@@ -28,8 +28,6 @@ spec:
         - name: "eukleides"
           image: ghcr.io/odysseia-greek/eukleides:v0.0.4
           imagePullPolicy: Always
-          envFrom:
-            - configMapRef:
-                name: eukleides
+          envFrom: []
           ports:
             - containerPort: 50060

@@ -3,5 +3,4 @@ kind: ConfigMap
 metadata:
   name: ptolemaios
 data:
-  VERSION: "v0.0.1"
   HERODOTOS_SERVICE: "http://herodotos.olympia.svc:5000"

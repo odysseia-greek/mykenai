@@ -34,9 +34,7 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.annotations['odysseia-greek/access']
-          envFrom:
-            - configMapRef:
-                name: hefaistion
+          envFrom: []
           volumeMounts:
             - name: hefaistion-certs
               mountPath: /app/config/hefaistion

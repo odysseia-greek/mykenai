@@ -34,9 +34,7 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.annotations['odysseia-greek/access']
-          envFrom:
-            - configMapRef:
-                name: antigonos
+          envFrom: []
           volumeMounts:
             - name: antigonos-certs
               mountPath: /app/config/antigonos
