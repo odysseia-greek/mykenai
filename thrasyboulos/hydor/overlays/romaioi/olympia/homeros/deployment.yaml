@@ -6,8 +6,7 @@ metadata:
   labels:
     app: homeros
   annotations:
-    volumes.odysseia.io/elastic: "true"
-    mount.odysseia.io/elastic: "true"
+    volumes.odysseia.io/secrets: "true"
 spec:
   replicas: 1
   selector:
