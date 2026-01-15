@@ -5,8 +5,7 @@ metadata:
   labels:
     app: demokritos
   annotations:
-    volumes.odysseia.io/combined: "true"
-    mounts.odysseia.io/combined: "true"
+    volumes.odysseia.io/secrets: "true"
 spec:
   template:
     metadata:
