@@ -34,13 +34,6 @@ spec:
                 fieldRef:
                   fieldPath: metadata.annotations['odysseia-greek/access']
           envFrom: []
-          volumeMounts:
-            - name: parmenion-certs
-              mountPath: /app/config/parmenion
-              readOnly: true
           ports:
             - containerPort: 50060
-      volumes:
-        - name: parmenion-certs
-          secret:
-            secretName: parmenion-tls-certs
+      volumes: []

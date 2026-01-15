@@ -34,13 +34,6 @@ spec:
                 fieldRef:
                   fieldPath: metadata.annotations['odysseia-greek/access']
           envFrom: []
-          volumeMounts:
-            - name: antigonos-certs
-              mountPath: /app/config/antigonos
-              readOnly: true
           ports:
             - containerPort: 50060
-      volumes:
-        - name: antigonos-certs
-          secret:
-            secretName: antigonos-tls-certs
+      volumes: []

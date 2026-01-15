@@ -34,13 +34,6 @@ spec:
                 fieldRef:
                   fieldPath: metadata.annotations['odysseia-greek/access']
           envFrom: []
-          volumeMounts:
-            - name: perdikkas-certs
-              mountPath: /app/config/perdikkas
-              readOnly: true
           ports:
             - containerPort: 50060
-      volumes:
-        - name: perdikkas-certs
-          secret:
-            secretName: perdikkas-tls-certs
+      volumes: []
