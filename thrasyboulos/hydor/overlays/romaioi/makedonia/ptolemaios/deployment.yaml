@@ -32,3 +32,4 @@ spec:
                 name: ptolemaios
           ports:
             - containerPort: 50060
+      volumes: []

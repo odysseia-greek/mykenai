@@ -36,4 +36,5 @@ spec:
                 fieldRef:
                   fieldPath: metadata.annotations['odysseia-greek/access']
       restartPolicy: Never
+      volumes: []
   backoffLimit: 3

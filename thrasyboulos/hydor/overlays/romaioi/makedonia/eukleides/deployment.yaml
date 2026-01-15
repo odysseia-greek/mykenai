@@ -29,3 +29,4 @@ spec:
           env: []
           ports:
             - containerPort: 50060
+      volumes: []
