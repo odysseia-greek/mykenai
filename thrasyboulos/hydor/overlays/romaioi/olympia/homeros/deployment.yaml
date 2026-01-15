@@ -18,21 +18,17 @@ spec:
       labels:
         app: homeros
         release: homeros
-        version: v0.3.0
+        version: v0.3.1
       annotations:
-        perikles/accesses: "alexandros-legacy;sokrates;dionysios;herodotos"
+        perikles/accesses: "alexandros;sokrates;dionysios;herodotos"
     spec:
       containers:
         - name: homeros
-          image: ghcr.io/odysseia-greek/homeros:v0.3.0
+          image: ghcr.io/odysseia-greek/homeros:v0.3.1
           imagePullPolicy: Always
           env:
             - name: TRACE_CONFIG_PATH
               value: /etc/config/trace-config.json
-            - name: VERSION
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.labels['version']
           envFrom:
             - configMapRef:
                 name: homeros
