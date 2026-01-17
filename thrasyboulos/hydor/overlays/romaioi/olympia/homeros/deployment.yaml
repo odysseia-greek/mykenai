@@ -17,13 +17,13 @@ spec:
       labels:
         app: homeros
         release: homeros
-        version: v0.3.1
+        version: v0.3.2
       annotations:
         perikles/accesses: "alexandros;sokrates;dionysios;herodotos"
     spec:
       containers:
         - name: homeros
-          image: ghcr.io/odysseia-greek/homeros:v0.3.1
+          image: ghcr.io/odysseia-greek/homeros:v0.3.2
           imagePullPolicy: Always
           env:
             - name: TRACE_CONFIG_PATH

@@ -17,7 +17,7 @@ spec:
     metadata:
       labels:
         app: euripides
-        version: v0.2.0
+        version: v0.2.1
       annotations:
         odysseia-greek/role: api
         odysseia-greek/access: tracing;metrics;metrics_rollup
@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
         - name: euripides
-          image: ghcr.io/odysseia-greek/euripides:v0.2.0
+          image: ghcr.io/odysseia-greek/euripides:v0.2.1
           imagePullPolicy: Always
           env:
             - name: POD_NAME
