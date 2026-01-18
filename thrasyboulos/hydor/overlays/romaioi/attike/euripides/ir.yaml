@@ -11,3 +11,8 @@ spec:
       services:
         - name: euripides
           port: 8080
+    - match: Host(`attike.byzantium.odysseia-greek`) && PathPrefix(`/euripides/v1`)
+      kind: Rule
+      services:
+        - name: euripides
+          port: 8080
