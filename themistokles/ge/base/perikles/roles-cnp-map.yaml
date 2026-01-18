@@ -9,6 +9,8 @@ data:
         path: "^/%%index%%/_search(\\?.*)?$"
       - method: "^POST$"
         path: "^/_search/scroll(\\?.*)?$"
+      - method: ^GET$
+        path: ^/%%index%%/_doc/.*$
 
   seeder: |
     cnp_rules:
