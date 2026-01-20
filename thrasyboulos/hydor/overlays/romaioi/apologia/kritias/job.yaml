@@ -5,8 +5,7 @@ metadata:
   labels:
     app: parmenides-kritias
   annotations:
-    volumes.odysseia.io/combined: "true"
-    mounts.odysseia.io/combined: "true"
+    volumes.odysseia.io/secrets: "true"
 spec:
   template:
     metadata:
@@ -34,4 +33,4 @@ spec:
                   fieldPath: metadata.annotations['odysseia-greek/access']
           envFrom: []
       restartPolicy: Never
-  backoffLimit: 3
+      volumes: []  backoffLimit: 3

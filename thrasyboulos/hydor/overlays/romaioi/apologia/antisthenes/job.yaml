@@ -5,8 +5,7 @@ metadata:
   labels:
     app: parmenides-antisthenes
   annotations:
-    volumes.odysseia.io/combined: "true"
-    mounts.odysseia.io/combined: "true"
+    volumes.odysseia.io/secrets: "true"
 spec:
   template:
     metadata:
@@ -36,4 +35,4 @@ spec:
             - configMapRef:
                 name: antisthenes
       restartPolicy: Never
-  backoffLimit: 3
+      volumes: []  backoffLimit: 3
