@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: perikles-test
-  annotations:
-    perikles/bootstrap: "true"
-    perikles/replicate-from: "solon-elastic:agora"
