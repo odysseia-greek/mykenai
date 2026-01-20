@@ -72,7 +72,7 @@ spec:
           envFrom:
             - configMapRef:
                 name: odysseia-common-env
-          image: ghcr.io/odysseia-greek/aristides:v0.0.2
+          image: ghcr.io/odysseia-greek/aristides:v0.0.4
           imagePullPolicy: Always
           name: aristides
           ports:
@@ -110,7 +110,7 @@ spec:
           envFrom:
             - configMapRef:
                 name: odysseia-common-env
-          image: ghcr.io/odysseia-greek/periandros:v0.1.4
+          image: ghcr.io/odysseia-greek/periandros:v0.1.5
           imagePullPolicy: Always
           name: periandros
           volumeMounts:
