@@ -6,7 +6,7 @@ spec:
   entryPoints:
     - web
   routes:
-    - match: Host(`alexandros.odysseia-greek`) && PathPrefix(`/alexandros/graphql`)
+    - match: Host(`byzantium.odysseia-greek`) && PathPrefix(`/alexandros/graphql`)
       kind: Rule
       services:
         - name: alexandros
