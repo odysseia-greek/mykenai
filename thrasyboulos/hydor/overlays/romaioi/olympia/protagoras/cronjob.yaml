@@ -25,14 +25,8 @@ spec:
               envFrom:
                 - configMapRef:
                     name: protagoras
-              volumeMounts:
-                - name: herodotos-certs
-                  mountPath: /app/config/herodotos
-                  readOnly: true
-          volumes:
-            - name: herodotos-certs
-              secret:
-                secretName: herodotos-tls-certs
+              volumeMounts: []
+          volumes: []
           restartPolicy: OnFailure
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
