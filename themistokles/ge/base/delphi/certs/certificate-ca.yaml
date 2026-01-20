@@ -1,0 +1,16 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: delphi-root-ca
+spec:
+  isCA: true
+  commonName: delphi-root-ca
+  secretName: delphi-root-ca
+  duration: 87600h   # 10 years
+  renewBefore: 720h  # 30 days
+  privateKey:
+    algorithm: RSA
+    size: 4096
+  issuerRef:
+    name: delphi-ca
+    kind: Issuer
