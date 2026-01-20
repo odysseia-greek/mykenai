@@ -14,5 +14,3 @@ spec:
   path: thrasyboulos/hydor/overlays/romaioi/alexandreia
   prune: true
   wait: true
-  dependsOn:
-    - name: solon

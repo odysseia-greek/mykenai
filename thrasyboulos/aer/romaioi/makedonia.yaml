@@ -14,5 +14,4 @@ spec:
   path: thrasyboulos/hydor/overlays/romaioi/makedonia
   prune: true
   wait: true
-  dependsOn:
-    - name: solon
+

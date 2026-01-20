@@ -23,6 +23,6 @@ spec:
     kind: GitRepository
     name: thrasyboulos
   dependsOn:
-    - name: solon
+    - name: delphi
   prune: true
   wait: true
