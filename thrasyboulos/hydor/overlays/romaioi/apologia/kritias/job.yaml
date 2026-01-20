@@ -33,4 +33,5 @@ spec:
                   fieldPath: metadata.annotations['odysseia-greek/access']
           envFrom: []
       restartPolicy: Never
-      volumes: []  backoffLimit: 3
+      volumes: []
+  backoffLimit: 3
