@@ -68,12 +68,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: user
-                  name: solon-user
+                  name: solon-elastic
             - name: ELASTIC_SEARCH_PASSWORD
               valueFrom:
                 secretKeyRef:
                   key: password
-                  name: solon-user
+                  name: solon-elastic
           envFrom:
             - configMapRef:
                 name: solon
