@@ -8,6 +8,7 @@ resources:
 
 components:
   - ../../../../../../thrasyboulos/pyr/koinos/resources/local/mid
+  - ../../../../../../thrasyboulos/pyr/koinos/downwardapi/version/deploy
 
 labels:
   - pairs:
