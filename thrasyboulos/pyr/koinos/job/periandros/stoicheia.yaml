@@ -3,7 +3,7 @@
   path: /spec/template/spec/initContainers
   value:
       - name: "periandros"
-        image: ghcr.io/odysseia-greek/periandros:v0.1.4
+        image: ghcr.io/odysseia-greek/periandros:v0.1.5
         imagePullPolicy: Always
         env:
           - name: POD_NAME

@@ -10,8 +10,6 @@ resources:
 components:
   - ../../../../../../thrasyboulos/pyr/koinos/deployment/aristophanes
   - ../../../../../../thrasyboulos/pyr/koinos/resources/local/mid
-  - ../../../../../../thrasyboulos/pyr/koinos/transformers/volumes/combined
-  - ../../../../../../thrasyboulos/pyr/koinos/transformers/mounts/combined
   - ../../../../../../thrasyboulos/pyr/koinos/common-env/base/deploy
 
 labels:
