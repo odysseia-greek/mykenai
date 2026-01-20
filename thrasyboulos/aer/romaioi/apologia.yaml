@@ -13,4 +13,5 @@ spec:
     name: thrasyboulos
   path: thrasyboulos/hydor/overlays/romaioi/apologia
   prune: true
+  force: true
   wait: true
