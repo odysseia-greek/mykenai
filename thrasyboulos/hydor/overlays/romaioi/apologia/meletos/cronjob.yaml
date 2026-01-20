@@ -18,7 +18,7 @@ spec:
             perikles/accesses: "sokrates"
         spec:
           restartPolicy: Never
-      volumes: []          containers:
+          containers:
             - name: meletos
               image: ghcr.io/odysseia-greek/meletos:v0.1.1
               imagePullPolicy: Always
