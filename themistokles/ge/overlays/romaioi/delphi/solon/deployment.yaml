@@ -101,4 +101,18 @@ spec:
               memory: 64Mi
               cpu: 200m
             limits:
-              memory: 256Mi
+              memory: 64Mi
+          volumeMounts:
+            - mountPath: /app/config/solon
+              name: solon-certs
+              readOnly: true
+            - mountPath: /app/config/vault
+              name: vault-server-tls
+              readOnly: true
+      volumes:
+        - name: solon-certs
+          secret:
+            secretName: solon-tls-certs
+        - name: vault-server-tls
+          secret:
+            secretName: vault-server-tls

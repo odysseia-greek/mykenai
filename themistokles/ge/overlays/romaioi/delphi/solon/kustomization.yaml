@@ -13,3 +13,11 @@ components:
   - ../../../../../../thrasyboulos/pyr/koinos/transformers/volumes/combined
   - ../../../../../../thrasyboulos/pyr/koinos/transformers/mounts/combined
   - ../../../../../../thrasyboulos/pyr/koinos/common-env/base/deploy
+
+labels:
+  - pairs:
+      environment: "romaioi"
+      variant: "k0s"
+      domain: "backend"
+    includeSelectors: false
+    includeTemplates: true

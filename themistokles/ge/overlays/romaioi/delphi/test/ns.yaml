@@ -4,4 +4,4 @@ metadata:
   name: perikles-test
   annotations:
     perikles/bootstrap: "true"
-    perikles/replicate-from: "solon-user:agora"
+    perikles/replicate-from: "solon-elastic:agora"

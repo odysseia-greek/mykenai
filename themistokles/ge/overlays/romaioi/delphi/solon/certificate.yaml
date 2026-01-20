@@ -3,7 +3,7 @@ kind: Certificate
 metadata:
   name: solon-server
 spec:
-  secretName: solon-server-tls
+  secretName: solon-tls-certs
   duration: 2160h        # 90 days
   renewBefore: 168h      # 7 days
   privateKey:
