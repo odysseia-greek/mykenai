@@ -8,5 +8,11 @@ resources:
 
 components:
   - ../../../../../../thrasyboulos/pyr/koinos/resources/local/mid
-  - ../../../../../../thrasyboulos/pyr/koinos/transformers/volumes
-  - ../../../../../../thrasyboulos/pyr/koinos/transformers/mounts
+
+labels:
+  - pairs:
+      environment: "romaioi"
+      variant: "k0s"
+      domain: "backend"
+    includeSelectors: false
+    includeTemplates: true

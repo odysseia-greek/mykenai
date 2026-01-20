@@ -10,7 +10,7 @@ resources:
 
 labels:
   - pairs:
-      environment: "local"
+      environment: "romaioi"
       variant: "k0s"
       domain: "tracing"
     includeSelectors: false
