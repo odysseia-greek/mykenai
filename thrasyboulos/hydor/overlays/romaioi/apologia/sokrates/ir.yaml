@@ -6,12 +6,12 @@ spec:
   entryPoints:
     - web
   routes:
-    - match: Host(`byzantium.odysseia-greek`) && PathPrefix(`/sokrates/graphql`)
+    - match: Host(`sokrates.odysseia-greek`) && PathPrefix(`/sokrates/graphql`)
       kind: Rule
       services:
         - name: sokrates
           port: 8080
-    - match: Host(`byzantium.odysseia-greek`) && PathPrefix(`/sokrates/v1/ping`)
+    - match: Host(`sokrates.odysseia-greek`) && PathPrefix(`/sokrates/v1/ping`)
       kind: Rule
       services:
         - name: sokrates
