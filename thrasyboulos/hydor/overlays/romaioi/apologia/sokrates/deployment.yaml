@@ -4,8 +4,6 @@ metadata:
   name: sokrates
   labels:
     app: sokrates
-  annotations:
-    volumes.odysseia.io/secrets: "true"
 spec:
   replicas: 1
   selector:
