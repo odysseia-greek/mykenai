@@ -13,10 +13,7 @@ components:
   - ../../../../../pyr/koinos/services/grpc
   - ../../../../../pyr/koinos/resources/local/low
   - ../../../../../pyr/koinos/resources/local/job
-  - ../../../../../pyr/koinos/transformers/volumes/existing
-  - ../../../../../pyr/koinos/transformers/mounts/existing
-  - ../../../../../pyr/koinos/transformers/volumes/combined
-  - ../../../../../pyr/koinos/transformers/mounts/combined
+  - ../../../../../pyr/koinos/transformers/volumes/secrets
   - ../../../../../pyr/koinos/common-env/base/deploy
   - ../../../../../pyr/koinos/common-env/base/job
   - ../../../../../pyr/koinos/downwardapi/version/deploy

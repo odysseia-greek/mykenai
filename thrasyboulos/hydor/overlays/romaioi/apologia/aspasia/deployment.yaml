@@ -4,8 +4,6 @@ metadata:
   name: aspasia
   labels:
     app: aspasia
-  annotations:
-    volumes.odysseia.io/elastic-only: "true"
 spec:
   replicas: 1
   selector:

@@ -5,8 +5,7 @@ metadata:
   labels:
     app: alkibiades
   annotations:
-    volumes.odysseia.io/existing: "true"
-    mounts.odysseia.io/existing: "true"
+    volumes.odysseia.io/secrets: "true"
 spec:
   replicas: 1
   selector:
