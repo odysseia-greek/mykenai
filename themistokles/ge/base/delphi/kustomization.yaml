@@ -4,9 +4,6 @@ namespace: delphi
 resources:
   - certs
   - ns.yaml
-  - external-secrets.yaml
-  - secrets
-
 
 components:
   - ../../../../thrasyboulos/pyr/koinos/common-env/overlays/local
