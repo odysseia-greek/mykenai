@@ -3,6 +3,6 @@ kind: ConfigMap
 metadata:
   name: aiskhylos
 data:
-  EUPALINOS_TRACING_SERVICE: "eupalinos.attike.svc:50060"
+  EUPALINOS_TRACING_SERVICE: "eupalinos.attike.svc.cluster.local:50060"
   METRICS_CHANNEL: "sophokles"
   TRACE_CHANNEL: "aristophanes"

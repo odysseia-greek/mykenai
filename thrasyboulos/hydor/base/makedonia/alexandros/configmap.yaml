@@ -5,7 +5,7 @@ metadata:
 data:
   MAX_NGRAM: "6"
   MIN_NGRAM: "2"
-  HERODOTOS_SERVICE: "http://herodotos.olympia.svc:5000"
+  HERODOTOS_SERVICE: "http://herodotos.olympia.svc.cluster.local:5000"
   ANTIGONOS_SERVICE: "antigonos:50060"
   HEFASTION_SERVICE: "hefaistion:50060"
   PTOLEMAIOS_SERVICE: "ptolemaios:50060"
