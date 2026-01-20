@@ -16,8 +16,6 @@ spec:
         release: eukleides
         version: v0.0.4
       annotations:
-        perikles/hostname: "eukleides"
-        perikles/validity: "10"
         odysseia-greek/role: api
         odysseia-greek/access: dictionary
     spec:

@@ -22,8 +22,6 @@ spec:
         odysseia-greek/role: api
         odysseia-greek/access: journey-quiz
         perikles/accesses: "solon"
-        perikles/hostname: "alkibiades"
-        perikles/validity: "10"
     spec:
       containers:
         - name: "alkibiades"
@@ -36,13 +34,7 @@ spec:
                 fieldRef:
                   fieldPath: metadata.annotations['odysseia-greek/access']
           envFrom: []
-          volumeMounts:
-            - name: alkibiades-certs
-              mountPath: /app/config/alkibiades
-              readOnly: true
+          volumeMounts: []
           ports:
             - containerPort: 50060
-      volumes:
-        - name: alkibiades-certs
-          secret:
-            secretName: alkibiades-tls-certs
+      volumes: []

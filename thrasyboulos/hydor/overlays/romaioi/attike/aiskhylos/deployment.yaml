@@ -21,8 +21,6 @@ spec:
         odysseia-greek/role: creator
         odysseia-greek/access: tracing;metrics;metrics_rollup
         perikles/accesses: solon
-        perikles/hostname: "aiskhylos"
-        perikles/validity: "10"
     spec:
       containers:
         - name: "aiskhylos"

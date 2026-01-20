@@ -22,8 +22,6 @@ spec:
         odysseia-greek/role: api
         odysseia-greek/access: media-quiz
         perikles/accesses: "solon"
-        perikles/hostname: "aristippos"
-        perikles/validity: "10"
     spec:
       containers:
         - name: "aristippos"
@@ -36,13 +34,7 @@ spec:
                 fieldRef:
                   fieldPath: metadata.annotations['odysseia-greek/access']
           envFrom: []
-          volumeMounts:
-            - name: aristippos-certs
-              mountPath: /app/config/aristippos
-              readOnly: true
+          volumeMounts: []
           ports:
             - containerPort: 50060
-      volumes:
-        - name: aristippos-certs
-          secret:
-            secretName: aristippos-tls-certs
+      volumes: []

@@ -21,8 +21,6 @@ spec:
         odysseia-greek/role: api
         odysseia-greek/access: dictionary
         perikles/accesses: "solon"
-        perikles/hostname: "hefaistion"
-        perikles/validity: "10"
     spec:
       containers:
         - name: "hefaistion"

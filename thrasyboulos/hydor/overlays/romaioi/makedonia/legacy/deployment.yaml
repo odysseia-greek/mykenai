@@ -19,8 +19,6 @@ spec:
         odysseia-greek/access: dictionary
         odysseia-greek/role: api
         perikles/accesses: solon
-        perikles/hostname: alexandros-legacy
-        perikles/validity: "10"
       labels:
         app: alexandros-legacy
         release: alexandros-legacy
@@ -65,10 +63,7 @@ spec:
             requests:
               cpu: 200m
               memory: 32Mi
-          volumeMounts:
-            - mountPath: /app/config/alexandros
-              name: alexandros-certs
-              readOnly: true
+          volumeMounts: []
         - env:
             - name: POD_NAME
               valueFrom:
@@ -123,9 +118,6 @@ spec:
               name: solon-certs
               readOnly: true
       volumes:
-        - name: alexandros-certs
-          secret:
-            secretName: alexandros-tls-certs
         - name: solon-certs
           secret:
             secretName: solon-tls-certs

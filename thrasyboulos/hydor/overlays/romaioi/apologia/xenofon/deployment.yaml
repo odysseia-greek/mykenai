@@ -22,8 +22,6 @@ spec:
         odysseia-greek/role: api
         odysseia-greek/access: author-based-quiz
         perikles/accesses: "solon"
-        perikles/hostname: "xenofon"
-        perikles/validity: "10"
     spec:
       containers:
         - name: "xenofon"
@@ -36,13 +34,7 @@ spec:
                 fieldRef:
                   fieldPath: metadata.annotations['odysseia-greek/access']
           envFrom: []
-          volumeMounts:
-            - name: xenofon-certs
-              mountPath: /app/config/xenofon
-              readOnly: true
+          volumeMounts: []
           ports:
             - containerPort: 50060
-      volumes:
-        - name: xenofon-certs
-          secret:
-            secretName: xenofon-tls-certs
+      volumes: []

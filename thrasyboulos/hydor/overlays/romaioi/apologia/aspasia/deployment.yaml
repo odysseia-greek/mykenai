@@ -19,8 +19,6 @@ spec:
         version: v0.0.5
       annotations:
         perikles/accesses: "herodotos;antigonos"
-        perikles/hostname: "aspasia"
-        perikles/validity: "10"
     spec:
       containers:
         - name: "aspasia"

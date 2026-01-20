@@ -22,8 +22,6 @@ spec:
         odysseia-greek/role: api
         odysseia-greek/access: text
         perikles/accesses: "solon;aristarchos"
-        perikles/hostname: "herodotos"
-        perikles/validity: "10"
     spec:
       containers:
         - name: "herodotos"
@@ -41,10 +39,7 @@ spec:
           envFrom:
             - configMapRef:
                 name: herodotos
-          volumeMounts:
-            - name: herodotos-certs
-              mountPath: /app/config/herodotos
-              readOnly: true
+          volumeMounts: []
           ports:
             - containerPort: 5000
               name: http
@@ -60,7 +55,4 @@ spec:
               port: 5000
             initialDelaySeconds: 1
             periodSeconds: 20
-      volumes:
-        - name: herodotos-certs
-          secret:
-            secretName: herodotos-tls-certs
+      volumes: []

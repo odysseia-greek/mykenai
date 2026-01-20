@@ -22,8 +22,6 @@ spec:
         odysseia-greek/role: api
         odysseia-greek/access: multiple-choice-quiz
         perikles/accesses: "solon"
-        perikles/hostname: "kritias"
-        perikles/validity: "10"
     spec:
       containers:
         - name: "kritias"
@@ -36,13 +34,7 @@ spec:
                 fieldRef:
                   fieldPath: metadata.annotations['odysseia-greek/access']
           envFrom: []
-          volumeMounts:
-            - name: kritias-certs
-              mountPath: /app/config/kritias
-              readOnly: true
+          volumeMounts: []
           ports:
             - containerPort: 50060
-      volumes:
-        - name: kritias-certs
-          secret:
-            secretName: kritias-tls-certs
+      volumes: []

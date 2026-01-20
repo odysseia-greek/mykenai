@@ -21,18 +21,12 @@ spec:
           envFrom:
             - configMapRef:
                 name: protagoras
-          volumeMounts:
-            - name: herodotos-certs
-              mountPath: /app/config/herodotos
-              readOnly: true
+          volumeMounts: []
           resources:
             requests:
               memory: 64Mi
             limits:
               memory: 128Mi
-      volumes:
-        - name: herodotos-certs
-          secret:
-            secretName: herodotos-tls-certs
+      volumes: []
       restartPolicy: Never
   backoffLimit: 3

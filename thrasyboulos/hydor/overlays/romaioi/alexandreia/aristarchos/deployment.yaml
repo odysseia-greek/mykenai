@@ -22,7 +22,6 @@ spec:
         odysseia-greek/role: hybrid
         odysseia-greek/access: aggregator
         perikles/accesses: solon
-        perikles/hostname: "aristarchos"
         perikles/validity: "10"
     spec:
       containers:
@@ -34,13 +33,7 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.annotations['odysseia-greek/access']
-          volumeMounts:
-            - name: aristarchos-certs
-              mountPath: /app/config/aristarchos
-              readOnly: true
+          volumeMounts: []
           ports:
             - containerPort: 50060
-      volumes:
-        - name: aristarchos-certs
-          secret:
-            secretName: aristarchos-tls-certs
+      volumes: []

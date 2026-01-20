@@ -22,8 +22,6 @@ spec:
         odysseia-greek/role: api
         odysseia-greek/access: grammar
         perikles/accesses: "solon;alexandros;aristarchos"
-        perikles/hostname: "dionysios"
-        perikles/validity: "10"
     spec:
       containers:
         - name: "dionysios"
@@ -41,10 +39,7 @@ spec:
           envFrom:
             - configMapRef:
                 name: dionysios
-          volumeMounts:
-            - name: dionysios-certs
-              mountPath: /app/config/dionysios
-              readOnly: true
+          volumeMounts: []
           ports:
             - containerPort: 5000
               name: http
@@ -60,7 +55,4 @@ spec:
               port: 5000
             initialDelaySeconds: 1
             periodSeconds: 20
-      volumes:
-        - name: dionysios-certs
-          secret:
-            secretName: dionysios-tls-certs
+      volumes: []

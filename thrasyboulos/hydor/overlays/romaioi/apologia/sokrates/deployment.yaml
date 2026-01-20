@@ -20,8 +20,6 @@ spec:
         version: v0.2.3
       annotations:
         perikles/accesses: "aristippos;xenofon;kriton;kritias;alkibiades;antisthenes;aspasia"
-        perikles/hostname: "sokrates"
-        perikles/validity: "10"
     spec:
       containers:
         - name: sokrates
