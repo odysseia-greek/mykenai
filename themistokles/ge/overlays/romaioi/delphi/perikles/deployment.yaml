@@ -17,12 +17,12 @@ spec:
       labels:
         app: perikles
         release: perikles
-        version: v0.2.0
+        version: v0.2.1
     spec:
       serviceAccountName: periklessa
       containers:
         - name: perikles
-          image: ghcr.io/odysseia-greek/perikles:v0.2.0
+          image: ghcr.io/odysseia-greek/perikles:v0.2.1
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
