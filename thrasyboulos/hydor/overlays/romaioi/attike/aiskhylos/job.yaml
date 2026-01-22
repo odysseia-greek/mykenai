@@ -11,7 +11,7 @@ spec:
     metadata:
       labels:
         app: anaximenes
-        version: v0.1.1
+        version: v0.1.2
       annotations:
         odysseia-greek/role: alias
         odysseia-greek/access: tracing;metrics;metrics_rollup
@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: "anaximenes"
-          image: ghcr.io/odysseia-greek/anaximenes:v0.1.1
+          image: ghcr.io/odysseia-greek/anaximenes:v0.1.
           imagePullPolicy: Always
           env:
             - name: POD_NAME
