@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: ktesias
 data:
-  VERSION: "0.0.4"
+  VERSION: "0.0.5"
