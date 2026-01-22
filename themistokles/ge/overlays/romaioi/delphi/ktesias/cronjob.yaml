@@ -14,7 +14,7 @@ spec:
           labels:
             app: ktesias
             release: ktesias
-            version: v0.0.2
+            version: v0.0.4
           annotations:
             odysseia-greek/role: "api"
             odysseia-greek/access: "dictionary"
