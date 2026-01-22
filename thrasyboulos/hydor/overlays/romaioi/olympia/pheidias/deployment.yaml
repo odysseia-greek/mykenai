@@ -12,11 +12,11 @@ spec:
       labels:
         app: "pheidias"
         release: pheidias
-        version: v0.2.0
+        version: v0.2.2
     spec:
       containers:
         - name: "pheidias"
-          image: ghcr.io/odysseia-greek/pheidias:v0.2.1
+          image: ghcr.io/odysseia-greek/pheidias:v0.2.2
           imagePullPolicy: Always
           env:
             - name: NODE_ENV
