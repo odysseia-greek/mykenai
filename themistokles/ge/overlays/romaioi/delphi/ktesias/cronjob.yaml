@@ -64,5 +64,5 @@ spec:
                   memory: 64Mi
           restartPolicy: OnFailure
           volumes: []
-  successfulJobsHistoryLimit: 1
-  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
