@@ -21,7 +21,7 @@ spec:
           serviceAccountName: ktesiassa
           containers:
             - name: "ktesias"
-              image: ghcr.io/odysseia-greek/ktesias:v0.0.3
+              image: ghcr.io/odysseia-greek/ktesias:v0.0.4
               imagePullPolicy: Always
               command:
                 - sh
@@ -59,7 +59,7 @@ spec:
                   memory: 64Mi
                   cpu: 500m
                 limits:
-                  memory: 128Mi
+                  memory: 64Mi
           volumes:
             - name: vault-server-tls
               secret:
