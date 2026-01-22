@@ -22,6 +22,11 @@ rules:
     resources: ["kustomizations"]
     verbs: ["get", "list", "patch", "update"]
 
+  # Permissions for secrets test
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list"]
+
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding

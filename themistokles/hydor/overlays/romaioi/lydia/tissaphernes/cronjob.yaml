@@ -13,13 +13,13 @@ spec:
           labels:
             app: tissaphernes
             release: tissaphernes
-            version: v0.0.1
+            version: v0.0.2
         spec:
           serviceAccountName: tissaphernes
           restartPolicy: Never
           containers:
             - name: tissaphernes
-              image: ghcr.io/odysseia-greek/tissaphernes:v0.0.1
+              image: ghcr.io/odysseia-greek/tissaphernes:v0.0.2
               imagePullPolicy: Always
               command: ["sh", "-c"]
               args:

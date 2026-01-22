@@ -4,3 +4,4 @@ namespace: lydia
 resources:
   - cronjob.yaml
   - pvc.yaml
+  - rbac.yaml
