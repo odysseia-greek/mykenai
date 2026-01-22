@@ -6,5 +6,5 @@ metadata:
   name: euripides
 data:
   EUPALINOS_TRACING_SERVICE: "eupalinos.attike.svc.cluster.local:50060"
-  TRACE_ID_CHANNEL: "euripides"
+  REPORT_CHANNEL: "euripides"
   VERSION: "0.2.0g"
