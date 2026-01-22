@@ -9,6 +9,5 @@ resources:
 components:
   - ../../../../../../thrasyboulos/pyr/koinos/resources/local/mid
   - ../../../../../../thrasyboulos/pyr/koinos/common-env/base/cronjob
-  - ../../../../../../thrasyboulos/pyr/koinos/transformers/volumes/secrets
   - ../../../../../../thrasyboulos/pyr/koinos/cronjob/aristides
   - ../../../../../../thrasyboulos/pyr/koinos/cronjob/periandros

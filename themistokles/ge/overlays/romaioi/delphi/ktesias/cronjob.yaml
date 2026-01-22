@@ -2,13 +2,10 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: ktesias
-  annotations:
-    volumes.odysseia.io/secrets: "true"
 spec:
   schedule: "*/20 * * * *"
   jobTemplate:
     spec:
-      backoffLimit: 2
       template:
         metadata:
           labels:
@@ -16,9 +13,9 @@ spec:
             release: ktesias
             version: v0.0.5
           annotations:
-            odysseia-greek/role: "api"
-            odysseia-greek/access: "dictionary"
-            perikles/accesses: "solon"
+            odysseia-greek/role: api
+            odysseia-greek/access: dictionary
+            perikles/accesses: solon
         spec:
           serviceAccountName: ktesiassa
           containers:
@@ -59,10 +56,15 @@ spec:
               resources:
                 requests:
                   memory: 64Mi
-                  cpu: 500m
                 limits:
                   memory: 64Mi
           restartPolicy: OnFailure
-          volumes: []
+          volumes:
+            - name: vault-server-tls
+              secret:
+                secretName: vault-server-tls
+            - name: solon-certs
+              secret:
+                secretName: solon-tls-certs
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
