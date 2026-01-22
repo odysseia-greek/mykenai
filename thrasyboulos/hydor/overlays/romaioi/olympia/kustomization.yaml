@@ -8,6 +8,7 @@ resources:
   - pheidias
   - melissos
   - protagoras
+  - hippokrates
 
 labels:
   - pairs:
