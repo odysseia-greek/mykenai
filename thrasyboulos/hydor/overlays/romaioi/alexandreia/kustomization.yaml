@@ -5,6 +5,7 @@ resources:
   - ../../../base/alexandreia
   - dionysios
   - aristarchos
+  - eratosthenes
 
 labels:
   - pairs:
