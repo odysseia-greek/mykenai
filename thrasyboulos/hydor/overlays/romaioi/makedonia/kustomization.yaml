@@ -12,7 +12,6 @@ resources:
   - parmenion
   - perdikkas
   - dareios
-  - legacy
 
 labels:
   - pairs:
