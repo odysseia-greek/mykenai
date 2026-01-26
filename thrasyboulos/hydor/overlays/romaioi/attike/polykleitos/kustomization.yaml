@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: attike
 resources:
   - deployment.yaml
+  - ir.yaml
 
 components:
   - ../../../../../pyr/koinos/services/frontend
