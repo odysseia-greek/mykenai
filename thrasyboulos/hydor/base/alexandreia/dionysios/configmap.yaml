@@ -5,4 +5,4 @@ kind: ConfigMap
 metadata:
   name: dionysios
 data:
-  ALEXANDROS_SERVICE: "http://alexandros-legacy.makedonia.svc.cluster.local:5000"
+  ERATOSTHENES_SERVICE: "http://eratosthenes.alexandreia.svc.cluster.local:5000"
