@@ -23,12 +23,12 @@ spec:
     deployment:
       kind: Deployment
     additionalArguments:
-      - "--entryPoints.web.address=:8080"
-      - "--entryPoints.websecure.address=:8443"  # keep defined, but no global redirect
+      - "--entryPoints.web.address=:4900"
+      - "--entryPoints.websecure.address=:8443"
       - "--api.dashboard=true"
     ports:
       web:
-        port: 8080
+        port: 4900
       websecure:
         port: 8443
         tls:

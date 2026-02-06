@@ -32,7 +32,7 @@ portForwards:
     proto: tcp
 
   - guestPort: 30080
-    hostPort: 8080
+    hostPort: 4900
     proto: tcp
 
   - guestPort: 30443
