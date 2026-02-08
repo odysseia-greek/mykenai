@@ -16,7 +16,6 @@ spec:
       labels:
         app: kriton
         release: kriton
-        version: v0.1.2
       annotations:
         odysseia-greek/role: api
         odysseia-greek/access: dialogue-quiz
@@ -24,7 +23,8 @@ spec:
     spec:
       containers:
         - name: "kriton"
-          image: ghcr.io/odysseia-greek/kriton:v0.1.2
+
+          image: ghcr.io/odysseia-greek/kriton
 
           imagePullPolicy: Always
           env:

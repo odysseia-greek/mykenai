@@ -14,13 +14,12 @@ spec:
       labels:
         app: sokrates
         release: sokrates
-        version: v0.2.3
       annotations:
         perikles/accesses: "aristippos;xenofon;kriton;kritias;alkibiades;antisthenes;aspasia"
     spec:
       containers:
         - name: sokrates
-          image: ghcr.io/odysseia-greek/sokrates:v0.2.3
+          image: ghcr.io/odysseia-greek/sokrates
           imagePullPolicy: Always
           env: []
           envFrom:

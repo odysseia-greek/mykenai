@@ -1,0 +1,10 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: antisthenes
+spec:
+  template:
+    metadata:
+      labels:
+        version: v0.1.3
+

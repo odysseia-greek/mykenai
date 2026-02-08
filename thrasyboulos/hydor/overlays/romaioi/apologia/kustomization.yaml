@@ -13,10 +13,14 @@ resources:
   - meletos
   - aspasia
 
+components:
+  - stoicheia/images
+  - stoicheia/version
+
 labels:
   - pairs:
-      environment: "k3d"
-      variant: "k3d"
+      environment: "romaioi"
+      variant: "k0s"
       domain: "backend"
     includeSelectors: false
     includeTemplates: true

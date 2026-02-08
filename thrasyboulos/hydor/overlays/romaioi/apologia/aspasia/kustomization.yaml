@@ -8,6 +8,8 @@ resources:
 
 components:
   - ../../../../../pyr/koinos/deployment/aristophanes
+  - ../stoicheia/version/aspasia
+  - ../stoicheia/images
 
   - ../../../../../pyr/koinos/services/grpc
   - ../../../../../pyr/koinos/resources/local/low

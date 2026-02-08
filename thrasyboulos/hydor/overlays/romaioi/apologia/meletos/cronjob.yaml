@@ -13,14 +13,13 @@ spec:
           labels:
             app: meletos
             release: meletos
-            version: v0.1.2
           annotations:
             perikles/accesses: "sokrates"
         spec:
           restartPolicy: Never
           containers:
             - name: meletos
-              image: ghcr.io/odysseia-greek/meletos:v0.1.2
+              image: ghcr.io/odysseia-greek/meletos
               imagePullPolicy: Always
               envFrom:
                 - configMapRef:

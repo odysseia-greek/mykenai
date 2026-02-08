@@ -14,13 +14,12 @@ spec:
       labels:
         app: aspasia
         release: aspasia
-        version: v0.0.5
       annotations:
         perikles/accesses: "herodotos;antigonos"
     spec:
       containers:
         - name: "aspasia"
-          image: ghcr.io/odysseia-greek/aspasia:v0.0.5
+          image: ghcr.io/odysseia-greek/aspasia
           imagePullPolicy: Always
           env: []
           envFrom:

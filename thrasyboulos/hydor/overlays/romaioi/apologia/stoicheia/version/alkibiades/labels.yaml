@@ -1,0 +1,9 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alkibiades
+spec:
+  template:
+    metadata:
+      labels:
+        version: v0.1.3

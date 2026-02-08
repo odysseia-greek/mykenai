@@ -4,3 +4,7 @@ namespace: apologia
 resources:
   - cronjob.yaml
   - configmap.yaml
+
+components:
+  - ../stoicheia/version/meletos
+  - ../stoicheia/images

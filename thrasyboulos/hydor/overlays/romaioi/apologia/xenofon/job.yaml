@@ -12,7 +12,6 @@ spec:
       labels:
         app: parmenides-xenofon
         release: xenofon
-        version: v0.2.0
       annotations:
         odysseia-greek/role: seeder
         odysseia-greek/access: author-based-quiz
@@ -20,7 +19,7 @@ spec:
     spec:
       containers:
         - name: "parmenides-xenofon"
-          image: ghcr.io/odysseia-greek/parmenides:v0.2.1
+          image: ghcr.io/odysseia-greek/parmenides
           imagePullPolicy: Always
           env:
             - name: POD_NAME
