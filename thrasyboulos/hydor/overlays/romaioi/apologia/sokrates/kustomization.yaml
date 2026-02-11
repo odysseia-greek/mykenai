@@ -1,0 +1,29 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: apologia
+resources:
+  - deployment.yaml
+  - scaler.yaml
+  - ir.yaml
+  - ../../../../base/apologia/sokrates
+
+components:
+  - ../../../../../pyr/koinos/deployment/aristophanes
+  - ../../../../../pyr/koinos/services/graphql
+  - ../../../../../pyr/koinos/resources/local/mid
+  - ../../../../../pyr/koinos/common-env/base/deploy
+  - ../../../../../pyr/koinos/downwardapi/version/deploy
+  - ../stoicheia/version/sokrates
+  - ../stoicheia/images
+
+patches:
+  - target:
+      version: v1
+      kind: Service
+    patch: |-
+      - op: replace
+        path: /metadata/name
+        value: sokrates
+      - op: replace
+        path: /spec/selector/app
+        value: sokrates

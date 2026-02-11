@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../../base/attike
+  - euripides
+  - praxiteles
+  - aiskhylos
+
+labels:
+  - pairs:
+      environment: "k3d"
+      variant: "k3d"
+      domain: "tracing"
+    includeSelectors: false
+    includeTemplates: true

@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: antigonos
+  labels:
+    app: antigonos
+  annotations:
+    volumes.odysseia.io/secrets: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: antigonos
+  template:
+    metadata:
+      labels:
+        app: antigonos
+        release: antigonos
+        version: v0.0.3
+      annotations:
+        odysseia-greek/role: api
+        odysseia-greek/access: dictionary
+        perikles/accesses: "solon"
+    spec:
+      containers:
+        - name: "antigonos"
+          image: ghcr.io/odysseia-greek/antigonos:v0.0.3
+          imagePullPolicy: Always
+          env:
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom: []
+          ports:
+            - containerPort: 50060
+      volumes: []

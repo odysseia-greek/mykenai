@@ -1,0 +1,98 @@
+---
+- name: Bootstrap Raspberry Pis for K3s/K0s
+  hosts: poleis
+  become: yes
+  serial: 1
+  vars:
+    use_cilium: true           # flip to false if you don’t want cgroup2 mount
+  tasks:
+    # Prefer newer path, then fall back
+    - name: Candidate cmdline paths (newer first)
+      ansible.builtin.set_fact:
+        _cmdline_candidates:
+          - /boot/firmware/cmdline.txt
+          - /boot/cmdline.txt
+
+    - name: Probe candidate paths on remote
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      loop: "{{ _cmdline_candidates }}"
+      register: _cmdline_stats
+
+    - name: Pick the first existing cmdline.txt
+      ansible.builtin.set_fact:
+        cmdline_path: >-
+          {{
+            (_cmdline_stats.results
+             | selectattr('stat.exists')
+             | map(attribute='item')
+             | list
+            )[0] | default(omit)
+          }}
+
+    - name: Fail if no cmdline.txt found
+      ansible.builtin.fail:
+        msg: "Could not find cmdline.txt at /boot/firmware or /boot."
+      when: cmdline_path is not defined
+
+    - name: Read current cmdline.txt
+      ansible.builtin.slurp:
+        src: "{{ cmdline_path }}"
+      register: cmdline_content
+      become: true  # often needed for /boot
+
+    - name: Check if cgroups are already enabled
+      set_fact:
+        cgroups_enabled: >-
+          {{ 'cgroup_enable=cpuset' in (cmdline_content.content | b64decode) and
+             'cgroup_enable=memory' in (cmdline_content.content | b64decode) and
+             'cgroup_memory=1'      in (cmdline_content.content | b64decode) }}
+
+    - name: Enable cgroups in cmdline.txt (idempotent)
+      lineinfile:
+        path: "{{ cmdline_path }}"
+        regexp: '^(.*rootwait.*)$'
+        line: '\1 cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1'
+        backrefs: yes
+      when: not cgroups_enabled
+      register: cgroups_updated
+
+    - name: Ensure /etc/hosts contains all cluster hosts (name -> ansible_host)
+      lineinfile:
+        path: /etc/hosts
+        line: "{{ hostvars[item].ansible_host }} {{ item }}"
+        state: present
+      loop: "{{ groups['poleis-prd'] | default([]) + groups['poleis-acc'] | default([]) }}"
+      when: hostvars[item].ansible_host is defined
+
+    # Longhorn prerequisites removed here
+
+    - name: Ensure BPF filesystem is mounted
+      mount:
+        path: /sys/fs/bpf
+        src: bpffs
+        fstype: bpf
+        state: mounted
+
+    - name: Ensure cgroup2 mountpoint exists (for Cilium)
+      file:
+        path: /run/cilium/cgroupv2
+        state: directory
+        mode: "0755"
+      when: use_cilium
+
+    - name: Ensure cgroups v2 is mounted for Cilium
+      mount:
+        path: /run/cilium/cgroupv2
+        src: none
+        fstype: cgroup2
+        opts: "defaults"
+        state: mounted
+      when: use_cilium
+
+    - name: Reboot if cgroups were updated
+      reboot:
+        reboot_timeout: 300
+        post_reboot_delay: 10
+        msg: "Rebooting to apply cgroup settings"
+      when: cgroups_updated is defined and cgroups_updated.changed

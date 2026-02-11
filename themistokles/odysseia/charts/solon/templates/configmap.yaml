@@ -1,8 +1,0 @@
-{{- include "koinos.configmap" . -}}
-{{ println }}
-  VAULT_TLS: {{ .Values.tlsConfig.vault.enabled | quote }}
-  VAULT_SERVICE: {{ .Values.commonConfig.envVariables.vaultService }}
-  TLS_FILES: /app/config
-  ELASTIC_USER: elastic
-  VAULT_ROLE: solon
-  GATHER_METRICS: "true"

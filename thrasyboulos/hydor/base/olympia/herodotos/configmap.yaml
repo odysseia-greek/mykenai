@@ -1,0 +1,9 @@
+---
+# Source: dionysios/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: herodotos
+data:
+  VERSION: "v0.2.2"
+  ARISTARCHOS_SERVICE: "aristarchos.alexandreia.svc.cluster.local:50060"

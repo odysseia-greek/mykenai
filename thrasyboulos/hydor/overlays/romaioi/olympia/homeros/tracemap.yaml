@@ -1,0 +1,91 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: homeros-trace-config
+  namespace: odysseia
+data:
+  trace-config.json: |
+    {
+      "operationScores": [
+        {
+          "operation": "dictionary",
+          "score": 100
+        },
+        {
+          "operation": "grammar",
+          "score": 100
+        },
+        {
+          "operation": "authors",
+          "score": 100
+        },
+        {
+          "operation": "sentence",
+          "score": 100
+        },
+        {
+          "operation": "text",
+          "score": 100
+        },
+        {
+          "operation": "options",
+          "score": 100
+        },
+        {
+          "operation": "authorBasedAnswer",
+          "score": 100
+        },
+        {
+          "operation": "authorBasedQuiz",
+          "score": 100
+        },
+        {
+          "operation": "dialogueQuiz",
+          "score": 100
+        },
+        {
+          "operation": "dialogueAnswer",
+          "score": 100
+        },
+        {
+          "operation": "multipleChoiceAnswer",
+          "score": 100
+        },
+        {
+          "operation": "multipleChoiceQuiz",
+          "score": 100
+        },
+        {
+          "operation": "mediaQuiz",
+          "score": 100
+        },
+        {
+          "operation": "mediaAnswer",
+          "score": 100
+        },
+        {
+          "operation": "fuzzy",
+          "score": 100
+        },
+        {
+          "operation": "exact",
+          "score": 100
+        },
+        {
+          "operation": "phrase",
+          "score": 100
+        },
+        {
+          "operation": "partial",
+          "score": 100
+        },
+        {
+          "operation": "counterTopFive",
+          "score": 100
+        },
+        {
+          "operation": "status",
+          "score": 1
+        }
+      ]
+    }

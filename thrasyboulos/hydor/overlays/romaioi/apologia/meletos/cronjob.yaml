@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: meletos
+  labels:
+    app: meletos
+spec:
+  schedule: "*/20 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: meletos
+            release: meletos
+          annotations:
+            perikles/accesses: "sokrates"
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: meletos
+              image: ghcr.io/odysseia-greek/meletos
+              imagePullPolicy: Always
+              envFrom:
+                - configMapRef:
+                    name: meletos
+      backoffLimit: 3

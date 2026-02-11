@@ -1,0 +1,116 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elastic-roles-and-users
+  namespace: odysseia
+data:
+  roles: |
+    api:
+      indices:
+        - media-quiz
+        - multiple-choice-quiz
+        - author-based-quiz
+        - dialogue-quiz
+        - journey-quiz
+        - grammar-quiz
+        - dictionary
+        - grammar
+        - text
+        - tracing
+        - metrics
+        - metrics_rollup
+      role:
+        privileges:
+          - read
+        cluster:
+          - monitor
+
+    seeder:
+      indices:
+        - media-quiz
+        - multiple-choice-quiz
+        - author-based-quiz
+        - dialogue-quiz
+        - journey-quiz
+        - grammar-quiz
+        - dictionary
+        - grammar
+        - text
+      role:
+        privileges:
+          - create_index
+          - delete_index
+          - create
+        cluster:
+          - monitor
+          - manage
+
+    hybrid:
+      indices:
+        - aggregator
+        - dictionary
+      role:
+        privileges:
+          - read
+          - create
+          - index
+          - create_index
+        cluster:
+          - monitor
+
+    alias:
+      indices:
+        - tracing
+        - metrics
+        - metrics_rollup
+      role:
+        privileges:
+          - create_index
+          - delete_index
+          - manage
+          - all
+        cluster:
+          - monitor
+          - manage
+
+    creator:
+      indices:
+        - metrics
+        - metrics_rollup
+        - tracing
+      role:
+        privileges:
+          - create
+          - index
+          - create_index
+        cluster:
+          - monitor
+          - manage
+
+    user_admin:
+      indices: []
+      role:
+        privileges: []
+        cluster:
+          - manage_security
+          - monitor
+
+  users: |
+    solon:
+      role: user_admin
+
+  policies: |
+    hot:
+      default: true
+      rollover:
+        - name: hot_30d
+          max_age: "30"
+        - name: hot_14d
+          max_age: "14"
+        - name: hot_7d
+          max_age: "7"
+        - name: hot_3d
+          max_age: "3"
+        - name: hot_plain
+          max_age: ""

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kriton
+  labels:
+    app: kriton
+  annotations:
+    volumes.odysseia.io/secrets: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kriton
+  template:
+    metadata:
+      labels:
+        app: kriton
+        release: kriton
+      annotations:
+        odysseia-greek/role: api
+        odysseia-greek/access: dialogue-quiz
+        perikles/accesses: "solon"
+    spec:
+      containers:
+        - name: "kriton"
+
+          image: ghcr.io/odysseia-greek/kriton
+
+          imagePullPolicy: Always
+          env:
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom: []
+          volumeMounts: []
+          ports:
+            - containerPort: 50060
+      volumes: []

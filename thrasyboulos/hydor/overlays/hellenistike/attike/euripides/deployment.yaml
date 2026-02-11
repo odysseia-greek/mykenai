@@ -1,0 +1,55 @@
+---
+# Source: dionysios/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: euripides
+  labels:
+    app: euripides
+  annotations:
+    volumes.odysseia.io/combined: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: euripides
+  template:
+    metadata:
+      labels:
+        app: euripides
+        version: v0.1.0
+      annotations:
+        odysseia-greek/role: api
+        odysseia-greek/access: tracing;metrics
+        perikles/accesses: solon
+    spec:
+      containers:
+        - name: euripides
+          image: ghcr.io/odysseia-greek/euripides:v0.1.0
+          imagePullPolicy: Always
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom:
+            - configMapRef:
+                name: euripides
+          ports:
+            - name: graphql
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 15

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aristippos
+  labels:
+    app: aristippos
+  annotations:
+    volumes.odysseia.io/secrets: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aristippos
+  template:
+    metadata:
+      labels:
+        app: aristippos
+        release: aristippos
+      annotations:
+        odysseia-greek/role: api
+        odysseia-greek/access: media-quiz
+        perikles/accesses: "solon"
+    spec:
+      containers:
+        - name: "aristippos"
+
+          image: ghcr.io/odysseia-greek/aristippos
+
+          imagePullPolicy: Always
+          env:
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom: []
+          volumeMounts: []
+          ports:
+            - containerPort: 50060
+      volumes: []

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aristarchos
+  labels:
+    app: aristarchos
+  annotations:
+    volumes.odysseia.io/existing: "true"
+    mounts.odysseia.io/existing: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aristarchos
+  template:
+    metadata:
+      labels:
+        app: aristarchos
+        release: aristarchos
+        version: v0.2.2
+      annotations:
+        odysseia-greek/role: hybrid
+        odysseia-greek/access: aggregator
+        perikles/accesses: solon
+        perikles/validity: "10"
+    spec:
+      containers:
+        - name: "aristarchos"
+          image: ghcr.io/odysseia-greek/aristarchos:v0.2.2
+          imagePullPolicy: Always
+          env:
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          volumeMounts: []
+          ports:
+            - containerPort: 50060
+      volumes: []

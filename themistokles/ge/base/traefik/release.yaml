@@ -1,0 +1,45 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: traefik
+  namespace: traefik
+spec:
+  interval: 10m
+  targetNamespace: traefik
+  install:
+    createNamespace: true
+    crds: Skip
+  chart:
+    spec:
+      chart: traefik
+      version: "34.2.0"
+      sourceRef:
+        kind: HelmRepository
+        name: traefik
+        namespace: traefik
+  values:
+    hostNetwork: true
+    dnsPolicy: ClusterFirstWithHostNet
+    deployment:
+      kind: Deployment
+    additionalArguments:
+      - "--entryPoints.web.address=:4900"
+      - "--entryPoints.websecure.address=:8443"
+      - "--api.dashboard=true"
+    ports:
+      web:
+        port: 4900
+      websecure:
+        port: 8443
+        tls:
+          enabled: false      # you said you’re not issuing certs now
+      traefik:
+        port: 9000
+        expose:
+          default: false
+          internal: true
+    service:
+      enabled: true
+      type: ClusterIP
+    podSecurityContext:
+      fsGroup: 65532

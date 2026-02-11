@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: protagoras
+  labels:
+    app: protagoras
+spec:
+  template:
+    metadata:
+      labels:
+        app: protagoras
+        release: protagoras
+        version: v0.2.1
+      annotations:
+        perikles/accesses: "herodotos;dionysios"
+    spec:
+      containers:
+        - name: "protagoras"
+          image: ghcr.io/odysseia-greek/protagoras:v0.2.1
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: protagoras
+          volumeMounts: []
+          resources:
+            requests:
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+      volumes: []
+      restartPolicy: Never
+  backoffLimit: 3

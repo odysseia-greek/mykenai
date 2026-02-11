@@ -1,0 +1,28 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: attike
+resources:
+  - deployment.yaml
+  - ir.yaml
+  - ../../../../base/attike/euripides
+
+components:
+  - ../../../../../pyr/koinos/deployment/periandros
+  - ../../../../../pyr/koinos/deployment/aristides
+  - ../../../../../pyr/koinos/services/graphql
+  - ../../../../../pyr/koinos/resources/local/low
+  - ../../../../../pyr/koinos/transformers/volumes/secrets
+  - ../../../../../pyr/koinos/common-env/base/deploy
+  - ../../../../../pyr/koinos/downwardapi/version/deploy
+
+patches:
+  - target:
+      version: v1
+      kind: Service
+    patch: |-
+      - op: replace
+        path: /metadata/name
+        value: euripides
+      - op: replace
+        path: /spec/selector/app
+        value: euripides

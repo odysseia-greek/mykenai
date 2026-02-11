@@ -2,9 +2,12 @@ package command
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
+	"path/filepath"
+
 	"github.com/odysseia-greek/agora/plato/logging"
 	"github.com/odysseia-greek/mykenai/archimedes/util"
-	"os/exec"
 )
 
 func isDockerRunning() error {
@@ -26,6 +29,15 @@ func isDockerRunning() error {
 	return nil
 }
 
+func getContainerFileName(rootPath string) string {
+	containerFile := filepath.Join(rootPath, "Containerfile")
+	if _, err := os.Stat(containerFile); err == nil {
+		return "Containerfile"
+	}
+
+	return "Dockerfile"
+}
+
 func buildImageMultiArch(rootPath, projectName, tag, dest, target string) error {
 	logging.Info("****** 🖊️ Tagging Container Image 🖊️ ******")
 	imageName := fmt.Sprintf("%s/%s:%s", dest, projectName, tag)
@@ -36,7 +48,9 @@ func buildImageMultiArch(rootPath, projectName, tag, dest, target string) error 
 		projectName = projectName + ".test"
 	}
 
-	buildCommand := fmt.Sprintf("docker buildx build --platform=linux/arm64,linux/amd64 --target=%s --build-arg project_name=%s --build-arg VERSION=%s -t %s . --push", target, projectName, tag, imageName)
+	containerFile := getContainerFileName(rootPath)
+
+	buildCommand := fmt.Sprintf("docker buildx build --platform=linux/arm64,linux/amd64 -f %s --target=%s --build-arg project_name=%s --build-arg VERSION=%s -t %s . --push", containerFile, target, projectName, tag, imageName)
 	logging.Info(buildCommand)
 
 	_, err := util.ExecCommandWithReturn(buildCommand, rootPath)
@@ -59,7 +73,9 @@ func buildImages(rootPath, projectName, tag, dest, target string) error {
 		projectName = projectName + ".test"
 	}
 
-	buildCommand := fmt.Sprintf("docker build --target=%s --build-arg project_name=%s --build-arg VERSION=%s -t %s . --push", target, projectName, tag, imageName)
+	containerFile := getContainerFileName(rootPath)
+
+	buildCommand := fmt.Sprintf("docker build -f %s --target=%s --build-arg project_name=%s --build-arg VERSION=%s -t %s . --push", containerFile, target, projectName, tag, imageName)
 	logging.Info(buildCommand)
 
 	_, err := util.ExecCommandWithReturn(buildCommand, rootPath)

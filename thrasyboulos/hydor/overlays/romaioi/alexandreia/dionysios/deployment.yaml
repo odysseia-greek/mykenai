@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dionysios
+  labels:
+    app: dionysios
+  annotations:
+    volumes.odysseia.io/secrets: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dionysios
+  template:
+    metadata:
+      labels:
+        app: dionysios
+        release: dionysios
+        version: v0.2.4
+      annotations:
+        odysseia-greek/role: api
+        odysseia-greek/access: grammar
+        perikles/accesses: "solon;eratosthenes;aristarchos"
+    spec:
+      containers:
+        - name: "dionysios"
+          image: ghcr.io/odysseia-greek/dionysios:v0.2.4
+          imagePullPolicy: Always
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom:
+            - configMapRef:
+                name: dionysios
+          volumeMounts: []
+          ports:
+            - containerPort: 5000
+              name: http
+          livenessProbe:
+            httpGet:
+              path: /dionysios/v1/health
+              port: 5000
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /dionysios/v1/ping
+              port: 5000
+            initialDelaySeconds: 1
+            periodSeconds: 20
+      volumes: []

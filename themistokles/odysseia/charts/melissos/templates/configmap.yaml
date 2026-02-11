@@ -1,5 +1,0 @@
-{{- include "koinos.configmap" . -}}
-{{ println}}
-  JOB_NAME: "{{ .Values.envVariables.job }}"
-  EUPALINOS_CHANNEL: "{{ .Values.envVariables.channel }}"
-  EUPALINOS_SERVICE: "{{ .Values.envVariables.eupalinosService }}"

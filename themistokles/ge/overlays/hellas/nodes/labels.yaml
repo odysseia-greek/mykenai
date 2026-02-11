@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Node
+metadata:
+  name: knossos-hellas
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+    kustomize.toolkit.fluxcd.io/ssa: disabled
+  labels:
+    cilium.io/envoy-capable: "true"
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: athenai-hellas
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+    kustomize.toolkit.fluxcd.io/ssa: disabled
+  labels:
+    cilium.io/envoy-capable: "true"
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: sparta-hellas
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+    kustomize.toolkit.fluxcd.io/ssa: disabled
+  labels:
+    cilium.io/envoy-capable: "true"
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: thebai-hellas
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+    kustomize.toolkit.fluxcd.io/ssa: disabled
+  labels:
+    cilium.io/envoy-capable: "true"

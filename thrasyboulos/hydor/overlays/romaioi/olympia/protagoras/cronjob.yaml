@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: protagoras
+  labels:
+    app: protagoras
+spec:
+  schedule: "*/30 * * * *"
+  jobTemplate:
+    metadata:
+      labels:
+        app: protagoras
+        release: protagoras
+        version: v0.2.1
+      annotations:
+        perikles/accesses: "herodotos;dionysios"
+    spec:
+      backoffLimit: 3
+      template:
+        spec:
+          containers:
+            - name: "protagoras"
+              image: ghcr.io/odysseia-greek/protagoras:v0.2.1
+              imagePullPolicy: Always
+              envFrom:
+                - configMapRef:
+                    name: protagoras
+              volumeMounts: []
+          volumes: []
+          restartPolicy: OnFailure
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1

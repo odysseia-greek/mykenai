@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: olympia
+
+resources:
+  - cronjob.yaml
+  - job.yaml
+  - ../../../../base/olympia/melissos
+
+components:
+  - ../../../../../pyr/koinos/resources/local/low
+  - ../../../../../pyr/koinos/common-env/base/cronjob
+  - ../../../../../pyr/koinos/common-env/base/job
+  - ../../../../../pyr/koinos/job/periandros
+  - ../../../../../pyr/koinos/job/aristides
+  - ../../../../../pyr/koinos/cronjob/aristides
+  - ../../../../../pyr/koinos/cronjob/periandros

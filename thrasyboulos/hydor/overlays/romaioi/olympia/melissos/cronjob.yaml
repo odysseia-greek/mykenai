@@ -1,0 +1,48 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: melissos
+  labels:
+    app: melissos
+spec:
+  schedule: "*/30 * * * *"  # Run every 30 minutes
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: melissos
+            release: melissos
+            version: v0.2.2
+          annotations:
+            odysseia-greek/role: hybrid
+            odysseia-greek/access: dictionary
+            perikles/accesses: solon
+        spec:
+          containers:
+            - name: "melissos"
+              image: ghcr.io/odysseia-greek/melissos:v0.2.2
+              imagePullPolicy: Always
+
+              env:
+                - name: POD_NAME
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.name
+                - name: ELASTIC_ACCESS
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.annotations['odysseia-greek/access']
+              envFrom:
+                - configMapRef:
+                    name: melissos
+          volumes:
+            - name: vault-server-tls
+              secret:
+                secretName: vault-server-tls
+            - name: solon-certs
+              secret:
+                secretName: solon-tls-certs
+          restartPolicy: OnFailure
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1

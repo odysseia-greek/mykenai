@@ -1,0 +1,53 @@
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: existing-init-transformer
+patch: |
+  - op: add
+    path: /spec/template/spec/containers/0/volumeMounts/-
+    value:
+      name: elastic-internal-tls
+      mountPath: /app/config/elastic
+      readOnly: true
+  - op: add
+    path: /spec/template/spec/containers/0/volumeMounts/-
+    value:
+      name: solon-certs
+      mountPath: /app/config/solon
+      readOnly: true
+  - op: add
+    path: /spec/template/spec/containers/0/volumeMounts/-
+    value:
+      name: vault-server-tls
+      mountPath: /app/config/vault
+      readOnly: true
+target:
+  kind: Deployment
+  annotationSelector: "mount.odysseia.io/existing=true"
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: existing-init-transformer-job
+patch: |
+  - op: add
+    path: /spec/template/spec/containers/0/volumeMounts/-
+    value:
+      name: elastic-internal-tls
+      mountPath: /app/config/elastic
+      readOnly: true
+  - op: add
+    path: /spec/template/spec/containers/0/volumeMounts/-
+    value:
+      name: solon-certs
+      mountPath: /app/config/solon
+      readOnly: true
+  - op: add
+    path: /spec/template/spec/containers/0/volumeMounts/-
+    value:
+      name: vault-server-tls
+      mountPath: /app/config/vault
+      readOnly: true
+target:
+  kind: Job
+  annotationSelector: "mount.odysseia.io/existing=true"

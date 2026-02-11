@@ -1,4 +1,0 @@
-apiVersion: v2
-name: koinos
-description: A common subchart providing essential templates for other subcharts.
-version: 0.1.0

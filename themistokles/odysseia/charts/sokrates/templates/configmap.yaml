@@ -1,5 +1,0 @@
-{{- include "koinos.configmap" . -}}
-{{- range $key, $value := .Values.envVariables }}
-  {{ $key }}: {{ $value | quote }}
-{{- end }}
-  VERSION: {{ .Values.images.odysseiaapi.tag }}

@@ -1,0 +1,10 @@
+---
+# Source: dionysios/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: euripides
+data:
+  EUPALINOS_TRACING_SERVICE: "eupalinos.attike.svc.cluster.local:50060"
+  REPORT_CHANNEL: "euripides"
+  VERSION: "0.2.0g"

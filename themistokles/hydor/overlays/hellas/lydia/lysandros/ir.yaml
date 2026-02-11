@@ -1,0 +1,13 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: lysandros-route
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`int.byzantium.odysseia-greek`) && PathPrefix(`/lysandros`)
+      kind: Rule
+      services:
+        - name: lysandros
+          port: 8080

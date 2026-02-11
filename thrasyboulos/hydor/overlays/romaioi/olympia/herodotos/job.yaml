@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: herakleitos
+  labels:
+    app: herakleitos
+  annotations:
+    volumes.odysseia.io/combined: "true"
+    mounts.odysseia.io/combined: "true"
+spec:
+  template:
+    metadata:
+      labels:
+        app: herakleitos
+        release: herodotos
+        version: v0.2.0
+      annotations:
+        odysseia-greek/role: seeder
+        odysseia-greek/access: text
+        perikles/accesses: solon
+    spec:
+      containers:
+        - name: "herakleitos"
+          image: ghcr.io/odysseia-greek/herakleitos:v0.2.0
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: herodotos
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+      restartPolicy: Never
+  backoffLimit: 3

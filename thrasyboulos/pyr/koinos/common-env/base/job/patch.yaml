@@ -1,0 +1,13 @@
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: add-common-env-to-jobs
+patch: |
+  - op: add
+    path: /spec/template/spec/containers/0/envFrom/-
+    value:
+      configMapRef:
+        name: odysseia-common-env
+target:
+  kind: Job
+  name: ".*"

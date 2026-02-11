@@ -1,0 +1,6 @@
+- op: replace
+  path: /spec/ports
+  value:
+    - name: "gateway"
+      port: 8080
+      targetPort: 8080

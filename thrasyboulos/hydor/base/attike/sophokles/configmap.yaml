@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sophokles
+data:
+  SCRAPE_INTERVAL: "10s"
+  EXCLUDE_NAMESPACES: "kube-system,kube-public,kube-node-lease"
+  EUPALINOS_TRACING_SERVICE: "eupalinos.attike.svc.cluster.local:50060"
+  EUPALINOS_CHANNEL: "sophokles"
+  KUBERNETES_API_ENDPOINT: "https://kubernetes.default.svc"
+  MAX_AGE: "5"
+  HOT_POLICY_NAME: "hot_30d"

@@ -2,12 +2,13 @@ package command
 
 import (
 	"fmt"
-	"github.com/odysseia-greek/agora/plato/logging"
-	"github.com/odysseia-greek/mykenai/archimedes/util"
-	"github.com/spf13/cobra"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/odysseia-greek/agora/plato/logging"
+	"github.com/odysseia-greek/mykenai/archimedes/util"
+	"github.com/spf13/cobra"
 )
 
 func CreateImagesFromRepo() *cobra.Command {
@@ -103,7 +104,7 @@ the command assumes the current working directory as the repository path`,
 			}
 			return fmt.Errorf("invalid platform specified: %s", target)
 		},
-		ValidArgs: []string{"debug", "prod"},
+		ValidArgs: []string{"dev", "debug", "test", "prod"},
 	}
 
 	cmd.PersistentFlags().StringVarP(&repoPath, "repo", "r", "", "Path to the repo build. Interprets '.' as current directory. Defaults to current directory when no value or positional argument is provided.")

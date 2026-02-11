@@ -1,0 +1,32 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: restrict-elasticsearch-access-aspasia
+spec:
+  enableDefaultDeny: {}
+  endpointSelector:
+    matchLabels:
+      elasticsearch.k8s.elastic.co/cluster-name: aristoteles
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app: aspasia
+            io.kubernetes.pod.namespace: apologia
+      toPorts:
+        - ports:
+            - port: "9200"
+              protocol: TCP
+          rules:
+            http:
+              - method: ^GET$
+                path: ^/$
+              - method: ^POST$
+                path: ^/tracing/_update/.*$
+              - method: ^POST$
+                path: ^/tracing-.*/_update/.*$
+              - method: ^PUT$
+                path: ^/tracing$
+              - method: ^PUT$
+                path: ^/tracing/.*$
+              - method: ^PUT$
+                path: ^/tracing-.*/.*$

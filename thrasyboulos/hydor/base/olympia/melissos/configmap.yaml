@@ -1,0 +1,10 @@
+---
+# Source: dionysios/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: melissos
+data:
+  JOB_NAME: "demokritos"
+  EUPALINOS_CHANNEL: "parmenides"
+  

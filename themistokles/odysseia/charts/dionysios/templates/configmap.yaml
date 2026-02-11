@@ -1,5 +1,0 @@
-{{- include "koinos.configmap" . -}}
-{{ println}}
-  ALEXANDROS_SERVICE: "{{ .Values.envVariables.alexandrosService }}"
-  DIONYSIOS_SERVICE: "{{ .Values.envVariables.dionysiosService }}"
-  GATHER_METRICS: "true"

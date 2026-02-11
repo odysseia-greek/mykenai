@@ -1,0 +1,160 @@
+---
+- name: Install k0s on ACC controller (single-node controller+worker)
+  hosts: poleis-acc-controller
+  become: yes
+  vars:
+    k0s_version: "v1.34.2+k0s.0"
+  tasks:
+    - name: Skip disabled hosts
+      meta: end_host
+      when: hostvars[inventory_hostname].disabled | default(false) | bool
+
+    - name: Ensure basic packages present
+      apt:
+        name: [ curl, iptables ]
+        state: present
+        update_cache: yes
+
+    - name: Download k0s install script
+      get_url:
+        url: https://get.k0s.sh
+        dest: /tmp/k0s-install.sh
+        mode: "0755"
+
+    - name: Install k0s binary
+      shell: /tmp/k0s-install.sh
+      environment:
+        K0S_VERSION: "{{ k0s_version }}"
+      args:
+        creates: /usr/local/bin/k0s
+
+    - name: Create /etc/k0s
+      file:
+        path: /etc/k0s
+        state: directory
+        mode: "0755"
+
+    - name: Drop k0s config from template
+      template:
+        src: templates/k0s/config.yaml.j2
+        dest: /etc/k0s/k0s.yaml
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Install controller with worker enabled (idempotent)
+      shell: |
+        test -f /etc/systemd/system/k0scontroller.service || \
+        /usr/local/bin/k0s install controller --enable-worker {{ '-c /etc/k0s/k0s.yaml' if (lookup('ansible.builtin.file', '/etc/k0s/k0s.yaml', errors='ignore') is not none) else '' }}
+      args:
+        executable: /bin/bash
+
+    - name: Start and enable k0s controller
+      systemd:
+        name: k0scontroller
+        state: started
+        enabled: yes
+        daemon_reload: yes
+
+    - name: Wait for k0s API (6443) to be ready
+      wait_for:
+        host: 127.0.0.1
+        port: 6443
+        delay: 5
+        timeout: 300
+        state: started
+
+    - name: Ensure ~/.kube for {{ ansible_user }}
+      file:
+        path: "/home/{{ ansible_user }}/.kube"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0755"
+
+    - name: Generate kubeconfig for admin
+      shell: /usr/local/bin/k0s kubeconfig admin
+      register: kubeconfig_content
+      changed_when: false
+
+    - name: Write kubeconfig
+      copy:
+        content: "{{ kubeconfig_content.stdout }}"
+        dest: "/home/{{ ansible_user }}/.kube/config"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0600"
+
+    - name: Fetch kubeconfig locally
+      fetch:
+        src: "/home/{{ ansible_user }}/.kube/config"
+        dest: "./k0s-kubeconfig-{{ inventory_hostname }}"
+        flat: yes
+
+    - name: Verify node registration
+      shell: /usr/local/bin/k0s kubectl get nodes -o wide
+      register: cluster_status
+      changed_when: false
+
+    - debug:
+        var: cluster_status.stdout_lines
+
+- name: Create join token on controller
+  hosts: poleis-acc-controller
+  become: yes
+  tasks:
+    - name: Create worker join token (valid 1h)
+      shell: /usr/local/bin/k0s token create --role=worker --expiry 1h
+      register: k0s_worker_token
+      changed_when: false
+
+    - name: Share token fact
+      set_fact:
+        worker_join_token: "{{ k0s_worker_token.stdout }}"
+
+- name: Join workers to ACC cluster
+  hosts: poleis-acc-workers
+  become: yes
+  vars:
+    controller_host: "{{ groups['poleis-acc-controller'][0] }}"
+  tasks:
+    - name: Skip disabled hosts
+      meta: end_host
+      when: hostvars[inventory_hostname].disabled | default(false) | bool
+
+    - name: Ensure controller resolves in /etc/hosts
+      lineinfile:
+        path: /etc/hosts
+        line: "{{ hostvars[controller_host].ansible_host }}  {{ controller_host }}"
+        state: present
+
+    - name: Download k0s install script
+      get_url:
+        url: https://get.k0s.sh
+        dest: /tmp/k0s-install.sh
+        mode: "0755"
+
+    - name: Install k0s binary (idempotent)
+      shell: /tmp/k0s-install.sh
+      args:
+        creates: /usr/local/bin/k0s
+
+    - name: Write join token to file
+      copy:
+        content: "{{ hostvars[controller_host].worker_join_token }}"
+        dest: /tmp/k0s-worker.token
+        owner: root
+        group: root
+        mode: "0600"
+
+    - name: Install k0s worker (idempotent)
+      shell: >
+        test -f /etc/systemd/system/k0sworker.service ||
+        /usr/local/bin/k0s install worker --token-file /tmp/k0s-worker.token
+
+    - name: Start and enable k0s worker
+      systemd:
+        name: k0sworker
+        state: started
+        enabled: yes
+        daemon_reload: yes

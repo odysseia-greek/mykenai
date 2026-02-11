@@ -1,0 +1,37 @@
+# Base build
+FROM golang:1.25-alpine as base
+
+ARG project_name
+ARG TARGETOS
+ARG TARGETARCH
+
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+
+# Build test binary + extract test2json
+FROM base as builder
+ENV CGO_ENABLED=0
+
+ARG project_name
+ARG TARGETOS
+ARG TARGETARCH
+
+RUN mkdir -p /out
+
+RUN GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH:-amd64} \
+    go test -c -o /out/${project_name}.test ./cluster/
+
+# Production build
+FROM golang:1.25-alpine as prod
+WORKDIR /app
+
+ARG project_name
+
+RUN apk add --no-cache ca-certificates tzdata
+
+COPY --from=builder /out/${project_name}.test /app/${project_name}.test
+
+ENV TMPDIR=/tmp
+ENTRYPOINT [ "sh", "-c", "/app/${project_name}.test" ]

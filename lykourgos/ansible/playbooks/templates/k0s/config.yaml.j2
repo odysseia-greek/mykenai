@@ -1,0 +1,37 @@
+{% set ip = hostvars[inventory_hostname].ansible_host
+            | default(hostvars[inventory_hostname].ip)
+            | default('127.0.0.1') %}
+{% set name = inventory_hostname %}
+
+apiVersion: k0s.k0sproject.io/v1beta1
+kind: ClusterConfig
+metadata:
+  name: k0s
+spec:
+  api:
+    address: {{ ip | quote }}
+    port: 6443
+    k0sApiPort: 9443
+    sans:
+      - {{ ip | quote }}
+      - {{ name | quote }}
+      {# Optional: add more SANs per-host via host var: api_sans: [dns1, ip2, ...] #}
+      {% for s in (hostvars[inventory_hostname].api_sans | default([])) %}
+      - {{ s | quote }}
+      {% endfor %}
+    {# Optional external address if you front this with LB/DNS #}
+    {% if hostvars[inventory_hostname].api_external_address is defined %}
+    externalAddress: {{ hostvars[inventory_hostname].api_external_address | quote }}
+    {% endif %}
+
+  network:
+    provider: custom
+    kubeProxy:
+      mode: iptables
+    podCIDR: 10.244.0.0/16
+    serviceCIDR: 10.96.0.0/12
+
+  storage:
+    type: etcd
+    etcd:
+      peerAddress: {{ ip | quote }}

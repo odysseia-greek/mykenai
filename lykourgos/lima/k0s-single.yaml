@@ -1,0 +1,44 @@
+# Lima configuration for single-node k0s cluster
+# Usage: limactl start --name=k0s-byzantium lykourgos/lima/k0s-single.yaml
+vmType: "vz"
+os: "Linux"
+
+images:
+  - location: "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-genericcloud-arm64.qcow2"
+
+cpus: 12
+memory: "12GiB"
+disk: "25GiB"
+
+mounts:
+  - location: "~"
+    writable: true
+  - location: "/tmp/lima"
+    writable: true
+
+hostResolver:
+  enabled: false
+
+dns:
+  - 8.8.8.8
+  - 1.1.1.1
+
+networks:
+  - vzNAT: true
+
+portForwards:
+  - guestPort: 6443
+    hostPort: 6443
+    proto: tcp
+
+  - guestPort: 30080
+    hostPort: 4900
+    proto: tcp
+
+  - guestPort: 30443
+    hostPort: 8443
+    proto: tcp
+
+additionalDisks:
+  - name: pyxis
+    format: false

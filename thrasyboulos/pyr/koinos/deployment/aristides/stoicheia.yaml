@@ -1,0 +1,29 @@
+# thrasyboulos/pyr/koinos/stoicheia/aristophanes.yaml
+- op: add
+  path: /spec/template/spec/containers/-
+  value:
+      name: "aristides"
+      image: ghcr.io/odysseia-greek/aristides:v0.0.4
+      env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+      envFrom:
+        - configMapRef:
+            name: odysseia-common-env
+      ports:
+        - containerPort: 50051
+      volumeMounts:
+        - name: vault-server-tls
+          mountPath: /app/config/vault
+          readOnly: true
+        - name: solon-certs
+          mountPath: /app/config/solon
+          readOnly: true
+      imagePullPolicy: Always
+      resources:
+        requests:
+          memory: 32Mi
+        limits:
+          memory: 32Mi

@@ -1,0 +1,15 @@
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: add-version-env-to-job
+patch: |-
+  - op: add
+    path: /spec/template/spec/containers/0/env/-
+    value:
+      name: VERSION
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.labels['version']
+target:
+  kind: Job
+  name: ".*"

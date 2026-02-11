@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: parmenides-aristippos
+  labels:
+    app: parmenides-aristippos
+  annotations:
+    volumes.odysseia.io/secrets: "true"
+spec:
+  template:
+    metadata:
+      labels:
+        app: parmenides-aristippos
+        release: aristippos
+      annotations:
+        odysseia-greek/role: seeder
+        odysseia-greek/access: media-quiz
+        perikles/accesses: "solon"
+    spec:
+      containers:
+        - name: "parmenides-aristippos"
+          image: ghcr.io/odysseia-greek/parmenides
+          imagePullPolicy: Always
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom: []
+      restartPolicy: Never
+      volumes: []
+  backoffLimit: 3

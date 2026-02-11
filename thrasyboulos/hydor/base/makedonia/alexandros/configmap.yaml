@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alexandros
+data:
+  MAX_NGRAM: "6"
+  MIN_NGRAM: "2"
+  HERODOTOS_SERVICE: "http://herodotos.olympia.svc.cluster.local:5000"
+  ANTIGONOS_SERVICE: "antigonos:50060"
+  HEFASTION_SERVICE: "hefaistion:50060"
+  PTOLEMAIOS_SERVICE: "ptolemaios:50060"
+  EUKLEIDES_SERVICE: "eukleides:50060"
+  PERDIKKAS_SERVICE: "perdikkas:50060"
+  PARMENION_SERVICE: "parmenion:50060"

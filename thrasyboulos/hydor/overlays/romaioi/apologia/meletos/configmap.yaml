@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: meletos
+data:
+  ENV: "k3d"
+  SOKRATES_SERVICE: "http://sokrates.apologia.svc.cluster.local:8080"

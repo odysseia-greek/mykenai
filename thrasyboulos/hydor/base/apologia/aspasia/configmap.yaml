@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aspasia
+data:
+  HERODOTOS_SERVICE: "http://herodotos.olympia.svc.cluster.local:5000"
+  ALEXANDROS_GATEWAY: "http://alexandros.makedonia.svc.cluster.local:8080/alexandros/graphql"

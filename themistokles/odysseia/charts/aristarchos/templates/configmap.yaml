@@ -1,3 +1,0 @@
-{{- include "koinos.configmap" . -}}
-{{ println}}
-  GATHER_METRICS: "true"

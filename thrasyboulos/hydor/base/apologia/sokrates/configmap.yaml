@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sokrates
+data:
+  ANTISTHENES_SERVICE: "antisthenes:50060"
+  ARISTIPPOS_SERVICE: "aristippos:50060"
+  KRITIAS_SERVICE: "kritias:50060"
+  KRITON_SERVICE: "kriton:50060"
+  XENOFON_SERVICE: "xenofon:50060"
+  ASPASIA_SERVICE: "aspasia:50060"

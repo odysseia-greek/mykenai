@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: perikles
+data:
+  VAULT_NAMESPACE: "delphi"
+  ELASTIC_NAMESPACE: "agora"
+  WATCHED_NAMESPACES: "attike;olympia;apologia;makedonia;alexandreia"
+  CONFIGMAP_NAME: "elastic-roles-and-cnp"

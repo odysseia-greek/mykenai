@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: olympia
+resources:
+  - deployment.yaml
+  - ir.yaml
+
+components:
+  - ../../../../../pyr/koinos/services/frontend
+
+patches:
+  - target:
+      version: v1
+      kind: Service
+    patch: |-
+      - op: replace
+        path: /metadata/name
+        value: pheidias
+      - op: replace
+        path: /spec/selector/app
+        value: pheidias

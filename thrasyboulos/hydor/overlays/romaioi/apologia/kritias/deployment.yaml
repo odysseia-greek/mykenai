@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kritias
+  labels:
+    app: kritias
+  annotations:
+    volumes.odysseia.io/secrets: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kritias
+  template:
+    metadata:
+      labels:
+        app: kritias
+        release: kritias
+      annotations:
+        odysseia-greek/role: api
+        odysseia-greek/access: multiple-choice-quiz
+        perikles/accesses: "solon"
+    spec:
+      containers:
+        - name: "kritias"
+          image: ghcr.io/odysseia-greek/kritias
+          imagePullPolicy: Always
+          env:
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom: []
+          volumeMounts: []
+          ports:
+            - containerPort: 50060
+      volumes: []

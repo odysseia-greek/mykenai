@@ -1,0 +1,11 @@
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: mount-init-transformer
+patch: |
+  - op: add
+    path: /spec/template/spec/containers/0/volumeMounts
+    value: []
+target:
+  kind: Deployment
+  annotationSelector: "mount.odysseia.io/init=true"

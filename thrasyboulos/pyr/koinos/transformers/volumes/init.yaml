@@ -1,0 +1,11 @@
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: volumes-init-transformer
+patch: |
+  - op: add
+    path: /spec/template/spec/volumes
+    value: []
+target:
+  kind: Deployment
+  annotationSelector: "volumes.odysseia.io/init=true"

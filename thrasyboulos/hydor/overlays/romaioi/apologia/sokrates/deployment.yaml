@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sokrates
+  labels:
+    app: sokrates
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sokrates
+  template:
+    metadata:
+      labels:
+        app: sokrates
+        release: sokrates
+      annotations:
+        perikles/accesses: "aristippos;xenofon;kriton;kritias;alkibiades;antisthenes;aspasia"
+    spec:
+      containers:
+        - name: sokrates
+          image: ghcr.io/odysseia-greek/sokrates
+          imagePullPolicy: Always
+          env: []
+          envFrom:
+            - configMapRef:
+                name: sokrates
+          ports:
+            - name: graphql
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 20

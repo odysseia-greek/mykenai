@@ -1,0 +1,38 @@
+{"Time":"2025-12-16T20:06:42.536939215Z","Action":"start","Package":"cluster"}
+{"Time":"2025-12-16T20:06:42.545265548Z","Action":"output","Package":"cluster","Output":"\u001b[0;35mSYSTEM | 2025-12-16 20:06:42 | \n"}
+{"Time":"2025-12-16T20:06:42.545296548Z","Action":"output","Package":"cluster","Output":" ______  ____ _____ _____  ____  ____  __ __    ___  ____   ____     ___  _____\n"}
+{"Time":"2025-12-16T20:06:42.545298548Z","Action":"output","Package":"cluster","Output":"|      ||    / ___// ___/ /    ||    \\|  |  |  /  _]|    \\ |    \\   /  _]/ ___/\n"}
+{"Time":"2025-12-16T20:06:42.54529984Z","Action":"output","Package":"cluster","Output":"|      | |  (   \\_(   \\_ |  o  ||  o  )  |  | /  [_ |  D  )|  _  | /  [_(   \\_ \n"}
+{"Time":"2025-12-16T20:06:42.545301007Z","Action":"output","Package":"cluster","Output":"|_|  |_| |  |\\__  |\\__  ||     ||   _/|  _  ||    _]|    / |  |  ||    _]\\__  |\n"}
+{"Time":"2025-12-16T20:06:42.545302173Z","Action":"output","Package":"cluster","Output":"  |  |   |  |/  \\ |/  \\ ||  _  ||  |  |  |  ||   [_ |    \\ |  |  ||   [_ /  \\ |\n"}
+{"Time":"2025-12-16T20:06:42.545303673Z","Action":"output","Package":"cluster","Output":"  |  |   |  |\\    |\\    ||  |  ||  |  |  |  ||     ||  .  \\|  |  ||     |\\    |\n"}
+{"Time":"2025-12-16T20:06:42.545304757Z","Action":"output","Package":"cluster","Output":"  |__|  |____|\\___| \\___||__|__||__|  |__|__||_____||__|\\_||__|__||_____| \\___|\n"}
+{"Time":"2025-12-16T20:06:42.54530584Z","Action":"output","Package":"cluster","Output":"\u001b[0m\n"}
+{"Time":"2025-12-16T20:06:42.545307298Z","Action":"output","Package":"cluster","Output":"\u001b[0;35mSYSTEM | 2025-12-16 20:06:42 | \"καὶ διενοεῖτο τὸ πλέον οὕτως ὁ Τισσαφέρνης, ὅσα γε ἀπὸ τῶν ποιουμένων ἦν εἰκάσαι.\"\u001b[0m\n"}
+{"Time":"2025-12-16T20:06:42.54531034Z","Action":"output","Package":"cluster","Output":"\u001b[0;35mSYSTEM | 2025-12-16 20:06:42 | \"In the main Tissaphernes approved of this policy, so far at least as could be conjectured from his behaviour.\"\u001b[0m\n"}
+{"Time":"2025-12-16T20:06:42.545311923Z","Action":"output","Package":"cluster","Output":"\u001b[0;35mSYSTEM | 2025-12-16 20:06:42 | starting test suite setup.....\u001b[0m\n"}
+{"Time":"2025-12-16T20:06:42.545312965Z","Action":"output","Package":"cluster","Output":"\u001b[0;35mSYSTEM | 2025-12-16 20:06:42 | getting env variables and creating config\u001b[0m\n"}
+{"Time":"2025-12-16T20:06:42.54531984Z","Action":"run","Package":"cluster","Test":"TestPodsReadyInCriticalNamespaces"}
+{"Time":"2025-12-16T20:06:42.545321757Z","Action":"output","Package":"cluster","Test":"TestPodsReadyInCriticalNamespaces","Output":"=== RUN   TestPodsReadyInCriticalNamespaces\n"}
+{"Time":"2025-12-16T20:06:42.545323257Z","Action":"run","Package":"cluster","Test":"TestPodsReadyInCriticalNamespaces/pods_are_Ready_in_critical_namespaces"}
+{"Time":"2025-12-16T20:06:42.545324632Z","Action":"output","Package":"cluster","Test":"TestPodsReadyInCriticalNamespaces/pods_are_Ready_in_critical_namespaces","Output":"=== RUN   TestPodsReadyInCriticalNamespaces/pods_are_Ready_in_critical_namespaces\n"}
+{"Time":"2025-12-16T20:06:42.545326257Z","Action":"run","Package":"cluster","Test":"TestPodsReadyInCriticalNamespaces/pods_are_Ready_in_critical_namespaces/all_pods_Ready"}
+{"Time":"2025-12-16T20:06:42.545327423Z","Action":"output","Package":"cluster","Test":"TestPodsReadyInCriticalNamespaces/pods_are_Ready_in_critical_namespaces/all_pods_Ready","Output":"=== RUN   TestPodsReadyInCriticalNamespaces/pods_are_Ready_in_critical_namespaces/all_pods_Ready\n"}
+{"Time":"2025-12-16T20:06:42.545328882Z","Action":"run","Package":"cluster","Test":"TestPodsReadyInCriticalNamespaces/pods_are_Ready_in_critical_namespaces/all_pods_Ready/kube-system"}
+{"Time":"2025-12-16T20:06:42.545330048Z","Action":"output","Package":"cluster","Test":"TestPodsReadyInCriticalNamespaces/pods_are_Ready_in_critical_namespaces/all_pods_Ready/kube-system","Output":"=== RUN   TestPodsReadyInCriticalNamespaces/pods_are_Ready_in_critical_namespaces/all_pods_Ready/kube-system\n"}
+{"Time":"2025-12-16T20:06:42.550878548Z","Action":"run","Package":"cluster","Test":"TestPodsReadyInCriticalNamespaces/pods_are_Ready_in_critical_namespaces/all_pods_Ready/cilium"}
+{"Time":"2025-12-16T20:06:42.550895048Z","Action":"output","Package":"cluster","Test":"TestPodsReadyInCriticalNamespaces/pods_are_Ready_in_critical_namespaces/all_pods_Ready/cilium","Output":"=== RUN   TestPodsReadyInCriticalNamespaces/pods_are_Ready_in_critical_namespaces/all_pods_Ready/cilium\n"}
+{"Time":"2025-12-16T20:06:45.5769548Z","Action":"output","Package":"cluster","Test":"TestPodsReadyInCriticalNamespaces/pods_are_Ready_in_critical_namespaces/all_pods_Ready/cilium","Output":"    critical_ns_test.go:65: not all pods ready in cilium after 2s:\n"}
+{"Time":"2025-12-16T20:06:45.577032216Z","Action":"output","Package":"cluster","Test":"TestPodsReadyInCriticalNamespaces/pods_are_Ready_in_critical_namespaces/all_pods_Ready/cilium","Output":"        - cilium/cilium-operator-c74d75565-2nh2r (Pending)\n"}
+{"Time":"2025-12-16T20:06:45.577044716Z","Action":"output","Package":"cluster","Test":"TestPodsReadyInCriticalNamespaces","Output":"--- FAIL: TestPodsReadyInCriticalNamespaces (3.03s)\n"}
+{"Time":"2025-12-16T20:06:45.5770503Z","Action":"output","Package":"cluster","Test":"TestPodsReadyInCriticalNamespaces/pods_are_Ready_in_critical_namespaces","Output":"    --- FAIL: TestPodsReadyInCriticalNamespaces/pods_are_Ready_in_critical_namespaces (3.03s)\n"}
+{"Time":"2025-12-16T20:06:45.57705455Z","Action":"output","Package":"cluster","Test":"TestPodsReadyInCriticalNamespaces/pods_are_Ready_in_critical_namespaces/all_pods_Ready","Output":"        --- FAIL: TestPodsReadyInCriticalNamespaces/pods_are_Ready_in_critical_namespaces/all_pods_Ready (3.03s)\n"}
+{"Time":"2025-12-16T20:06:45.577058841Z","Action":"output","Package":"cluster","Test":"TestPodsReadyInCriticalNamespaces/pods_are_Ready_in_critical_namespaces/all_pods_Ready/kube-system","Output":"            --- PASS: TestPodsReadyInCriticalNamespaces/pods_are_Ready_in_critical_namespaces/all_pods_Ready/kube-system (0.01s)\n"}
+{"Time":"2025-12-16T20:06:45.577062383Z","Action":"pass","Package":"cluster","Test":"TestPodsReadyInCriticalNamespaces/pods_are_Ready_in_critical_namespaces/all_pods_Ready/kube-system","Elapsed":0.01}
+{"Time":"2025-12-16T20:06:45.577070633Z","Action":"output","Package":"cluster","Test":"TestPodsReadyInCriticalNamespaces/pods_are_Ready_in_critical_namespaces/all_pods_Ready/cilium","Output":"            --- FAIL: TestPodsReadyInCriticalNamespaces/pods_are_Ready_in_critical_namespaces/all_pods_Ready/cilium (3.03s)\n"}
+{"Time":"2025-12-16T20:06:45.577076008Z","Action":"fail","Package":"cluster","Test":"TestPodsReadyInCriticalNamespaces/pods_are_Ready_in_critical_namespaces/all_pods_Ready/cilium","Elapsed":3.03}
+{"Time":"2025-12-16T20:06:45.577079633Z","Action":"fail","Package":"cluster","Test":"TestPodsReadyInCriticalNamespaces/pods_are_Ready_in_critical_namespaces/all_pods_Ready","Elapsed":3.03}
+{"Time":"2025-12-16T20:06:45.577082258Z","Action":"fail","Package":"cluster","Test":"TestPodsReadyInCriticalNamespaces/pods_are_Ready_in_critical_namespaces","Elapsed":3.03}
+{"Time":"2025-12-16T20:06:45.577085508Z","Action":"fail","Package":"cluster","Test":"TestPodsReadyInCriticalNamespaces","Elapsed":3.03}
+{"Time":"2025-12-16T20:06:45.577088133Z","Action":"output","Package":"cluster","Output":"FAIL\n"}
+{"Time":"2025-12-16T20:06:45.579664591Z","Action":"fail","Package":"cluster","Elapsed":3.043}

@@ -1,0 +1,18 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: euripides-route
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`attike.byzantium.odysseia-greek`) && PathPrefix(`/euripides/graphql`)
+      kind: Rule
+      services:
+        - name: euripides
+          port: 8080
+    - match: Host(`attike.byzantium.odysseia-greek`) && PathPrefix(`/euripides/v1`)
+      kind: Rule
+      services:
+        - name: euripides
+          port: 8080

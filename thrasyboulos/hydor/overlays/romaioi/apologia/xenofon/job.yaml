@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: parmenides-xenofon
+  labels:
+    app: parmenides-xenofon
+  annotations:
+    volumes.odysseia.io/secrets: "true"
+spec:
+  template:
+    metadata:
+      labels:
+        app: parmenides-xenofon
+        release: xenofon
+      annotations:
+        odysseia-greek/role: seeder
+        odysseia-greek/access: author-based-quiz
+        perikles/accesses: "solon;aristarchos"
+    spec:
+      containers:
+        - name: "parmenides-xenofon"
+          image: ghcr.io/odysseia-greek/parmenides
+          imagePullPolicy: Always
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom:
+            - configMapRef:
+                name: xenofon
+      restartPolicy: Never
+      volumes: []
+  backoffLimit: 3

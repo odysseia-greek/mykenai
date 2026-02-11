@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: anaximander
+  labels:
+    app: anaximander
+  annotations:
+    volumes.odysseia.io/secrets: "true"
+spec:
+  template:
+    metadata:
+      labels:
+        app: anaximander
+        release: herodotos
+        version: v0.2.0
+      annotations:
+        odysseia-greek/role: seeder
+        odysseia-greek/access: grammar
+        perikles/accesses: solon
+    spec:
+      containers:
+        - name: "anaximander"
+          image: ghcr.io/odysseia-greek/anaximander:v0.2.0
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: dionysios
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+      restartPolicy: Never
+      volumes: []
+  backoffLimit: 3

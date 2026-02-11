@@ -1,0 +1,30 @@
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: aristoteles
+  labels:
+    env: local
+    variant: k0s
+    app: aristoteles
+    version: 9.2.2
+spec:
+  version: 9.2.2
+  http:
+    tls:
+      selfSignedCertificate:
+        disabled: true
+  nodeSets:
+    - name: worker
+      count: 1
+      config:
+        node.store.allow_mmap: false
+        xpack.security.http.ssl.enabled: false
+      podTemplate:
+        spec:
+          containers:
+            - name: elasticsearch
+          resources:
+            requests:
+              memory: 2Gi
+            limits:
+              memory: 2Gi

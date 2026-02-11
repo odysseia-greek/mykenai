@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../../base/alexandreia
+  - dionysios
+  - aristarchos
+  - eratosthenes
+
+labels:
+  - pairs:
+      environment: "local"
+      variant: "k0s"
+      domain: "backend"
+    includeSelectors: false
+    includeTemplates: true

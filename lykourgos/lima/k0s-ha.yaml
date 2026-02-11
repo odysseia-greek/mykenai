@@ -1,0 +1,146 @@
+# Lima configuration for HA k0s cluster (1 controller + 2 workers)
+# Usage:
+#   limactl start --name=k0s-controller lykourgos/lima/k0s-ha.yaml
+#   limactl start --name=k0s-worker1 lykourgos/lima/k0s-ha-worker.yaml
+#   limactl start --name=k0s-worker2 lykourgos/lima/k0s-ha-worker.yaml
+
+vmType: "vz"
+os: "Linux"
+
+images:
+  - location: "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-genericcloud-arm64.qcow2"
+    arch: "aarch64"
+
+cpus: 4
+memory: "8GiB"
+disk: "50GiB"
+
+networks:
+  - lima: shared
+    macAddress: "52:55:55:12:34:60"
+    interface: "lima0"
+
+mounts:
+  - location: "~"
+    writable: false
+
+dns:
+  - 8.8.8.8
+  - 1.1.1.1
+
+additionalDisks:
+  - name: pyxis-controller
+    format: false
+
+provision:
+  - mode: system
+    script: |
+      #!/bin/bash
+      set -eux -o pipefail
+
+      export DEBIAN_FRONTEND=noninteractive
+      apt-get update
+      apt-get install -y curl iptables socat conntrack python3 python3-pip lvm2
+
+      # Install k0s
+      curl -sSLf https://get.k0s.sh | K0S_VERSION=v1.34.2+k0s.0 sh
+
+      mkdir -p /etc/k0s
+
+      # Create k0s config for controller
+      cat > /etc/k0s/k0s.yaml <<'EOF'
+      apiVersion: k0s.k0sproject.io/v1beta1
+      kind: ClusterConfig
+      metadata:
+        name: byzantium-ha
+      spec:
+        api:
+          address: 192.168.105.10
+          port: 6443
+          k0sApiPort: 9443
+          sans:
+            - 192.168.105.10
+            - k0s-byzantium.odysseia-greek
+            - byzantium.odysseia-greek
+            - localhost
+            - 127.0.0.1
+        network:
+          provider: custom
+          kubeProxy:
+            mode: iptables
+          podCIDR: 10.244.0.0/16
+          serviceCIDR: 10.96.0.0/12
+        storage:
+          type: etcd
+          etcd:
+            peerAddress: 192.168.105.10
+      EOF
+
+      # Install k0s controller (no worker role on controller for HA setup)
+      k0s install controller -c /etc/k0s/k0s.yaml
+      systemctl start k0scontroller
+      systemctl enable k0scontroller
+
+      # Wait for API
+      timeout=300
+      while [ $timeout -gt 0 ]; do
+        if k0s kubectl get --raw /healthz &>/dev/null; then
+          echo "k0s API is ready"
+          break
+        fi
+        echo "Waiting for k0s API..."
+        sleep 5
+        timeout=$((timeout - 5))
+      done
+
+      # Generate kubeconfig
+      mkdir -p /root/.kube
+      k0s kubeconfig admin > /root/.kube/config
+      chmod 600 /root/.kube/config
+
+      mkdir -p /home/${USER}.linux/.kube
+      k0s kubeconfig admin > /home/${USER}.linux/.kube/config
+      chown -R ${USER}.linux:${USER}.linux /home/${USER}.linux/.kube
+      chmod 600 /home/${USER}.linux/.kube/config
+
+      # Generate worker token (valid for 1 hour, extend if needed)
+      k0s token create --role=worker --expiry=24h > /tmp/worker-token.txt
+      chmod 644 /tmp/worker-token.txt
+
+      echo "k0s HA controller ready!"
+      echo "IP: 192.168.105.10"
+      echo "Worker token saved to /tmp/worker-token.txt"
+      echo ""
+      echo "Next steps:"
+      echo "1. Start worker VMs with k0s-ha-worker.yaml"
+      echo "2. Copy worker token to workers"
+      echo "3. Add to /etc/hosts: 192.168.105.10 k0s-byzantium.odysseia-greek byzantium.odysseia-greek"
+
+probes:
+  - mode: readiness
+    description: k0s API
+    script: |
+      #!/bin/bash
+      set -eux -o pipefail
+      if ! timeout 30s bash -c "until k0s kubectl get --raw /healthz &>/dev/null; do sleep 3; done"; then
+        echo >&2 "k0s is not running yet"
+        exit 1
+      fi
+    hint: |
+      See "/var/log/cloud-init-output.log" in the guest
+      Run "limactl shell k0s-controller sudo journalctl -u k0scontroller"
+
+message: |
+  k0s HA controller is ready!
+
+  Get kubeconfig:
+    limactl shell k0s-controller sudo k0s kubeconfig admin > ~/.kube/k0s-byzantium-ha-config
+    export KUBECONFIG=~/.kube/k0s-byzantium-ha-config
+
+  Get worker token:
+    limactl shell k0s-controller cat /tmp/worker-token.txt
+
+  Add to /etc/hosts:
+    192.168.105.10 k0s-byzantium.odysseia-greek byzantium.odysseia-greek
+
+  Next: Start workers with k0s-ha-worker.yaml

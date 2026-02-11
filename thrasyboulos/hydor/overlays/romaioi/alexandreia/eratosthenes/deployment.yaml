@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eratosthenes
+  labels:
+    app: eratosthenes
+  annotations:
+    volumes.odysseia.io/secrets: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eratosthenes
+  template:
+    metadata:
+      labels:
+        app: eratosthenes
+        release: eratosthenes
+        version: v0.0.1
+      annotations:
+        odysseia-greek/role: api
+        odysseia-greek/access: dictionary
+        perikles/accesses: solon
+    spec:
+      containers:
+        - name: "eratosthenes"
+          image: ghcr.io/odysseia-greek/eratosthenes:v0.0.1
+          imagePullPolicy: Always
+          env:
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          volumeMounts: []
+          envFrom: []
+          ports:
+            - containerPort: 50060
+      volumes: []

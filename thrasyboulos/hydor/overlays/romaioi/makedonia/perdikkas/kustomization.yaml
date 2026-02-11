@@ -1,0 +1,30 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: makedonia
+
+resources:
+  - deployment.yaml
+
+components:
+  - ../../../../../pyr/koinos/deployment/aristophanes
+  - ../../../../../pyr/koinos/deployment/periandros
+  - ../../../../../pyr/koinos/deployment/aristides
+  - ../../../../../pyr/koinos/services/grpc
+  - ../../../../../pyr/koinos/resources/local/low
+  - ../../../../../pyr/koinos/transformers/volumes/existing
+  - ../../../../../pyr/koinos/transformers/mounts/existing
+  - ../../../../../pyr/koinos/transformers/volumes/secrets
+  - ../../../../../pyr/koinos/common-env/base/deploy
+  - ../../../../../pyr/koinos/downwardapi/version/deploy
+
+patches:
+  - target:
+      version: v1
+      kind: Service
+    patch: |-
+      - op: replace
+        path: /metadata/name
+        value: perdikkas
+      - op: replace
+        path: /spec/selector/app
+        value: perdikkas

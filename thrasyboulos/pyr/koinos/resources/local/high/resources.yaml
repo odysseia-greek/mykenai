@@ -1,0 +1,9 @@
+# pyr/koinos/resources/local/resources.yaml
+- op: replace
+  path: /spec/template/spec/containers/0/resources
+  value:
+    requests:
+      memory: 128Mi
+      cpu: 500m
+    limits:
+      memory: 128Mi
