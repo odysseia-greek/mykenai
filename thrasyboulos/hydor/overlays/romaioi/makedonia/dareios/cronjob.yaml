@@ -13,12 +13,12 @@ spec:
           labels:
             app: dareios
             release: dareios
-            version: v0.0.1
+            version: v0.0.2
         spec:
           restartPolicy: Never
           containers:
             - name: dareios
-              image: ghcr.io/odysseia-greek/dareios:v0.0.1
+              image: ghcr.io/odysseia-greek/dareios:v0.0.2
               imagePullPolicy: Always
               env:
                 - name: ALEXANDROS_URL
