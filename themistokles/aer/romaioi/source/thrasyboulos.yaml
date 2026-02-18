@@ -6,7 +6,7 @@ metadata:
 spec:
   interval: 1m0s
   ref:
-    branch: feat/add-flux
+    branch: main
   url: https://github.com/odysseia-greek/mykenai.git
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
