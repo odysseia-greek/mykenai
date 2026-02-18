@@ -1,13 +1,15 @@
 package main
 
 import (
+	"strings"
+
 	"github.com/odysseia-greek/agora/plato/logging"
 	"github.com/odysseia-greek/mykenai/archimedes/command/images"
 	"github.com/odysseia-greek/mykenai/archimedes/command/odysseia"
 	"github.com/odysseia-greek/mykenai/archimedes/command/parse"
 	"github.com/odysseia-greek/mykenai/archimedes/command/skene"
+	"github.com/odysseia-greek/mykenai/archimedes/command/text"
 	"github.com/spf13/cobra"
-	"strings"
 )
 
 var version = "v0.1.0"
@@ -49,6 +51,7 @@ work with vault and much more is coming`,
 		parse.Manager(),
 		odysseia.Manager(),
 		skene.Manager(),
+		text.Manager(),
 	)
 
 	err := rootCmd.Execute()
