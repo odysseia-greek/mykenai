@@ -2,7 +2,7 @@
 
 # Variables
 REPO_URL := https://github.com/odysseia-greek/mykenai.git
-BRANCH := feat/add-flux
+BRANCH := main
 ENV ?= romaioi
 PATH_IN_REPO := ./themistokles/aer/$(ENV)
 NAMESPACE := flux-system

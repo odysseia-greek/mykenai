@@ -13,7 +13,7 @@ spec:
       labels:
         app: herakleitos
         release: herodotos
-        version: v0.2.0
+        version: v0.2.1
       annotations:
         odysseia-greek/role: seeder
         odysseia-greek/access: text
@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: "herakleitos"
-          image: ghcr.io/odysseia-greek/herakleitos:v0.2.0
+          image: ghcr.io/odysseia-greek/herakleitos:v0.2.1
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
