@@ -3,13 +3,13 @@ module github.com/odysseia-greek/mykenai/archimedes
 go 1.25.5
 
 require (
-	github.com/odysseia-greek/agora/plato v0.2.12
+	github.com/odysseia-greek/agora/plato v0.2.16
 	github.com/odysseia-greek/agora/thales v0.1.14
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.10.2
-	golang.org/x/text v0.33.0
-	k8s.io/api v0.35.0
-	k8s.io/apimachinery v0.35.0
+	golang.org/x/text v0.34.0
+	k8s.io/api v0.35.1
+	k8s.io/apimachinery v0.35.1
 )
 
 require (
