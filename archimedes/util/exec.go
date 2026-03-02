@@ -1,60 +1,43 @@
 package util
 
 import (
-	"bufio"
+	"bytes"
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 )
 
 func ExecCommand(command, filePath string) error {
+	return ExecCommandStreaming(command, filePath)
+}
+
+func ExecCommandStreaming(command, filePath string) error {
 	cmd := exec.Command("/bin/sh", "-c", command)
 	cmd.Dir = filePath
-
-	stdOut, _ := cmd.StdoutPipe()
-	err := cmd.Start()
-	if err != nil {
-		return err
-	}
-
-	scanner := bufio.NewScanner(stdOut)
-	for scanner.Scan() {
-		text := scanner.Text()
-		fmt.Println(text)
-	}
-	cmd.Wait()
-
-	return nil
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }
 
 func ExecCommandWithReturn(command, filePath string) (string, error) {
 	cmd := exec.Command("/bin/sh", "-c", command)
 	cmd.Dir = filePath
 
-	stdOut, err := cmd.StdoutPipe()
-	if err != nil {
-		return "", err
+	var stdout bytes.Buffer
+	var stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+
+	if err := cmd.Run(); err != nil {
+		stderrOutput := strings.TrimSpace(stderr.String())
+		if stderrOutput != "" {
+			return stdout.String(), fmt.Errorf("%w: %s", err, stderrOutput)
+		}
+		return stdout.String(), err
 	}
 
-	err = cmd.Start()
-	if err != nil {
-		return "", err
-	}
-
-	var textBuilder strings.Builder // Use strings.Builder to efficiently accumulate strings
-
-	scanner := bufio.NewScanner(stdOut)
-	for scanner.Scan() {
-		textBuilder.WriteString(scanner.Text() + "\n") // Append each line to the builder
-	}
-
-	cmd.Wait()
-
-	if err := scanner.Err(); err != nil {
-		return "", err
-	}
-
-	return textBuilder.String(), nil // Return the accumulated output as a single string
+	return stdout.String(), nil
 }
 
 func ExecCommandWithErrorCode(command, filePath string) error {

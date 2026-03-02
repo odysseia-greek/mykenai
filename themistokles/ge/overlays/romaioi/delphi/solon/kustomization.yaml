@@ -11,6 +11,7 @@ components:
   - ../../../../../../thrasyboulos/pyr/koinos/deployment/aristophanes
   - ../../../../../../thrasyboulos/pyr/koinos/resources/local/mid
   - ../../../../../../thrasyboulos/pyr/koinos/common-env/base/deploy
+  - ../../../../../../thrasyboulos/pyr/koinos/downwardapi/version/deploy
 
 labels:
   - pairs:

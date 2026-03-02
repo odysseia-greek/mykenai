@@ -5,3 +5,14 @@ resources:
   - configmap.yaml
   - rbac.yaml
   - nwp.yaml
+
+components:
+  - ../../../../../thrasyboulos/pyr/koinos/downwardapi/version/deploy
+
+labels:
+  - pairs:
+      environment: "romaioi"
+      variant: "k0s"
+      domain: "elastic"
+    includeSelectors: false
+    includeTemplates: true

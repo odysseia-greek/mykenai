@@ -53,7 +53,7 @@ func buildImageMultiArch(rootPath, projectName, tag, dest, target string) error 
 	buildCommand := fmt.Sprintf("docker buildx build --platform=linux/arm64,linux/amd64 -f %s --target=%s --build-arg project_name=%s --build-arg VERSION=%s -t %s . --push", containerFile, target, projectName, tag, imageName)
 	logging.Info(buildCommand)
 
-	_, err := util.ExecCommandWithReturn(buildCommand, rootPath)
+	err := util.ExecCommandStreaming(buildCommand, rootPath)
 	if err != nil {
 		return err
 	}
@@ -78,7 +78,7 @@ func buildImages(rootPath, projectName, tag, dest, target string) error {
 	buildCommand := fmt.Sprintf("docker build -f %s --target=%s --build-arg project_name=%s --build-arg VERSION=%s -t %s . --push", containerFile, target, projectName, tag, imageName)
 	logging.Info(buildCommand)
 
-	_, err := util.ExecCommandWithReturn(buildCommand, rootPath)
+	err := util.ExecCommandStreaming(buildCommand, rootPath)
 	if err != nil {
 		return err
 	}
