@@ -9,12 +9,16 @@ func Manager() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "odysseia",
 		Short: "meta odysseia commands",
-		Long:  `Install odysseia from scratch, currently only tested and working on docker desktop (macos)`,
+		Long:  `Manage odysseia local cluster workflows and supporting commands.`,
 	}
 
 	cmd.AddCommand(
-		command.Install(),
+		command.Create(),
+		command.Delete(),
+		command.Restart(),
+		command.Status(),
 		command.GenerateDocs(),
+		command.Tidy(),
 	)
 
 	return cmd

@@ -4,13 +4,7 @@ metadata:
   name: theofrastos
   namespace: odysseia
   labels:
-    heritage: "Helm"
-    release: "theofrastos"
-    chart: "theofrastos"
-    env: k3d
-    variant: k3d
     app: theofrastos
-    domain: "backend"
 spec:
   replicas: 1
   selector:
@@ -22,12 +16,12 @@ spec:
       labels:
         app: theofrastos
         release: theofrastos
-        version: v0.0.1
+        version: v0.0.2
     spec:
       serviceAccountName: theofrastossa
       containers:
         - name: "theofrastos"
-          image: ghcr.io/odysseia-greek/theofrastos:v0.0.1
+          image: ghcr.io/odysseia-greek/theofrastos:v0.0.2
           imagePullPolicy: Always
           env:
             - name: ENV

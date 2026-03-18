@@ -2,200 +2,276 @@ package command
 
 import (
 	"fmt"
-	"github.com/odysseia-greek/agora/plato/logging"
-	"github.com/odysseia-greek/mykenai/archimedes/command"
-	"github.com/odysseia-greek/mykenai/archimedes/util"
-	"github.com/spf13/cobra"
-	"io"
-	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
-)
 
-var swaggerApis = [...]string{"alexandros", "dionysios", "herodotos", "solon", "sokrates"}
-var gatewayApis = [...]string{"homeros", "euripides"}
-var grpcApis = [...]string{command.Aristophanes, "ptolemaios"}
+	"github.com/odysseia-greek/agora/plato/logging"
+	"github.com/spf13/cobra"
+)
 
 const (
-	swaggerOutputPath string = "docs/swagger.json"
-	openapiOutputPath string = "docs/openapi.yaml"
+	protocGenDocModule  = "github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest"
+	spectaqlPackage     = "spectaql"
+	defaultToolsDirName = ".archimedes-tools"
+	bufDocsTemplateName = "buf.gen.docs.yaml"
+	spectaqlConfigName  = "spectaql.yaml"
+	spectaqlDocsDirName = "spectaql"
 )
 
+type docsTarget struct {
+	serviceName     string
+	servicePath     string
+	bufTemplatePath string
+	spectaqlDir     string
+	spectaqlConfig  string
+}
+
 func GenerateDocs() *cobra.Command {
-	var (
-		rootPath string
-	)
+	var rootPath string
+
 	cmd := &cobra.Command{
 		Use:   "docs",
 		Short: "generate docs",
-		Long: `Allows you to create documentation for all apis
-`,
-		Run: func(cmd *cobra.Command, args []string) {
-
-			if rootPath == "" {
-				currentDir, err := os.Getwd()
-				if err != nil {
-					return
-				}
-
-				logging.Debug(fmt.Sprintf("rootPath is empty defaulting to current dir %s", currentDir))
-				rootPath = currentDir
+		Long:  `Discover proto and GraphQL doc configs below a root path and generate the docs without make.`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			resolvedRoot, err := resolveDocsRoot(rootPath, args)
+			if err != nil {
+				return err
 			}
 
-			generateDocs(rootPath)
-
+			return generateDocs(resolvedRoot)
 		},
 	}
 
-	cmd.PersistentFlags().StringVarP(&rootPath, "root", "r", "", "rootpath when not using odysseia-settings")
+	cmd.PersistentFlags().StringVarP(&rootPath, "root", "r", "", "root path containing the service directories to scan")
 
 	return cmd
 }
 
-func generateDocs(rootPath string) {
-	for _, grpc := range grpcApis {
-		var path string
-		ploutarchosDocs := filepath.Join(rootPath, command.Olympia, command.Ploutarchos, command.Docs, "grpc")
-		if grpc == command.Aristophanes {
-			path = filepath.Join(rootPath, command.Attike, command.Aristophanes)
-		}
-		err := generateGRPC(ploutarchosDocs, command.Aristophanes, path)
+func resolveDocsRoot(rootPath string, args []string) (string, error) {
+	if rootPath == "" && len(args) > 0 {
+		rootPath = args[len(args)-1]
+	}
+
+	if rootPath == "" || rootPath == "." {
+		currentDir, err := os.Getwd()
 		if err != nil {
-			logging.Error(err.Error())
+			return "", err
+		}
+		rootPath = currentDir
+	}
+
+	absRoot, err := filepath.Abs(rootPath)
+	if err != nil {
+		return "", err
+	}
+
+	info, err := os.Stat(absRoot)
+	if err != nil {
+		return "", err
+	}
+	if !info.IsDir() {
+		return "", fmt.Errorf("%s is not a directory", absRoot)
+	}
+
+	return absRoot, nil
+}
+
+func generateDocs(rootPath string) error {
+	targets, err := discoverDocsTargets(rootPath)
+	if err != nil {
+		return err
+	}
+	if len(targets) == 0 {
+		return fmt.Errorf("found no %s or SpectaQL configs under %s", bufDocsTemplateName, rootPath)
+	}
+
+	toolsDir := filepath.Join(rootPath, defaultToolsDirName)
+	toolsBinDir := filepath.Join(toolsDir, "bin")
+
+	var protoTargets []docsTarget
+	var spectaqlTargets []docsTarget
+	for _, target := range targets {
+		if target.bufTemplatePath != "" {
+			protoTargets = append(protoTargets, target)
+		}
+		if target.spectaqlConfig != "" {
+			spectaqlTargets = append(spectaqlTargets, target)
 		}
 	}
 
-	for _, api := range swaggerApis {
-		path := filepath.Join(rootPath, command.Olympia)
-		if api == "solon" {
-			path = filepath.Join(rootPath, command.Delphi)
+	if len(protoTargets) > 0 {
+		if err := ensureProtocGenDoc(toolsBinDir); err != nil {
+			return err
 		}
-		ploutarchosDocs := filepath.Join(rootPath, command.Olympia, command.Ploutarchos, command.Docs)
-		err := generateSwaggerFiles(path, ploutarchosDocs, api)
+		if _, err := exec.LookPath("buf"); err != nil {
+			return fmt.Errorf("buf is required to generate proto docs: %w", err)
+		}
+	}
+
+	spectaqlExec := "spectaql"
+	if len(spectaqlTargets) > 0 {
+		spectaqlExec, err = ensureSpectaql(toolsDir)
 		if err != nil {
-			logging.Error(err.Error())
+			return err
 		}
 	}
 
-	for _, gateway := range gatewayApis {
-		apiPath := filepath.Join(rootPath, command.Olympia, gateway, command.Docs)
-		err := generateSpectaql(rootPath, apiPath)
-		if err != nil {
-			logging.Error(err.Error())
+	for _, target := range protoTargets {
+		if err := generateProtoDocs(target, toolsBinDir); err != nil {
+			return err
 		}
 	}
-}
 
-func generateSwaggerFiles(rootPath, ploutarchosDocs, api string) error {
-	logging.Info("****** 🗄️ Generating Swagger Docs 🗄️ ******")
-
-	apiPath := filepath.Join(rootPath, api)
-	buildCommand := fmt.Sprintf("docker run -v %s:%s -e SWAGGER_GENERATE_EXTENSION=true --workdir %s quay.io/goswagger/swagger generate spec -o %s -m", rootPath, rootPath, apiPath, swaggerOutputPath)
-
-	err := util.ExecCommand(buildCommand, "/tmp")
-	if err != nil {
-		return err
+	for _, target := range spectaqlTargets {
+		if err := generateSpectaqlDocs(target, spectaqlExec); err != nil {
+			return err
+		}
 	}
 
-	logging.Info("****** 🗄️ Generated Swagger Docs 🗄️ ******")
-
-	swaggerFile := filepath.Join(apiPath, swaggerOutputPath)
-	openapiFile := filepath.Join(apiPath, openapiOutputPath)
-	generateOpenApi(swaggerFile, openapiFile)
-	logging.Info("****** 📋 Generated OpenApi Doc 📋 ******")
-
-	ploutarchosPath := filepath.Join(ploutarchosDocs, "templates", fmt.Sprintf("%s.yaml", api))
-
-	err = util.CopyFileContents(openapiFile, ploutarchosPath)
-	if err != nil {
-		return err
-	}
-
+	logging.System(fmt.Sprintf("Generated docs for %d service(s)", len(targets)))
 	return nil
 }
 
-func generateOpenApi(swaggerFilePath, openapiFile string) error {
-	logging.Info("****** 📋 Transforming OpenApi Doc 📋 ******")
-
-	url := "https://converter.swagger.io/api/convert"
-	headers := map[string]string{
-		"Accept":       "application/yaml",
-		"Content-Type": "application/json",
-	}
-
-	fileContent, err := os.ReadFile(swaggerFilePath)
+func discoverDocsTargets(rootPath string) ([]docsTarget, error) {
+	entries, err := os.ReadDir(rootPath)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	requestBody := strings.NewReader(string(fileContent))
-	client := &http.Client{}
-	request, err := http.NewRequest("POST", url, requestBody)
-	if err != nil {
-		return err
+	var targets []docsTarget
+	for _, entry := range entries {
+		if !entry.IsDir() || strings.HasPrefix(entry.Name(), ".") {
+			continue
+		}
+
+		servicePath := filepath.Join(rootPath, entry.Name())
+		target := docsTarget{
+			serviceName: entry.Name(),
+			servicePath: servicePath,
+		}
+
+		bufTemplatePath := filepath.Join(servicePath, bufDocsTemplateName)
+		if fileExists(bufTemplatePath) {
+			target.bufTemplatePath = bufTemplatePath
+		}
+
+		spectaqlDir, spectaqlConfig := discoverSpectaqlConfig(servicePath)
+		target.spectaqlDir = spectaqlDir
+		target.spectaqlConfig = spectaqlConfig
+
+		if target.bufTemplatePath != "" || target.spectaqlConfig != "" {
+			targets = append(targets, target)
+		}
 	}
 
-	for key, value := range headers {
-		request.Header.Set(key, value)
-	}
+	sort.Slice(targets, func(i, j int) bool {
+		return targets[i].serviceName < targets[j].serviceName
+	})
 
-	response, err := client.Do(request)
-	if err != nil {
-		return err
-	}
-	defer response.Body.Close()
-
-	responseBody, err := io.ReadAll(response.Body)
-	if err != nil {
-		return err
-	}
-
-	err = os.WriteFile(openapiFile, responseBody, 0644)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return targets, nil
 }
 
-func generateSpectaql(rootPath, spectaqlPath string) error {
-	logging.Info("****** 📋 Generating Spectaql Doc 📋 ******")
-	buildCommand := "npx spectaql spectaql.yaml"
-	err := util.ExecCommand(buildCommand, spectaqlPath)
-	if err != nil {
-		return err
+func discoverSpectaqlConfig(servicePath string) (string, string) {
+	directConfig := filepath.Join(servicePath, "docs", spectaqlConfigName)
+	if fileExists(directConfig) {
+		return filepath.Dir(directConfig), directConfig
 	}
 
-	logging.Info("****** 📋 Generated Spectaql Doc 📋 ******")
+	nestedDir := filepath.Join(servicePath, "docs", spectaqlDocsDirName)
+	nestedConfig := filepath.Join(nestedDir, spectaqlConfigName)
+	if fileExists(nestedConfig) {
+		return nestedDir, nestedConfig
+	}
 
-	ploutarchosPath := filepath.Join(rootPath, command.Olympia, command.Ploutarchos, command.Docs, "public")
-	spectaqlDir := filepath.Join(spectaqlPath, "public")
-	err = util.CopyDir(spectaqlDir, ploutarchosPath)
-
-	return nil
+	return "", ""
 }
 
-func generateGRPC(ploutarchosDocs, api, path string) error {
-	logging.Info("****** 🗄️ Generating GRPC Docs 🗄️ ******")
+func ensureProtocGenDoc(toolsBinDir string) error {
+	binaryPath := filepath.Join(toolsBinDir, "protoc-gen-doc")
+	if fileExists(binaryPath) {
+		return nil
+	}
 
-	buildCommand := fmt.Sprintf("docker run -v %s/docs:/out -v %s/proto:/protos pseudomuto/protoc-gen-doc --doc_opt=html,%s.html", path, path, api)
-
-	err := util.ExecCommand(buildCommand, path)
-	if err != nil {
+	if err := os.MkdirAll(toolsBinDir, 0o755); err != nil {
 		return err
 	}
 
-	logging.Info("****** 🗄️ Generated GRPC Docs 🗄️ ******")
+	logging.System("Installing protoc-gen-doc into local tools directory")
+	return runDocsCommandWithEnv("", []string{"GOBIN=" + toolsBinDir}, "go", "install", protocGenDocModule)
+}
 
-	fileName := fmt.Sprintf("%s.html", api)
-	grpcFile := filepath.Join(path, command.Docs, fileName)
-	ploutarchosPath := filepath.Join(ploutarchosDocs, fileName)
-
-	err = util.CopyFileContents(grpcFile, ploutarchosPath)
-	if err != nil {
-		return err
+func ensureSpectaql(toolsDir string) (string, error) {
+	if systemBinary, err := exec.LookPath("spectaql"); err == nil {
+		return systemBinary, nil
 	}
 
-	return nil
+	if _, err := exec.LookPath("npm"); err != nil {
+		return "", fmt.Errorf("spectaql is not installed and npm is unavailable: %w", err)
+	}
+
+	installRoot := filepath.Join(toolsDir, "spectaql")
+	binPath := filepath.Join(installRoot, "node_modules", ".bin", "spectaql")
+	if fileExists(binPath) {
+		return binPath, nil
+	}
+
+	if err := os.MkdirAll(installRoot, 0o755); err != nil {
+		return "", err
+	}
+
+	logging.System("Installing spectaql into local tools directory")
+	if err := runDocsCommand("", "npm", "install", "--prefix", installRoot, spectaqlPackage); err != nil {
+		return "", err
+	}
+
+	if !fileExists(binPath) {
+		return "", fmt.Errorf("spectaql installation completed but binary was not found at %s", binPath)
+	}
+
+	return binPath, nil
+}
+
+func generateProtoDocs(target docsTarget, toolsBinDir string) error {
+	logging.System(fmt.Sprintf("Generating proto docs for %s", target.serviceName))
+
+	pathEnv := os.Getenv("PATH")
+	extraEnv := []string{"PATH=" + toolsBinDir + string(os.PathListSeparator) + pathEnv}
+
+	return runDocsCommandWithEnv(
+		filepath.Dir(target.servicePath),
+		extraEnv,
+		"buf", "generate", "--template", target.bufTemplatePath, target.servicePath,
+	)
+}
+
+func generateSpectaqlDocs(target docsTarget, spectaqlExec string) error {
+	logging.System(fmt.Sprintf("Generating SpectaQL docs for %s", target.serviceName))
+	return runDocsCommand(target.spectaqlDir, spectaqlExec, "-c", target.spectaqlConfig)
+}
+
+func runDocsCommand(dir string, name string, args ...string) error {
+	return runDocsCommandWithEnv(dir, nil, name, args...)
+}
+
+func runDocsCommandWithEnv(dir string, extraEnv []string, name string, args ...string) error {
+	cmd := exec.Command(name, args...)
+	cmd.Dir = dir
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Env = append(os.Environ(), extraEnv...)
+
+	return cmd.Run()
+}
+
+func fileExists(path string) bool {
+	info, err := os.Stat(path)
+	if err != nil {
+		return false
+	}
+
+	return !info.IsDir()
 }
