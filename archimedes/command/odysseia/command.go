@@ -16,6 +16,7 @@ func Manager() *cobra.Command {
 		command.Create(),
 		command.Delete(),
 		command.Restart(),
+		command.Status(),
 		command.GenerateDocs(),
 		command.Tidy(),
 	)
