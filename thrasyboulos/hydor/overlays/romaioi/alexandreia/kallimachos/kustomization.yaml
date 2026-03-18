@@ -4,6 +4,7 @@ namespace: alexandreia
 
 resources:
   - deployment.yaml
+  - ../../../../base/alexandreia/kallimachos
 
 components:
   - ../../../../../pyr/koinos/deployment/aristophanes

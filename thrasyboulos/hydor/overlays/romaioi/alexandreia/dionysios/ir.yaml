@@ -6,7 +6,7 @@ spec:
   entryPoints:
     - web
   routes:
-    - match: Host(`byzantium.odysseia-greek`) && PathPrefix(`/dioynsios/v1`)
+    - match: Host(`byzantium.odysseia-greek`) && PathPrefix(`/dionysios/v1`)
       kind: Rule
       services:
         - name: dioynsios

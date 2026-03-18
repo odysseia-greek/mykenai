@@ -32,7 +32,9 @@ spec:
                 fieldRef:
                   fieldPath: metadata.annotations['odysseia-greek/access']
           volumeMounts: []
-          envFrom: []
+          envFrom:
+            - configMapRef:
+                name: kallimachos
           ports:
             - containerPort: 50060
       volumes: []
