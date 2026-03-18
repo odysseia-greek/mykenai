@@ -22,6 +22,7 @@ components:
   - ../../../../../pyr/koinos/transformers/mounts/combined
   - ../../../../../pyr/koinos/common-env/base/deploy
   - ../../../../../pyr/koinos/common-env/base/job
+  - ../../../../../pyr/koinos/downwardapi/version/deploy
 
 patches:
   - target:

@@ -4,5 +4,4 @@ kind: ConfigMap
 metadata:
   name: kallimachos
 data:
-  VERSION: "v0.0.1"
   ARISTARCHOS_SERVICE: "aristarchos.alexandreia.svc.cluster.local:50060"
