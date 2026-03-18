@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: "anaximander"
-          image: ghcr.io/odysseia-greek/anaximander:v0.2.0
+          image: ghcr.io/odysseia-greek/anaximander:v0.2.1
           imagePullPolicy: Always
           envFrom:
             - configMapRef:

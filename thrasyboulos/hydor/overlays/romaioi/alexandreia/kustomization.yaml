@@ -6,6 +6,7 @@ resources:
   - dionysios
   - aristarchos
   - eratosthenes
+  - kallimachos
 
 labels:
   - pairs:

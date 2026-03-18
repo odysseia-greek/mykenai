@@ -6,3 +6,4 @@ metadata:
   name: dionysios
 data:
   ERATOSTHENES_SERVICE: "eratosthenes.alexandreia.svc.cluster.local:50060"
+  KALLIMACHOS_SERVICE: "kallimachos.alexandreia.svc.cluster.local:50060"
