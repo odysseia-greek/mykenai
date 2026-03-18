@@ -20,7 +20,7 @@ spec:
       annotations:
         odysseia-greek/role: api
         odysseia-greek/access: grammar
-        perikles/accesses: "solon;eratosthenes;aristarchos"
+        perikles/accesses: "solon;eratosthenes;aristarchos;kallimachos"
     spec:
       containers:
         - name: "dionysios"
