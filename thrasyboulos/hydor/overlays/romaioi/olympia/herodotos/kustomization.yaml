@@ -6,6 +6,7 @@ resources:
   - deployment.yaml
   - job.yaml
   - scaler.yaml
+  - ir.yaml
   - ../../../../base/olympia/herodotos
 
 components:
