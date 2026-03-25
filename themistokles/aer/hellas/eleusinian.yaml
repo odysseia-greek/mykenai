@@ -2,15 +2,16 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: external-secrets
+  name: eleusinian
   namespace: flux-system
 spec:
-  interval: 4h
-  retryInterval: 2m
-  timeout: 10m
+  interval: 10m
   sourceRef:
     kind: GitRepository
     name: themistokles
-  path: themistokles/ge/base/external-secrets
+  path: themistokles/hydor/overlays/hellas/eleusinian
   prune: true
-  wait: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-gpg

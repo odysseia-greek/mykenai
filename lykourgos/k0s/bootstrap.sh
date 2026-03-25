@@ -14,7 +14,7 @@ FLUX_NAMESPACE="${FLUX_NAMESPACE:-flux-system}"
 
 # Kubeconfig
 KUBECONFIG_FILE="${KUBECONFIG:-$HOME/.kube/config}"
-CONTEXT="${KUBE_CONTEXT:-acc-odysseia-single}"
+CONTEXT="${KUBE_CONTEXT:-k0s-athenai}"
 
 echo -e "${GREEN}========================================${NC}"
 echo -e "${GREEN}k0s Cluster Bootstrap Script${NC}"

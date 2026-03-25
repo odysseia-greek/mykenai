@@ -274,7 +274,7 @@ echo "3. Boot from NVMe."
 echo "4. SSH in with: ssh $USERNAME@$HOSTNAME_SET.local"
 echo
 echo "After first boot, recommended hardening:"
-echo "  sudo nano /etc/ssh/sshd_config"
+echo "  sudo sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config"
 echo "  Set: PasswordAuthentication no"
 echo "  Then: sudo systemctl restart ssh"
 echo
