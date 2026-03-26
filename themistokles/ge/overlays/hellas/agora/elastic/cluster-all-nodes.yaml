@@ -1,0 +1,103 @@
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: aristoteles
+  labels:
+    env: hellas
+    variant: k0s
+    app: aristoteles
+    version: 9.2.2
+spec:
+  version: 9.2.2
+  http:
+    tls:
+      selfSignedCertificate:
+        disabled: true
+  nodeSets:
+    - name: master
+      count: 1
+      config:
+        node.roles:
+          - master
+        node.store.allow_mmap: false
+        xpack.security.http.ssl.enabled: false
+      podTemplate:
+        metadata:
+          labels:
+            odysseia-greek/elastic-node-set: master
+        spec:
+          affinity:
+            nodeAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  preference:
+                    matchExpressions:
+                      - key: odysseia-greek/elastic-role
+                        operator: In
+                        values:
+                          - master
+                - weight: 50
+                  preference:
+                    matchExpressions:
+                      - key: odysseia-greek/elastic-memory-tier
+                        operator: In
+                        values:
+                          - high
+          containers:
+            - name: elasticsearch
+              resources:
+                requests:
+                  cpu: 500m
+                  memory: 2Gi
+                limits:
+                  memory: 2Gi
+    - name: data-hot
+      count: 2
+      config:
+        node.roles:
+          - data_hot
+          - data_content
+          - ingest
+          - transform
+          - remote_cluster_client
+        node.store.allow_mmap: false
+        xpack.security.http.ssl.enabled: false
+      podTemplate:
+        metadata:
+          labels:
+            odysseia-greek/elastic-node-set: data-hot
+        spec:
+          affinity:
+            nodeAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  preference:
+                    matchExpressions:
+                      - key: odysseia-greek/elastic-role
+                        operator: In
+                        values:
+                          - data-hot
+                - weight: 25
+                  preference:
+                    matchExpressions:
+                      - key: odysseia-greek/elastic-memory-tier
+                        operator: In
+                        values:
+                          - high
+            podAntiAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchExpressions:
+                      - key: odysseia-greek/elastic-node-set
+                        operator: In
+                        values:
+                          - data-hot
+                  topologyKey: kubernetes.io/hostname
+          containers:
+            - name: elasticsearch
+              resources:
+                requests:
+                  cpu: 1
+                  memory: 4Gi
+                limits:
+                  memory: 4Gi

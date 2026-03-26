@@ -3,7 +3,7 @@ kind: Elasticsearch
 metadata:
   name: aristoteles
   labels:
-    env: romaioi
+    env: hellas
     variant: k0s
     app: aristoteles
     version: 9.2.2

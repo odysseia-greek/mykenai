@@ -7,3 +7,5 @@ metadata:
     kustomize.toolkit.fluxcd.io/ssa: disabled
   labels:
     cilium.io/envoy-capable: "true"
+    odysseia-greek/elastic-role: master
+    odysseia-greek/elastic-memory-tier: high
