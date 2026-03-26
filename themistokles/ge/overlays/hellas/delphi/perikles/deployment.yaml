@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: perikles
+  labels:
+    env: k3d
+    variant: k0s
+    app: perikles
+    domain: "backend"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: perikles
+  template:
+    metadata:
+      labels:
+        app: perikles
+        release: perikles
+        version: v0.2.1
+    spec:
+      serviceAccountName: periklessa
+      containers:
+        - name: perikles
+          image: ghcr.io/odysseia-greek/perikles:v0.2.1
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: perikles
+            - configMapRef:
+                name: elastic-roles-and-cnp
+          env:
+            - name: CRD_NAME
+              value: perikles-mapping
+            - name: L7_MODE
+              value: "true"
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace

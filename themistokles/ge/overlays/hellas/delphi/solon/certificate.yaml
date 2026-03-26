@@ -1,0 +1,21 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: solon-server
+spec:
+  secretName: solon-tls-certs
+  duration: 2160h        # 90 days
+  renewBefore: 168h      # 7 days
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  usages:
+    - server auth
+  dnsNames:
+    - solon
+    - solon.delphi
+    - solon.delphi.svc
+    - solon.delphi.svc.cluster.local
+  issuerRef:
+    name: delphi-internal
+    kind: Issuer
