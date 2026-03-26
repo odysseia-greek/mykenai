@@ -7,7 +7,7 @@ spec:
     - websecure
     - web
   routes:
-    - match: Host(`vault.byzantium.odysseia-greek`)
+    - match: Host(`vault.hellas.odysseia-greek`)
       kind: Rule
       services:
         - name: vault-ui
