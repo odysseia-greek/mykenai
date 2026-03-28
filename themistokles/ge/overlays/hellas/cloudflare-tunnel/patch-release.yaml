@@ -3,10 +3,6 @@ kind: HelmRelease
 metadata:
   name: cloudflare-tunnel
 spec:
-  values:
-    cloudflare:
-      account: hellas
-      tunnel_name: hellas
   valuesFrom:
     - kind: Secret
       name: cloudflare-tunnel

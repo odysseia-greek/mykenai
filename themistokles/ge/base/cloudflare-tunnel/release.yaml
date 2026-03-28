@@ -22,6 +22,3 @@ spec:
         namespace: cloudflare-tunnel
   values:
     replicaCount: 1
-    cloudflare:
-      account: odysseia-hellas
-      tunnel_name: hellas

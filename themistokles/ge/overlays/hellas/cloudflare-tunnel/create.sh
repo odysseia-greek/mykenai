@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-token="$(gopass show "odysseia/hellas/cloudflare tunnel")"
+token="$(gopass show "odysseia/hellas/cloudflare" | head -n1 | tr -d '\r')"
 
 kubectl create secret generic cloudflare-tunnel \
   --namespace=cloudflare-tunnel \
