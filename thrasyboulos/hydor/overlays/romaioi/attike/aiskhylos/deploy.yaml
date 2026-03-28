@@ -1,0 +1,223 @@
+apiVersion: v1
+data:
+  EUPALINOS_TRACING_SERVICE: eupalinos.attike.svc.cluster.local:50060
+  METRICS_CHANNEL: sophokles
+  REPORT_CHANNEL: euripides
+  TRACE_CHANNEL: aristophanes
+kind: ConfigMap
+metadata:
+  name: aiskhylos
+  namespace: attike
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    volumes.odysseia.io/secrets: "true"
+  labels:
+    app: aiskhylos
+  name: aiskhylos
+  namespace: attike
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aiskhylos
+  template:
+    metadata:
+      annotations:
+        odysseia-greek/access: tracing;metrics;metrics_rollup
+        odysseia-greek/role: creator
+        perikles/accesses: solon
+      labels:
+        app: aiskhylos
+        release: aiskhylos
+        version: v0.2.2
+    spec:
+      containers:
+      - env:
+        - name: ELASTIC_ACCESS
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['odysseia-greek/access']
+        envFrom:
+        - configMapRef:
+            name: aiskhylos
+        - configMapRef:
+            name: odysseia-common-env
+        image: ghcr.io/odysseia-greek/aiskhylos:v0.2.2
+        imagePullPolicy: Always
+        name: aiskhylos
+        resources:
+          limits:
+            memory: 64Mi
+          requests:
+            cpu: 200m
+            memory: 64Mi
+      - env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        envFrom:
+        - configMapRef:
+            name: odysseia-common-env
+        image: ghcr.io/odysseia-greek/aristides:v0.0.4
+        imagePullPolicy: Always
+        name: aristides
+        ports:
+        - containerPort: 50051
+        resources:
+          limits:
+            memory: 32Mi
+          requests:
+            memory: 32Mi
+        volumeMounts:
+        - mountPath: /app/config/vault
+          name: vault-server-tls
+          readOnly: true
+        - mountPath: /app/config/solon
+          name: solon-certs
+          readOnly: true
+      initContainers:
+      - env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: ELASTIC_ROLE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['odysseia-greek/role']
+        - name: ELASTIC_ACCESS
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['odysseia-greek/access']
+        envFrom:
+        - configMapRef:
+            name: odysseia-common-env
+        image: ghcr.io/odysseia-greek/periandros:v0.1.5
+        imagePullPolicy: Always
+        name: periandros
+        volumeMounts:
+        - mountPath: /app/config/solon
+          name: solon-certs
+          readOnly: true
+      volumes:
+      - name: solon-certs
+        secret:
+          secretName: solon-tls-certs
+      - name: vault-server-tls
+        secret:
+          secretName: vault-server-tls
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    volumes.odysseia.io/secrets: "true"
+  labels:
+    app: anaximenes
+  name: anaximenes
+  namespace: attike
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      annotations:
+        odysseia-greek/access: tracing;metrics;metrics_rollup
+        odysseia-greek/role: alias
+        perikles/accesses: solon
+      labels:
+        app: anaximenes
+        version: v0.1.2
+    spec:
+      containers:
+      - env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: ELASTIC_ACCESS
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['odysseia-greek/access']
+        envFrom:
+        - configMapRef:
+            name: sophokles
+        - configMapRef:
+            name: odysseia-common-env
+        image: ghcr.io/odysseia-greek/anaximenes:v0.1.2
+        imagePullPolicy: Always
+        name: anaximenes
+        resources:
+          limits:
+            memory: 64Mi
+          requests:
+            cpu: 200m
+            memory: 64Mi
+      - env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        envFrom:
+        - configMapRef:
+            name: odysseia-common-env
+        image: ghcr.io/odysseia-greek/aristides:v0.0.4
+        imagePullPolicy: Always
+        name: aristides
+        ports:
+        - containerPort: 50051
+        resources:
+          limits:
+            memory: 32Mi
+          requests:
+            memory: 32Mi
+        volumeMounts:
+        - mountPath: /app/config/vault
+          name: vault-server-tls
+          readOnly: true
+        - mountPath: /app/config/solon
+          name: solon-certs
+          readOnly: true
+      initContainers:
+      - env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: ELASTIC_ROLE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['odysseia-greek/role']
+        - name: ELASTIC_ACCESS
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['odysseia-greek/access']
+        envFrom:
+        - configMapRef:
+            name: odysseia-common-env
+        image: ghcr.io/odysseia-greek/periandros:v0.1.5
+        imagePullPolicy: Always
+        name: periandros
+        volumeMounts:
+        - mountPath: /app/config/solon
+          name: solon-certs
+          readOnly: true
+      restartPolicy: Never
+      volumes:
+      - name: solon-certs
+        secret:
+          secretName: solon-tls-certs
+      - name: vault-server-tls
+        secret:
+          secretName: vault-server-tls

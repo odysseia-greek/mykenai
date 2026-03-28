@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: dareios
+  labels:
+    app: dareios
+spec:
+  schedule: "*/20 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: dareios
+            release: dareios
+            version: v0.0.2
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: dareios
+              image: ghcr.io/odysseia-greek/dareios:v0.0.2
+              imagePullPolicy: Always
+              env:
+                - name: ALEXANDROS_URL
+                  value: "http://alexandros:8080/alexandros/graphql"
+      backoffLimit: 3

@@ -1,0 +1,25 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-probes-management
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: require-liveness-and-readiness
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+              namespaces:
+                - harbor
+                - tekton-pipelines
+      validate:
+        message: Pods in the management namespaces must define livenessProbe and readinessProbe.
+        pattern:
+          spec:
+            containers:
+              - name: "*"
+                livenessProbe: "?*"
+                readinessProbe: "?*"

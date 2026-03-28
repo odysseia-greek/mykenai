@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kallimachos
+  labels:
+    app: kallimachos
+  annotations:
+    volumes.odysseia.io/secrets: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kallimachos
+  template:
+    metadata:
+      labels:
+        app: kallimachos
+        release: kallimachos
+        version: v0.0.1
+      annotations:
+        odysseia-greek/role: api
+        odysseia-greek/access: text
+        perikles/accesses: "solon;aristarchos"
+    spec:
+      containers:
+        - name: "kallimachos"
+          image: ghcr.io/odysseia-greek/kallimachos:v0.0.1
+          imagePullPolicy: Always
+          env:
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          volumeMounts: []
+          envFrom:
+            - configMapRef:
+                name: kallimachos
+          ports:
+            - containerPort: 50060
+      volumes: []

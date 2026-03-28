@@ -1,0 +1,13 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: herodotos-route
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`hellas.odysseia-greek`) && PathPrefix(`/herodotos/v1`)
+      kind: Rule
+      services:
+        - name: herodotos
+          port: 5000

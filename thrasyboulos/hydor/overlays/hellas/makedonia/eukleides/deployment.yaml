@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eukleides
+  labels:
+    app: eukleides
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eukleides
+  template:
+    metadata:
+      labels:
+        app: eukleides
+        release: eukleides
+        version: v0.0.4
+      annotations:
+        odysseia-greek/role: api
+        odysseia-greek/access: dictionary
+    spec:
+      containers:
+        - name: "eukleides"
+          image: ghcr.io/odysseia-greek/eukleides:v0.0.4
+          imagePullPolicy: Always
+          envFrom: []
+          env: []
+          ports:
+            - containerPort: 50060
+      volumes: []

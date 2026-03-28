@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ptolemaios
+  labels:
+    app: ptolemaios
+  annotations:
+    volumes.odysseia.io/elastic-only: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ptolemaios
+  template:
+    metadata:
+      labels:
+        app: ptolemaios
+        release: ptolemaios
+        version: v0.0.3
+      annotations:
+        perikles/accesses: "herodotos"
+    spec:
+      containers:
+        - name: "ptolemaios"
+          image: ghcr.io/odysseia-greek/ptolemaios:v0.0.3
+          imagePullPolicy: Always
+          env: []
+          envFrom:
+            - configMapRef:
+                name: ptolemaios
+          ports:
+            - containerPort: 50060
+      volumes: []

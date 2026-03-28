@@ -1,0 +1,12 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: longhorn
+spec:
+  values:
+    persistence:
+      defaultClass: true
+      defaultClassReplicaCount: "1"
+    defaultSettings:
+      defaultReplicaCount: "1"
+      createDefaultDiskLabeledNodes: false

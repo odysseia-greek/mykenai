@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alkibiades
+  labels:
+    app: alkibiades
+  annotations:
+    volumes.odysseia.io/secrets: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alkibiades
+  template:
+    metadata:
+      labels:
+        app: alkibiades
+        release: alkibiades
+      annotations:
+        odysseia-greek/role: api
+        odysseia-greek/access: journey-quiz
+        perikles/accesses: "solon"
+    spec:
+      containers:
+        - name: "alkibiades"
+
+          image: ghcr.io/odysseia-greek/alkibiades
+
+          imagePullPolicy: Always
+          env:
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom: []
+          volumeMounts: []
+          ports:
+            - containerPort: 50060
+      volumes: []

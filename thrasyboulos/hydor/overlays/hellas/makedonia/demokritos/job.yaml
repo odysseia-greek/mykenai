@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: demokritos
+  labels:
+    app: demokritos
+  annotations:
+    volumes.odysseia.io/secrets: "true"
+spec:
+  template:
+    metadata:
+      labels:
+        app: demokritos
+        release: alexandros
+        version: v0.2.3
+      annotations:
+        odysseia-greek/role: seeder
+        odysseia-greek/access: dictionary
+        perikles/accesses: solon
+    spec:
+      containers:
+        - name: "demokritos"
+          image: ghcr.io/odysseia-greek/demokritos:v0.2.3
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: alexandros
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+      restartPolicy: Never
+      volumes: []
+  backoffLimit: 3

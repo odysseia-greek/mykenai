@@ -1,0 +1,42 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: kaniko-chainguard
+  namespace: tekton-pipelines
+spec:
+  description: Build and push an image with a Chainguard Kaniko executor image.
+  params:
+    - name: builder-image
+      type: string
+      description: Fully-qualified Chainguard Kaniko image, for example cgr.dev/<org>/kaniko:latest.
+    - name: destination-image
+      type: string
+      description: Destination image reference.
+    - name: context
+      type: string
+      default: .
+    - name: dockerfile
+      type: string
+      default: Dockerfile
+  results:
+    - name: image-digest
+      description: Digest reported by Kaniko.
+  workspaces:
+    - name: source
+      description: Source checkout to build.
+    - name: dockerconfig
+      description: Optional Docker config.json workspace mounted at /kaniko/.docker.
+      optional: true
+      mountPath: /kaniko/.docker
+  steps:
+    - name: build-and-push
+      image: $(params.builder-image)
+      workingDir: $(workspaces.source.path)
+      args:
+        - --context=$(workspaces.source.path)/$(params.context)
+        - --dockerfile=$(workspaces.source.path)/$(params.dockerfile)
+        - --destination=$(params.destination-image)
+        - --digest-file=$(results.image-digest.path)
+        - --cache=true
+        - --cache-copy-layers
+        - --use-new-run

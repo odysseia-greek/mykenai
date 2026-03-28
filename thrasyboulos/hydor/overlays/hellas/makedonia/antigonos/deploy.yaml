@@ -1,0 +1,148 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: antigonos
+  namespace: makedonia
+spec:
+  ports:
+  - name: grpc
+    port: 50060
+    targetPort: 50060
+  selector:
+    app: antigonos
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    volumes.odysseia.io/secrets: "true"
+  labels:
+    app: antigonos
+  name: antigonos
+  namespace: makedonia
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: antigonos
+  template:
+    metadata:
+      annotations:
+        odysseia-greek/access: dictionary
+        odysseia-greek/role: api
+        perikles/accesses: solon
+      labels:
+        app: antigonos
+        release: antigonos
+        version: v0.0.3
+    spec:
+      containers:
+      - env:
+        - name: ELASTIC_ACCESS
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['odysseia-greek/access']
+        - name: VERSION
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['version']
+        envFrom:
+        - configMapRef:
+            name: odysseia-common-env
+        image: ghcr.io/odysseia-greek/antigonos:v0.0.3
+        imagePullPolicy: Always
+        name: antigonos
+        ports:
+        - containerPort: 50060
+        resources:
+          limits:
+            memory: 32Mi
+          requests:
+            cpu: 100m
+            memory: 32Mi
+        volumeMounts:
+        - mountPath: /app/config/antigonos
+          name: antigonos-certs
+          readOnly: true
+      - env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        envFrom:
+        - configMapRef:
+            name: odysseia-common-env
+        image: ghcr.io/odysseia-greek/aristophanes:v0.7.1
+        imagePullPolicy: Always
+        name: aristophanes
+        ports:
+        - containerPort: 50052
+        resources:
+          limits:
+            memory: 32Mi
+          requests:
+            memory: 32Mi
+      - env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        envFrom:
+        - configMapRef:
+            name: odysseia-common-env
+        image: ghcr.io/odysseia-greek/aristides:v0.0.2
+        imagePullPolicy: Always
+        name: aristides
+        ports:
+        - containerPort: 50051
+        resources:
+          limits:
+            memory: 32Mi
+          requests:
+            memory: 32Mi
+        volumeMounts:
+        - mountPath: /app/config/vault
+          name: vault-server-tls
+          readOnly: true
+        - mountPath: /app/config/solon
+          name: solon-certs
+          readOnly: true
+      initContainers:
+      - env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: ELASTIC_ROLE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['odysseia-greek/role']
+        - name: ELASTIC_ACCESS
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['odysseia-greek/access']
+        envFrom:
+        - configMapRef:
+            name: odysseia-common-env
+        image: ghcr.io/odysseia-greek/periandros:v0.1.4
+        imagePullPolicy: Always
+        name: periandros
+        volumeMounts:
+        - mountPath: /app/config/solon
+          name: solon-certs
+          readOnly: true
+      volumes:
+      - name: solon-certs
+        secret:
+          secretName: solon-tls-certs
+      - name: vault-server-tls
+        secret:
+          secretName: vault-server-tls

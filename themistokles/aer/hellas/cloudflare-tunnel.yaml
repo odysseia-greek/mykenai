@@ -2,17 +2,19 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: cilium
+  name: cloudflare-tunnel
   namespace: flux-system
 spec:
-  interval: 4h
+  interval: 10m
   retryInterval: 2m
   timeout: 10m
   sourceRef:
     kind: GitRepository
     name: themistokles
-  dependsOn:
-    - name: node-labels
-  path: themistokles/ge/overlays/hellenistike/cilium
+  path: themistokles/ge/overlays/hellas/cloudflare-tunnel
   prune: true
   wait: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-gpg

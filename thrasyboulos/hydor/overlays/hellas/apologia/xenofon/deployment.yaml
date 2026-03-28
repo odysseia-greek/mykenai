@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: xenofon
+  labels:
+    app: xenofon
+  annotations:
+    volumes.odysseia.io/secrets: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: xenofon
+  template:
+    metadata:
+      labels:
+        app: xenofon
+        release: xenofon
+      annotations:
+        odysseia-greek/role: api
+        odysseia-greek/access: author-based-quiz
+        perikles/accesses: "solon"
+    spec:
+      containers:
+        - name: "xenofon"
+
+          image: ghcr.io/odysseia-greek/xenofon
+
+          imagePullPolicy: Always
+          env:
+            - name: ELASTIC_ACCESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['odysseia-greek/access']
+          envFrom: []
+          volumeMounts: []
+          ports:
+            - containerPort: 50060
+      volumes: []

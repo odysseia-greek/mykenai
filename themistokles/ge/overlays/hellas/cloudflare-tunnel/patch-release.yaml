@@ -1,0 +1,14 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: cloudflare-tunnel
+spec:
+  values:
+    cloudflare:
+      account: hellas
+      tunnel_name: hellas
+  valuesFrom:
+    - kind: Secret
+      name: cloudflare-tunnel
+      valuesKey: tunnel-token
+      targetPath: cloudflare.tunnel_token

@@ -1,0 +1,22 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: tekton-pipelines
+  namespace: tekton-pipelines
+spec:
+  interval: 10m
+  targetNamespace: tekton-pipelines
+  install:
+    createNamespace: false
+    remediation:
+      retries: -1
+  upgrade:
+    remediation:
+      retries: -1
+  chart:
+    spec:
+      chart: tekton-pipelines
+      sourceRef:
+        kind: HelmRepository
+        name: tekton
+        namespace: tekton-pipelines

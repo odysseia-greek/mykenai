@@ -1,0 +1,24 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+images:
+  - name: ghcr.io/odysseia-greek/alkibiades
+    newTag: v0.1.4
+  - name: ghcr.io/odysseia-greek/antisthenes
+    newTag: v0.1.4
+  - name: ghcr.io/odysseia-greek/aristippos
+    newTag: v0.1.4
+  - name: ghcr.io/odysseia-greek/aspasia
+    newTag: v0.0.6
+  - name: ghcr.io/odysseia-greek/kritias
+    newTag: v0.1.4
+  - name: ghcr.io/odysseia-greek/kriton
+    newTag: v0.1.3
+  - name: ghcr.io/odysseia-greek/xenofon
+    newTag: v0.1.4
+  - name: ghcr.io/odysseia-greek/sokrates
+    newTag: v0.2.4
+  - name: ghcr.io/odysseia-greek/meletos
+    newTag: v0.1.2
+  - name: ghcr.io/odysseia-greek/parmenides
+    newTag: v0.2.1

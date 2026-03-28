@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hippokrates
+data:
+  ENV: "k3d"
+  DIONYSIOS_SERVICE: "http://dionysios:5000"
+  HERODOTOS_SERVICE: "http://herodotos:5000"
+  HOMEROS_SERVICE: "http://homeros:8080"
+  ARISTARCHOS_SERVICE: "http://aristarchos:50060"

@@ -1,0 +1,27 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: cloudflare-tunnel
+  namespace: cloudflare-tunnel
+spec:
+  interval: 10m
+  targetNamespace: cloudflare-tunnel
+  install:
+    createNamespace: false
+    remediation:
+      retries: -1
+  upgrade:
+    remediation:
+      retries: -1
+  chart:
+    spec:
+      chart: cloudflare-tunnel-remote
+      sourceRef:
+        kind: HelmRepository
+        name: cloudflare
+        namespace: cloudflare-tunnel
+  values:
+    replicaCount: 1
+    cloudflare:
+      account: odysseia-hellas
+      tunnel_name: hellas

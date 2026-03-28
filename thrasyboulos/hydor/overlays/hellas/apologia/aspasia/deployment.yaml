@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aspasia
+  labels:
+    app: aspasia
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aspasia
+  template:
+    metadata:
+      labels:
+        app: aspasia
+        release: aspasia
+      annotations:
+        perikles/accesses: "herodotos;antigonos"
+    spec:
+      containers:
+        - name: "aspasia"
+          image: ghcr.io/odysseia-greek/aspasia
+          imagePullPolicy: Always
+          env: []
+          envFrom:
+            - configMapRef:
+                name: aspasia
+          ports:
+            - containerPort: 50060

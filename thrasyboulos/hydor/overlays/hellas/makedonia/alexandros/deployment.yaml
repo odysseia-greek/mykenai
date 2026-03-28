@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alexandros
+  labels:
+    app: alexandros
+  annotations:
+    volumes.odysseia.io/secrets: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alexandros
+  template:
+    metadata:
+      labels:
+        app: alexandros
+        release: alexandros
+        version: v0.3.2
+      annotations:
+        perikles/accesses: "antigonos;eukleides;ptolemaios;hefaistion"
+    spec:
+      containers:
+        - name: alexandros
+          image: ghcr.io/odysseia-greek/alexandros:v0.3.2
+          imagePullPolicy: Always
+          env: []
+          envFrom:
+            - configMapRef:
+                name: alexandros
+          ports:
+            - name: graphql
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 20
+      volumes: []

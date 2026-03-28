@@ -1,0 +1,8 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: tekton
+  namespace: tekton-pipelines
+spec:
+  interval: 1h
+  url: https://chainguard.github.io/tekton-helm-charts
