@@ -13,7 +13,7 @@ spec:
               kinds:
                 - Pod
               namespaces:
-                - harbor
+                - zot
                 - tekton-pipelines
       validate:
         message: Pods in the management namespaces must define livenessProbe and readinessProbe.

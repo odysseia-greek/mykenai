@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openbao
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openbao
+  template:
+    metadata:
+      labels:
+        app: openbao
+    spec:
+      containers:
+        - name: openbao
+          image: ghcr.io/openbao/openbao:v2.4.4
+          args:
+            - bao
+            - server
+            - -config=/etc/openbao/openbao.hcl
+          ports:
+            - name: https
+              containerPort: 8200
+          livenessProbe:
+            tcpSocket:
+              port: https
+          readinessProbe:
+            tcpSocket:
+              port: https
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
+          volumeMounts:
+            - name: config
+              mountPath: /etc/openbao
+              readOnly: true
+            - name: tls
+              mountPath: /vault/userconfig/vault-server-tls
+              readOnly: true
+            - name: data
+              mountPath: /vault/data
+      volumes:
+        - name: config
+          configMap:
+            name: vault-config
+        - name: tls
+          secret:
+            secretName: vault-server-tls
+        - name: data
+          persistentVolumeClaim:
+            claimName: vault-data

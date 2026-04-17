@@ -12,7 +12,7 @@ spec:
     kind: GitRepository
     name: themistokles
   dependsOn:
-    - name: harbor
+    - name: zot
     - name: tekton
   path: themistokles/ge/overlays/hellenistike/kaniko
   prune: true
