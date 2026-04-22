@@ -14,7 +14,7 @@ run ansible script to get all the pies ready to run k3s
 
 setup ansible script for bootstrapping k3s according to the following params:
 
-1. longhorn
+1. rook-ceph
 2. cilium
 3. traefik
 4. etcd

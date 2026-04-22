@@ -1,0 +1,24 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: rook-ceph-cluster
+spec:
+  values:
+    cephClusterSpec:
+      placement:
+        all:
+          tolerations:
+            - key: node-role.kubernetes.io/master
+              operator: Exists
+              effect: NoSchedule
+            - key: node-role.kubernetes.io/control-plane
+              operator: Exists
+              effect: NoSchedule
+      storage:
+        # Keep the allowed nodes explicit and only consume the expected NVMe device.
+        # If your Raspberry Pi nodes expose a different device name, update the filter.
+        deviceFilter: "^nvme0n1$"
+        nodes:
+          - name: pella-hellenistike
+          - name: antioch-hellenistike
+          - name: alexandreia-hellenistike

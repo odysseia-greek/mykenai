@@ -3,4 +3,4 @@ kind: PersistentVolumeClaim
 metadata:
   name: vault-data
 spec:
-  storageClassName: longhorn
+  storageClassName: ceph-block
