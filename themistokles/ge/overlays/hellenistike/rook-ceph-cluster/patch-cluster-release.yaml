@@ -4,6 +4,31 @@ metadata:
   name: rook-ceph-cluster
 spec:
   values:
+    cephBlockPools:
+      - name: pyxis
+        spec:
+          failureDomain: host
+          replicated:
+            size: 2
+        storageClass:
+          enabled: true
+          name: pyxis
+          isDefault: true
+          reclaimPolicy: Delete
+          allowVolumeExpansion: true
+          volumeBindingMode: WaitForFirstConsumer
+      - name: kibotos
+        spec:
+          failureDomain: host
+          replicated:
+            size: 2
+        storageClass:
+          enabled: true
+          name: kibotos
+          isDefault: false
+          reclaimPolicy: Retain
+          allowVolumeExpansion: true
+          volumeBindingMode: WaitForFirstConsumer
     cephClusterSpec:
       placement:
         all:
@@ -15,9 +40,8 @@ spec:
               operator: Exists
               effect: NoSchedule
       storage:
-        # Keep the allowed nodes explicit and only consume the dedicated external SSD.
+        # Keep OSDs off the 4GB antioch node and only consume the dedicated external SSD.
         deviceFilter: "^sda$"
         nodes:
           - name: pella-hellenistike
-          - name: antioch-hellenistike
           - name: alexandreia-hellenistike

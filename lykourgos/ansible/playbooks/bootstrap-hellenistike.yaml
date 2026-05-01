@@ -202,6 +202,28 @@
         regexp: '^([^#].*\s+swap\s+.*)$'
         replace: '# \1'
 
+    - name: Check default kubelet directory
+      ansible.builtin.stat:
+        path: /var/lib/kubelet
+      register: default_kubelet_dir
+
+    - name: Ensure k0s kubelet directory exists
+      ansible.builtin.file:
+        path: /var/lib/k0s/kubelet
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Provide default kubelet path compatibility for k0s
+      ansible.builtin.file:
+        src: /var/lib/k0s/kubelet
+        dest: /var/lib/kubelet
+        state: link
+        owner: root
+        group: root
+      when: not default_kubelet_dir.stat.exists
+
     - name: Ensure /etc/hosts contains all Hellenistike cluster hosts
       ansible.builtin.lineinfile:
         path: /etc/hosts
