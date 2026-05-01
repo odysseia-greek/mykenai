@@ -58,6 +58,8 @@ spec:
           volumeBindingMode: WaitForFirstConsumer
     cephClusterSpec:
       dataDirHostPath: /var/lib/rook
+      crashCollector:
+        disable: true
       mon:
         count: 3
         allowMultiplePerNode: false
