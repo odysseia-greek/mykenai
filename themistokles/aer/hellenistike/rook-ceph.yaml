@@ -27,6 +27,8 @@ spec:
   sourceRef:
     kind: GitRepository
     name: themistokles
+  dependsOn:
+    - name: rook-ceph-operator
   path: themistokles/ge/overlays/hellenistike/rook-ceph-cluster
   prune: true
   wait: true
