@@ -1,9 +1,9 @@
 ---
-- name: Install k0s on ACC controller (single-node controller+worker)
-  hosts: poleis-acc-controller
+- name: Install k0s on Hellenistike controller (single-node controller+worker)
+  hosts: poleis-hellenistike-controller
   become: yes
   vars:
-    k0s_version: "v1.34.2+k0s.0"
+    k0s_version: "v1.35.2+k0s.0"
   tasks:
     - name: Skip disabled hosts
       meta: end_host
@@ -100,7 +100,7 @@
         var: cluster_status.stdout_lines
 
 - name: Create join token on controller
-  hosts: poleis-acc-controller
+  hosts: poleis-hellenistike-controller
   become: yes
   tasks:
     - name: Create worker join token (valid 1h)
@@ -112,11 +112,11 @@
       set_fact:
         worker_join_token: "{{ k0s_worker_token.stdout }}"
 
-- name: Join workers to ACC cluster
-  hosts: poleis-acc-workers
+- name: Join workers to Hellenistike cluster
+  hosts: poleis-hellenistike-workers
   become: yes
   vars:
-    controller_host: "{{ groups['poleis-acc-controller'][0] }}"
+    controller_host: "{{ groups['poleis-hellenistike-controller'][0] }}"
   tasks:
     - name: Skip disabled hosts
       meta: end_host

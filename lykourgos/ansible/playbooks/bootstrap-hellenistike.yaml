@@ -1,0 +1,441 @@
+---
+- name: Bootstrap Hellenistike Raspberry Pis for k0s, Cilium, and Rook Ceph
+  hosts: poleis
+  become: yes
+  serial: 1
+  vars:
+    use_cilium: true
+    ssd_mount_path: /mnt/ssd
+    ssd_label_device: '/dev/disk/by-label/PHILIPS\x20SSD'
+    ssd_fstab_src: 'LABEL=PHILIPS\040SSD'
+    ssd_fstype: exfat
+    ssd_mount_opts: defaults,nofail,uid=1000,gid=1000
+  handlers:
+    - name: Reload systemd daemon
+      ansible.builtin.systemd:
+        daemon_reload: true
+  tasks:
+    - name: Skip disabled hosts
+      ansible.builtin.meta: end_host
+      when: hostvars[inventory_hostname].disabled | default(false) | bool
+
+    - name: Set Rook Ceph bootstrap defaults
+      ansible.builtin.set_fact:
+        rook_expected_devices: "{{ rook_expected_devices | default([]) }}"
+        rook_ceph_prepare_disk: "{{ rook_ceph_prepare_disk | default(false) }}"
+        rook_ceph_wipe_disk: "{{ rook_ceph_wipe_disk | default(false) }}"
+        rook_ceph_disk: "{{ rook_ceph_disk | default('') }}"
+        rook_ceph_partition_number: "{{ rook_ceph_partition_number | default(1) }}"
+        rook_ceph_partition_name: "{{ rook_ceph_partition_name | default('rook-ceph') }}"
+        rook_ceph_partition_start: "{{ rook_ceph_partition_start | default('1MiB') }}"
+        rook_ceph_partition_end: "{{ rook_ceph_partition_end | default('100%') }}"
+
+    - name: Ensure required packages are installed
+      ansible.builtin.apt:
+        name:
+          - curl
+          - exfatprogs
+          - gdisk
+          - iproute2
+          - iptables
+          - lvm2
+          - parted
+          - thin-provisioning-tools
+          - util-linux
+          - xfsprogs
+        state: present
+        update_cache: yes
+
+    - name: Install exfat-fuse when available
+      ansible.builtin.apt:
+        name: exfat-fuse
+        state: present
+      register: exfat_fuse_install
+      failed_when: false
+
+    - name: Report unavailable exfat-fuse package
+      ansible.builtin.debug:
+        msg: "exfat-fuse is not available on {{ inventory_hostname }}; continuing with exfatprogs."
+      when: exfat_fuse_install.msg is defined and 'No package matching' in exfat_fuse_install.msg
+
+    - name: Check external SSD mountpoint state
+      ansible.builtin.command: "mountpoint -q {{ ssd_mount_path }}"
+      register: ssd_mountpoint
+      changed_when: false
+      failed_when: false
+      when: not rook_ceph_prepare_disk | bool
+
+    - name: Ensure external SSD mountpoint exists before mounting
+      ansible.builtin.file:
+        path: "{{ ssd_mount_path }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+      when:
+        - not rook_ceph_prepare_disk | bool
+        - ssd_mountpoint.rc != 0
+
+    - name: Check for external SSD by filesystem label
+      ansible.builtin.stat:
+        path: "{{ ssd_label_device }}"
+      register: ssd_label
+      when: not rook_ceph_prepare_disk | bool
+
+    - name: Skip external SSD mount when disk is not attached
+      ansible.builtin.debug:
+        msg: "External SSD label device {{ ssd_label_device }} is not present on {{ inventory_hostname }}; skipping {{ ssd_mount_path }} fstab and mount setup."
+      when:
+        - not rook_ceph_prepare_disk | bool
+        - not ssd_label.stat.exists
+
+    - name: Persist external SSD mount in fstab
+      ansible.posix.mount:
+        path: "{{ ssd_mount_path }}"
+        src: "{{ ssd_fstab_src }}"
+        fstype: "{{ ssd_fstype }}"
+        opts: "{{ ssd_mount_opts }}"
+        dump: "0"
+        passno: "0"
+        state: present
+      notify: Reload systemd daemon
+      when:
+        - not rook_ceph_prepare_disk | bool
+        - ssd_label.stat.exists
+
+    - name: Flush systemd daemon reload after fstab changes
+      ansible.builtin.meta: flush_handlers
+
+    - name: Mount filesystems from fstab
+      ansible.builtin.command: mount -a
+      changed_when: false
+      when:
+        - not rook_ceph_prepare_disk | bool
+        - ssd_label.stat.exists
+
+    - name: Candidate Raspberry Pi cmdline paths
+      ansible.builtin.set_fact:
+        _cmdline_candidates:
+          - /boot/firmware/cmdline.txt
+          - /boot/cmdline.txt
+
+    - name: Probe cmdline paths
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      loop: "{{ _cmdline_candidates }}"
+      register: _cmdline_stats
+
+    - name: Pick existing cmdline.txt
+      ansible.builtin.set_fact:
+        cmdline_path: >-
+          {{
+            (_cmdline_stats.results
+             | selectattr('stat.exists')
+             | map(attribute='item')
+             | list
+            )[0] | default(omit)
+          }}
+
+    - name: Fail if no cmdline.txt found
+      ansible.builtin.fail:
+        msg: "Could not find cmdline.txt at /boot/firmware or /boot."
+      when: cmdline_path is not defined
+
+    - name: Read current cmdline.txt
+      ansible.builtin.slurp:
+        src: "{{ cmdline_path }}"
+      register: cmdline_content
+
+    - name: Track missing cgroup kernel args
+      ansible.builtin.set_fact:
+        missing_cgroup_args: >-
+          {{
+            ['cgroup_enable=cpuset', 'cgroup_enable=memory', 'cgroup_memory=1']
+            | difference((cmdline_content.content | b64decode).split())
+          }}
+
+    - name: Enable Raspberry Pi cgroup kernel args
+      ansible.builtin.lineinfile:
+        path: "{{ cmdline_path }}"
+        regexp: '^(.*)$'
+        line: '\1 {{ missing_cgroup_args | join(" ") }}'
+        backrefs: yes
+      when: missing_cgroup_args | length > 0
+      register: cgroups_updated
+
+    - name: Ensure Kubernetes kernel modules load on boot
+      ansible.builtin.copy:
+        dest: /etc/modules-load.d/kubernetes.conf
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          overlay
+          br_netfilter
+
+    - name: Load Kubernetes kernel modules now
+      community.general.modprobe:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - overlay
+        - br_netfilter
+
+    - name: Ensure Kubernetes and Cilium sysctls are present
+      ansible.builtin.copy:
+        dest: /etc/sysctl.d/99-kubernetes.conf
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          net.bridge.bridge-nf-call-iptables = 1
+          net.bridge.bridge-nf-call-ip6tables = 1
+          net.ipv4.ip_forward = 1
+
+    - name: Apply Kubernetes sysctls
+      ansible.builtin.command: sysctl --system
+      changed_when: false
+
+    - name: Disable swap immediately
+      ansible.builtin.command: swapoff -a
+      changed_when: false
+
+    - name: Disable swap persistently
+      ansible.builtin.replace:
+        path: /etc/fstab
+        regexp: '^([^#].*\s+swap\s+.*)$'
+        replace: '# \1'
+
+    - name: Ensure /etc/hosts contains all Hellenistike cluster hosts
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: "{{ hostvars[item].ansible_host }} {{ item }}"
+        state: present
+      loop: "{{ groups['poleis'] | default([]) }}"
+      when: hostvars[item].ansible_host is defined
+
+    - name: Ensure BPF filesystem is mounted
+      ansible.posix.mount:
+        path: /sys/fs/bpf
+        src: bpffs
+        fstype: bpf
+        state: mounted
+
+    - name: Ensure cgroup2 mountpoint exists for Cilium
+      ansible.builtin.file:
+        path: /run/cilium/cgroupv2
+        state: directory
+        mode: "0755"
+      when: use_cilium
+
+    - name: Check Cilium cgroup2 mount
+      ansible.builtin.command: mountpoint -q /run/cilium/cgroupv2
+      register: cilium_cgroup2_mount
+      changed_when: false
+      failed_when: false
+      when: use_cilium
+
+    - name: Mount cgroup2 for Cilium runtime use
+      ansible.builtin.command: mount -t cgroup2 none /run/cilium/cgroupv2
+      when:
+        - use_cilium
+        - cilium_cgroup2_mount.rc != 0
+
+    - name: Show block devices for Rook Ceph planning
+      ansible.builtin.command: lsblk -e7 -o NAME,PATH,SIZE,TYPE,FSTYPE,MOUNTPOINTS,MODEL
+      register: rook_lsblk
+      changed_when: false
+
+    - name: Print block devices
+      ansible.builtin.debug:
+        var: rook_lsblk.stdout_lines
+
+    - name: Skip Rook Ceph partitioning when not configured
+      ansible.builtin.debug:
+        msg: "Rook Ceph disk partitioning is disabled on {{ inventory_hostname }}. Set rook_ceph_prepare_disk=true and rook_ceph_disk=/dev/... to create the OSD partition."
+      when: not rook_ceph_prepare_disk | bool
+
+    - name: Require rook_ceph_disk when Rook Ceph partitioning is enabled
+      ansible.builtin.fail:
+        msg: "rook_ceph_prepare_disk=true requires rook_ceph_disk to be set on {{ inventory_hostname }}."
+      when:
+        - rook_ceph_prepare_disk | bool
+        - rook_ceph_disk | length == 0
+
+    - name: Check configured Rook Ceph disk
+      ansible.builtin.stat:
+        path: "{{ rook_ceph_disk }}"
+      register: rook_ceph_disk_stat
+      when: rook_ceph_prepare_disk | bool
+
+    - name: Fail when configured Rook Ceph disk is missing
+      ansible.builtin.fail:
+        msg: "Configured Rook Ceph disk {{ rook_ceph_disk }} is not present on {{ inventory_hostname }}."
+      when:
+        - rook_ceph_prepare_disk | bool
+        - not rook_ceph_disk_stat.stat.exists
+
+    - name: Remove external SSD mount when repurposing disk for Rook Ceph
+      ansible.posix.mount:
+        path: "{{ ssd_mount_path }}"
+        state: absent
+      notify: Reload systemd daemon
+      when:
+        - rook_ceph_prepare_disk | bool
+        - rook_ceph_wipe_disk | bool
+
+    - name: Flush systemd daemon reload after removing SSD mount
+      ansible.builtin.meta: flush_handlers
+
+    - name: Inspect configured Rook Ceph disk
+      ansible.builtin.command: "lsblk -J -o NAME,PATH,TYPE,FSTYPE,MOUNTPOINTS {{ rook_ceph_disk }}"
+      register: rook_ceph_disk_lsblk
+      changed_when: false
+      when: rook_ceph_prepare_disk | bool
+
+    - name: Derive configured Rook Ceph disk facts
+      ansible.builtin.set_fact:
+        rook_ceph_disk_info: "{{ (rook_ceph_disk_lsblk.stdout | from_json).blockdevices[0] }}"
+        rook_ceph_existing_partitions: "{{ (rook_ceph_disk_lsblk.stdout | from_json).blockdevices[0].children | default([]) }}"
+      when: rook_ceph_prepare_disk | bool
+
+    - name: Zap existing partition table from Rook Ceph disk
+      ansible.builtin.command: "sgdisk --zap-all {{ rook_ceph_disk }}"
+      when:
+        - rook_ceph_prepare_disk | bool
+        - rook_ceph_wipe_disk | bool
+
+    - name: Force wipe existing filesystem signatures from Rook Ceph disk
+      ansible.builtin.command: "wipefs --all --force {{ rook_ceph_disk }}"
+      when:
+        - rook_ceph_prepare_disk | bool
+        - rook_ceph_wipe_disk | bool
+
+    - name: Force wipe existing filesystem signatures from Rook Ceph partitions
+      ansible.builtin.command: "wipefs --all --force {{ item.path }}"
+      failed_when: false
+      loop: "{{ rook_ceph_existing_partitions }}"
+      when:
+        - rook_ceph_prepare_disk | bool
+        - rook_ceph_wipe_disk | bool
+        - item.path is defined
+
+    - name: Refresh partition table after Rook Ceph wipe
+      ansible.builtin.command: "partprobe {{ rook_ceph_disk }}"
+      changed_when: false
+      failed_when: false
+      when:
+        - rook_ceph_prepare_disk | bool
+        - rook_ceph_wipe_disk | bool
+
+    - name: Reset Rook Ceph partition facts after wipe
+      ansible.builtin.set_fact:
+        rook_ceph_existing_partitions: []
+      when:
+        - rook_ceph_prepare_disk | bool
+        - rook_ceph_wipe_disk | bool
+
+    - name: Refuse to partition mounted or formatted Rook Ceph disks
+      ansible.builtin.fail:
+        msg: "Refusing to prepare {{ rook_ceph_disk }} on {{ inventory_hostname }} because it or its partitions are mounted or formatted. Rook OSD partitions must be empty."
+      when:
+        - rook_ceph_prepare_disk | bool
+        - >-
+          rook_ceph_disk_info.fstype
+          or (rook_ceph_disk_info.mountpoints | default([]) | select() | list | length > 0)
+          or (rook_ceph_existing_partitions | selectattr('fstype') | list | length > 0)
+          or (rook_ceph_existing_partitions | selectattr('mountpoints', 'defined') | map(attribute='mountpoints') | flatten | select() | list | length > 0)
+
+    - name: Create single GPT partition for Rook Ceph
+      community.general.parted:
+        device: "{{ rook_ceph_disk }}"
+        label: gpt
+        number: "{{ rook_ceph_partition_number }}"
+        name: "{{ rook_ceph_partition_name }}"
+        part_start: "{{ rook_ceph_partition_start }}"
+        part_end: "{{ rook_ceph_partition_end }}"
+        state: present
+      when:
+        - rook_ceph_prepare_disk | bool
+        - rook_ceph_existing_partitions | length == 0
+
+    - name: Refresh partition table after creating Rook Ceph partition
+      ansible.builtin.command: "partprobe {{ rook_ceph_disk }}"
+      changed_when: false
+      failed_when: false
+      when:
+        - rook_ceph_prepare_disk | bool
+        - rook_ceph_existing_partitions | length == 0
+
+    - name: Ensure Rook Ceph partition has the expected GPT name
+      ansible.builtin.command: "parted -s {{ rook_ceph_disk }} name {{ rook_ceph_partition_number }} {{ rook_ceph_partition_name }}"
+      changed_when: false
+      when: rook_ceph_prepare_disk | bool
+
+    - name: Trigger udev after naming Rook Ceph partition
+      ansible.builtin.command: udevadm trigger --subsystem-match=block
+      changed_when: false
+      when: rook_ceph_prepare_disk | bool
+
+    - name: Wait for Rook Ceph partition device
+      ansible.builtin.command: udevadm settle
+      changed_when: false
+      when: rook_ceph_prepare_disk | bool
+
+    - name: Determine Rook Ceph partition path
+      ansible.builtin.set_fact:
+        rook_ceph_partition_path: >-
+          {{
+            rook_ceph_disk ~
+            (('p' ~ rook_ceph_partition_number)
+             if (rook_ceph_disk | regex_search('[0-9]$'))
+             else rook_ceph_partition_number)
+          }}
+      when: rook_ceph_prepare_disk | bool
+
+    - name: Force wipe filesystem signatures from prepared Rook Ceph partition
+      ansible.builtin.command: "wipefs --all --force {{ rook_ceph_partition_path }}"
+      when:
+        - rook_ceph_prepare_disk | bool
+        - rook_ceph_wipe_disk | bool
+
+    - name: Refresh udev after final Rook Ceph partition wipe
+      ansible.builtin.command: udevadm trigger --subsystem-match=block
+      changed_when: false
+      when: rook_ceph_prepare_disk | bool
+
+    - name: Wait for Rook Ceph partition label symlink
+      ansible.builtin.wait_for:
+        path: "/dev/disk/by-partlabel/{{ rook_ceph_partition_name }}"
+        state: present
+        timeout: 20
+      when: rook_ceph_prepare_disk | bool
+
+    - name: Keep existing empty Rook Ceph partition
+      ansible.builtin.debug:
+        msg: "Rook Ceph disk {{ rook_ceph_disk }} already has {{ rook_ceph_existing_partitions | length }} empty partition(s); leaving the partition table unchanged."
+      when:
+        - rook_ceph_prepare_disk | bool
+        - rook_ceph_existing_partitions | length > 0
+
+    - name: Check expected Rook Ceph devices when configured
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      loop: "{{ rook_expected_devices }}"
+      register: rook_expected_device_stats
+      when: rook_expected_devices | length > 0
+
+    - name: Fail if expected Rook Ceph devices are missing
+      ansible.builtin.fail:
+        msg: "Expected Rook Ceph device {{ item.item }} is not present on {{ inventory_hostname }}."
+      loop: "{{ rook_expected_device_stats.results | default([]) }}"
+      when:
+        - rook_expected_devices | length > 0
+        - not item.stat.exists
+
+    - name: Reboot if cgroup kernel args changed
+      ansible.builtin.reboot:
+        reboot_timeout: 300
+        post_reboot_delay: 10
+        msg: "Rebooting to apply Raspberry Pi cgroup settings"
+      when: cgroups_updated is defined and cgroups_updated.changed

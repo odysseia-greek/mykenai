@@ -15,10 +15,9 @@ spec:
               operator: Exists
               effect: NoSchedule
       storage:
-        # Keep the allowed nodes explicit and only consume the expected NVMe device.
-        # If your Raspberry Pi nodes expose a different device name, update the filter.
-        deviceFilter: "^nvme0n1$"
+        # Keep the allowed nodes explicit and only consume the prepared Rook partition.
+        devicePathFilter: "^/dev/disk/by-partlabel/rook-ceph$"
         nodes:
           - name: pella-hellenistike
           - name: antioch-hellenistike
-          - name: alexandreia-hellenistike
+          - name: alexandria-hellenistike

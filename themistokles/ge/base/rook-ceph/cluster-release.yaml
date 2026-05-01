@@ -28,16 +28,28 @@ spec:
     monitoring:
       enabled: false
     cephBlockPools:
-      - name: replicapool
+      - name: pyxis
         spec:
           failureDomain: host
           replicated:
             size: 3
         storageClass:
           enabled: true
-          name: ceph-block
+          name: pyxis
           isDefault: true
           reclaimPolicy: Delete
+          allowVolumeExpansion: true
+          volumeBindingMode: WaitForFirstConsumer
+      - name: kibotos
+        spec:
+          failureDomain: host
+          replicated:
+            size: 3
+        storageClass:
+          enabled: true
+          name: kibotos
+          isDefault: false
+          reclaimPolicy: Retain
           allowVolumeExpansion: true
           volumeBindingMode: WaitForFirstConsumer
     cephClusterSpec:

@@ -1,18 +1,21 @@
-INVENTORY_ACC = inventories/acc/hosts.yaml
+INVENTORY_HELLENISTIKE = inventories/hellenistike/hosts.yaml
 INVENTORY_PRD = inventories/prd/hosts.yaml
 INVENTORY_SINGLE = inventories/single/hosts.yaml
 INVENTORY_LIMA = inventories/lima/hosts.yaml
 
-.PHONY: ping-acc ping-prd bootstrap-acc bootstrap-prd k0s-acc k3s-acc k0s-single k0s-lima-single k0s-lima-ha
+.PHONY: ping ping-prd bootstrap bootstrap-hellenistike bootstrap-prd k0s-hellenistike k3s-hellenistike k0s-single k0s-lima-single k0s-lima-ha
 
 KUBECONFIG_FILE ?= $(HOME)/.kube/config
-K0S_KUBECONFIG := playbooks/k0s-kubeconfig-athenai
-CLUSTER_NAME := acc-odysseia-single
-CONTEXT_NAME := acc-odysseia-single
-USER_NAME := acc-odysseia-single-admin
+K0S_KUBECONFIG := playbooks/k0s-kubeconfig-pella
+CLUSTER_NAME := hellenistike-odysseia
+CONTEXT_NAME := hellenistike-odysseia
+USER_NAME := hellenistike-odysseia-admin
 
 ping-prd:
 	ansible -i $(INVENTORY_PRD) all -m ping
+
+ping:
+	ansible -i $(INVENTORY_HELLENISTIKE) all -m ping
 
 merge-k0s-config: ## Merge k0s kubeconfig into main kubeconfig with meaningful names
 	@echo "Merging k0s kubeconfig into $(KUBECONFIG_FILE)..."
@@ -47,14 +50,19 @@ merge-k0s-config: ## Merge k0s kubeconfig into main kubeconfig with meaningful n
 bootstrap-prd:
 	ansible-playbook -i $(INVENTORY_PRD) playbooks/bootstrap-raspies.yaml
 
+bootstrap: bootstrap-hellenistike
+
+bootstrap-hellenistike:
+	ansible-playbook -i $(INVENTORY_HELLENISTIKE) playbooks/bootstrap-hellenistike.yaml
+
 bootstrap-single:
 	ansible-playbook -i $(INVENTORY_SINGLE) playbooks/bootstrap-raspies.yaml
 
-k0s-acc:
-	ansible-playbook -i $(INVENTORY_ACC) playbooks/k0s-install-acc.yaml
+k0s-hellenistike:
+	ansible-playbook -i $(INVENTORY_HELLENISTIKE) playbooks/k0s-hellenistike.yaml
 
-k3s-acc:
-	ansible-playbook -i $(INVENTORY_ACC) playbooks/k3s-install-acc.yaml
+k3s-hellenistike:
+	ansible-playbook -i $(INVENTORY_HELLENISTIKE) playbooks/k3s-install-hellenistike.yaml
 
 lvm-storage:
 	ansible-playbook -i $(INVENTORY_SINGLE) playbooks/lvm-node-storage.yaml

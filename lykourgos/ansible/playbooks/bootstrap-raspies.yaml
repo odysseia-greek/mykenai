@@ -62,7 +62,7 @@
         path: /etc/hosts
         line: "{{ hostvars[item].ansible_host }} {{ item }}"
         state: present
-      loop: "{{ groups['poleis-prd'] | default([]) + groups['poleis-acc'] | default([]) }}"
+      loop: "{{ groups['poleis'] | default([]) }}"
       when: hostvars[item].ansible_host is defined
 
     # Longhorn prerequisites removed here

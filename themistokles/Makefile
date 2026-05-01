@@ -4,6 +4,7 @@
 REPO_URL := https://github.com/odysseia-greek/mykenai.git
 BRANCH := main
 ENV ?= romaioi
+HELLENISTIKE_ENV := hellenistike
 PATH_IN_REPO := ./themistokles/aer/$(ENV)
 NAMESPACE := flux-system
 SOPS_NS        ?= flux-system
@@ -38,7 +39,7 @@ ensure-sops-gpg: ensure-flux-ns
 	@echo "Done."
 
 # Bootstrap Flux
-.PHONY: bootstrap-flux
+.PHONY: bootstrap-flux bootstrap-hellenistike
 bootstrap-flux: check-flux
 	@echo "Bootstrapping Flux for environment: $(ENV)..."
 	@echo "Using path: $(PATH_IN_REPO)"
@@ -59,6 +60,9 @@ bootstrap-flux: check-flux
 	  --prune=true \
 	  --interval=10m
 
+bootstrap-hellenistike:
+	@$(MAKE) bootstrap-flux ENV=$(HELLENISTIKE_ENV)
+
 # Check Flux status
 .PHONY: flux-status
 flux-status:
@@ -69,11 +73,12 @@ flux-status:
 help:
 	@echo "Available targets:"
 	@echo "  check-flux        - Check if Flux CLI is installed"
-	@echo "  bootstrap-flux    - Bootstrap Flux manually (ENV=romaioi|hellenistike|hellas, default: local)"
+	@echo "  bootstrap-flux    - Bootstrap Flux manually (ENV=romaioi|hellenistike|hellas, default: romaioi)"
+	@echo "  bootstrap-hellenistike - Bootstrap Flux with the Hellenistike core stack"
 	@echo "  flux-status       - Check Flux status"
 	@echo "  help              - Show this help message"
 	@echo ""
 	@echo "Usage examples:"
 	@echo "  make bootstrap-flux              # Uses romaioi environment (default)"
-	@echo "  make bootstrap-flux ENV=acc      # Uses hellenistike environment"
-	@echo "  make bootstrap-flux ENV=hellas     # Uses hellas environment"
+	@echo "  make bootstrap-hellenistike      # Uses hellenistike environment"
+	@echo "  make bootstrap-flux ENV=hellas   # Uses hellas environment"

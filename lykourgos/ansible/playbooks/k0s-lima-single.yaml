@@ -7,7 +7,7 @@
   gather_facts: yes
   vars:
     lima_user: "{{ ansible_env.USER }}"
-    k0s_version: "v1.34.2+k0s.0"
+    k0s_version: "v1.35.2+k0s.0"
   tasks:
     - name: Check Lima VM exists
       shell: limactl list --format '{{ "{{.Name}}" }}' | grep -x "{{ lima_vm_name }}"

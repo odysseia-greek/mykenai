@@ -1,9 +1,9 @@
 ---
-# ACC: installs a single control-plane on servers-acc[0] and joins all workers-acc.
+# Hellenistike: installs a single control-plane and joins all workers.
 # CNI left empty (flannel disabled) so you can install Cilium later.
 
-- name: Install K3s on ACC control-plane
-  hosts: servers-acc
+- name: Install K3s on Hellenistike control-plane
+  hosts: poleis-hellenistike-controller
   become: yes
   vars:
     k3s_flags: >
@@ -17,7 +17,7 @@
   tasks:
     - name: Restrict to the first server only
       meta: end_host
-      when: inventory_hostname != groups['servers-acc'][0]
+      when: inventory_hostname != groups['poleis-hellenistike-controller'][0]
 
     - name: Ensure base packages
       apt:
@@ -74,11 +74,11 @@
       set_fact:
         k3s_cluster_token: "{{ k3s_token_raw.content | b64decode | trim }}"
 
-- name: Join ACC workers to K3s
-  hosts: workers-acc
+- name: Join Hellenistike workers to K3s
+  hosts: poleis-hellenistike-workers
   become: yes
   vars:
-    controller: "{{ groups['servers-acc'][0] }}"
+    controller: "{{ groups['poleis-hellenistike-controller'][0] }}"
     controller_host: "{{ hostvars[controller].ansible_host | default(controller) }}"
   tasks:
     - name: Ensure base packages

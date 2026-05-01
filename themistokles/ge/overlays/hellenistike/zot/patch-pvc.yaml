@@ -3,4 +3,4 @@ kind: PersistentVolumeClaim
 metadata:
   name: zot-data
 spec:
-  storageClassName: ceph-block
+  storageClassName: pyxis
