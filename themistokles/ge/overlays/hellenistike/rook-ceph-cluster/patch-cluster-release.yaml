@@ -36,8 +36,6 @@ spec:
         global:
           osd_pool_default_size: "1"
           mon_warn_on_pool_no_redundancy: "false"
-        osd:
-          osd_memory_target: "536870912"
       mon:
         count: 1
         allowMultiplePerNode: true

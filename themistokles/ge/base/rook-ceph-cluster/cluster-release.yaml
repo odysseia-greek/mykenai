@@ -4,6 +4,7 @@ metadata:
   name: rook-ceph-cluster
 spec:
   interval: 10m
+  timeout: 30m
   targetNamespace: rook-ceph
   dependsOn:
     - name: rook-ceph
