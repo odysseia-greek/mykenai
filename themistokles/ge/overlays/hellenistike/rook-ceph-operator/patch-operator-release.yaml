@@ -12,6 +12,17 @@ spec:
         operator: Exists
         effect: NoSchedule
     csi:
+      rookUseCsiOperator: true
+      enableRbdDriver: true
+      enableCephfsDriver: false
+      enableCephfsSnapshotter: false
+      enableRBDSnapshotter: false
+      enableNFSSnapshotter: false
+      enableCSIHostNetwork: false
+      provisionerReplicas: 1
+      kubeletDirPath: /var/lib/k0s/kubelet
+      nfs:
+        enabled: false
       provisionerTolerations:
         - key: node-role.kubernetes.io/master
           operator: Exists
@@ -26,3 +37,9 @@ spec:
         - key: node-role.kubernetes.io/control-plane
           operator: Exists
           effect: NoSchedule
+    resources:
+      requests:
+        cpu: 50m
+        memory: 256Mi
+      limits:
+        memory: 256Mi
