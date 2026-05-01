@@ -1,0 +1,35 @@
+apiVersion: v1
+data:
+    hierophant: ENC[AES256_GCM,data:P6F4oh2K3Oc=,iv:hEpIq4yDAHIfcqmmTYLAmhDolWI1AFhqySRM5Fc+xqs=,tag:X78jqiYOgAitUeGx1Htetg==,type:str]
+    mystery: ENC[AES256_GCM,data:hISSUDGfvYmhSvOCXAz4vfn1J3ve2+PCmxK6zH99C30GTzlTX289VuAFZPD4G/DU,iv:iTVn9/hFdxCDs8o6+8+ltsPUNo9PKfB9ruNlpBNk1VI=,tag:gR54Bu/8Go1brTX5BBFOzQ==,type:str]
+kind: Secret
+metadata:
+    name: telete
+    namespace: eleusinian
+sops:
+    lastmodified: "2026-05-01T14:27:07Z"
+    mac: ENC[AES256_GCM,data:9Prr8x8g8bzkjbR3Go79ZKtv0osJ0pITQ+R1mnUF08qLTmeJwsNvXr8NAUhgnwk4R6o7gM4OWi5o60MHOD+hhnhLi+7l7UgQxOGQn4u5Z14HTA7jV6qP185+rVqzUcUJSSlUBM/4nMjhL1msGy23MjIwD74Rscd2GzNcX0BpFvM=,iv:N8x0z2oSDPEgASiNpjLC45qeClIDlUvzbi4AWdVOZTo=,tag:v9vKypNkYDqbP05pV/FFMg==,type:str]
+    pgp:
+        - created_at: "2026-05-01T14:27:07Z"
+          enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA/dvIqia++XvAQ//RSoOGLHhPNmuAkfMiD3pJmnpoBAuzTCJtfPIWuafOJ0O
+            WLQUnRx6RJ8EwwQrbnUOgTz3GDZygYddaDnd1d/NAb1IrFPdl0HwsFuvALDhinnV
+            uBiI0eU+G/KZ0JYnXU5frt64H1BraSDDbXEhDW+BIlXC9a4ksa9+GdMf2b8guMEb
+            XkaRQkdJnLR4944opWjnCEhmLJV7/LcchmPjLiPNV+N2L0uDdE0Mv+AGCI0Lf1wm
+            RafGwEMBOhUSjQHrI2x8/O7gNRDdBZToNEvwf6X+ZwTgcbSlKTx4IRrzY4B8EbYj
+            7jxWQFTLXy58XhD5G89vJc3nV9Wi/e7BUKFZd/EUSgSvHXGeJ0DcNvRoKsJWUxto
+            1/hxPvvrwsumDR9krcm6hyZmbupafHlxmGGLDzCkfqEsNsN2cSeo1eOYQ7v3bsmn
+            btoAusm9SEhlGxJk9+8FrP7/JwoFXNwKAIqqEjrqrnbZQf2od6DpnUpkXEtaswhV
+            dA+7CJljRYz0jpM1NQ9/RKaoAzxhfxQkqu0w4HHi+wKIL20ksXrR0pPXAmHX2Fmm
+            bRVfC5DsnQ4djIDqEDy+yxKvpYawWY6A3FCTpea1838j+M0XnxOa/euJbzJ+A/Uk
+            N1p1HKWGSUSfE7/X+TGASg1gBbGs8ykJ1U27v1XSiOeDyT21tfk/K3Q7KzXtI9zU
+            aAEJAhCYMhAPVisnObkPmrSlqlSmBXlvxgF6n9X2O02hPVA8DPmZhBY99Qt+X2if
+            n+/S77feKv1MloskntHQP+BULvwT6QSZrhWch7zUwh3EPsDfUk9WAibNZQ2Q3FF7
+            Frvr/IY3Ygds
+            =Lfps
+            -----END PGP MESSAGE-----
+          fp: 3C8B5BB6281C34C5E80C473086FCFB28CF0EC482
+    encrypted_regex: ^(data|stringData)$
+    version: 3.12.2
