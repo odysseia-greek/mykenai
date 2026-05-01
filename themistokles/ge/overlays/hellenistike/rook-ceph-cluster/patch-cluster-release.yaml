@@ -9,8 +9,7 @@ spec:
         spec:
           failureDomain: host
           replicated:
-            size: 1
-            requireSafeReplicaSize: false
+            size: 2
         storageClass:
           enabled: true
           name: pyxis
@@ -22,8 +21,7 @@ spec:
         spec:
           failureDomain: host
           replicated:
-            size: 1
-            requireSafeReplicaSize: false
+            size: 2
         storageClass:
           enabled: true
           name: kibotos
@@ -34,10 +32,10 @@ spec:
     cephClusterSpec:
       cephConfig:
         global:
-          osd_pool_default_size: "1"
+          osd_pool_default_size: "2"
           mon_warn_on_pool_no_redundancy: "false"
       mon:
-        count: 1
+        count: 2
         allowMultiplePerNode: true
       mgr:
         count: 1
