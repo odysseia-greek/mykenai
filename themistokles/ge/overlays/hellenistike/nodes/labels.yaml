@@ -21,7 +21,7 @@ metadata:
 apiVersion: v1
 kind: Node
 metadata:
-  name: alexandria-hellenistike
+  name: alexandreia-hellenistike
   annotations:
     kustomize.toolkit.fluxcd.io/prune: disabled
     kustomize.toolkit.fluxcd.io/ssa: disabled
