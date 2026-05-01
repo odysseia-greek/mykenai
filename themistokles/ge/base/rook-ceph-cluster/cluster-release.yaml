@@ -62,7 +62,7 @@ spec:
       crashCollector:
         disable: true
       mon:
-        count: 3
+        count: 2
         allowMultiplePerNode: false
       mgr:
         count: 1
