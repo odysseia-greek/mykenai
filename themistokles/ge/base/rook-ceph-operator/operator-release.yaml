@@ -7,9 +7,11 @@ spec:
   targetNamespace: rook-ceph
   install:
     createNamespace: false
+    crds: CreateReplace
     remediation:
       retries: -1
   upgrade:
+    crds: CreateReplace
     remediation:
       retries: -1
   chart:
