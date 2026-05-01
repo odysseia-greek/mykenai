@@ -25,10 +25,6 @@
         rook_ceph_prepare_disk: "{{ rook_ceph_prepare_disk | default(false) }}"
         rook_ceph_wipe_disk: "{{ rook_ceph_wipe_disk | default(false) }}"
         rook_ceph_disk: "{{ rook_ceph_disk | default('') }}"
-        rook_ceph_partition_number: "{{ rook_ceph_partition_number | default(1) }}"
-        rook_ceph_partition_name: "{{ rook_ceph_partition_name | default('rook-ceph') }}"
-        rook_ceph_partition_start: "{{ rook_ceph_partition_start | default('1MiB') }}"
-        rook_ceph_partition_end: "{{ rook_ceph_partition_end | default('100%') }}"
 
     - name: Ensure required packages are installed
       ansible.builtin.apt:
@@ -328,6 +324,21 @@
         - rook_ceph_prepare_disk | bool
         - rook_ceph_wipe_disk | bool
 
+    - name: Reread Rook Ceph disk partition table
+      ansible.builtin.command: "blockdev --rereadpt {{ rook_ceph_disk }}"
+      changed_when: false
+      failed_when: false
+      when:
+        - rook_ceph_prepare_disk | bool
+        - rook_ceph_wipe_disk | bool
+
+    - name: Wait for Rook Ceph disk udev settle after wipe
+      ansible.builtin.command: udevadm settle
+      changed_when: false
+      when:
+        - rook_ceph_prepare_disk | bool
+        - rook_ceph_wipe_disk | bool
+
     - name: Reset Rook Ceph partition facts after wipe
       ansible.builtin.set_fact:
         rook_ceph_existing_partitions: []
@@ -346,77 +357,10 @@
           or (rook_ceph_existing_partitions | selectattr('fstype') | list | length > 0)
           or (rook_ceph_existing_partitions | selectattr('mountpoints', 'defined') | map(attribute='mountpoints') | flatten | select() | list | length > 0)
 
-    - name: Create single GPT partition for Rook Ceph
-      community.general.parted:
-        device: "{{ rook_ceph_disk }}"
-        label: gpt
-        number: "{{ rook_ceph_partition_number }}"
-        name: "{{ rook_ceph_partition_name }}"
-        part_start: "{{ rook_ceph_partition_start }}"
-        part_end: "{{ rook_ceph_partition_end }}"
-        state: present
-      when:
-        - rook_ceph_prepare_disk | bool
-        - rook_ceph_existing_partitions | length == 0
-
-    - name: Refresh partition table after creating Rook Ceph partition
-      ansible.builtin.command: "partprobe {{ rook_ceph_disk }}"
-      changed_when: false
-      failed_when: false
-      when:
-        - rook_ceph_prepare_disk | bool
-        - rook_ceph_existing_partitions | length == 0
-
-    - name: Ensure Rook Ceph partition has the expected GPT name
-      ansible.builtin.command: "parted -s {{ rook_ceph_disk }} name {{ rook_ceph_partition_number }} {{ rook_ceph_partition_name }}"
-      changed_when: false
-      when: rook_ceph_prepare_disk | bool
-
-    - name: Trigger udev after naming Rook Ceph partition
-      ansible.builtin.command: udevadm trigger --subsystem-match=block
-      changed_when: false
-      when: rook_ceph_prepare_disk | bool
-
-    - name: Wait for Rook Ceph partition device
-      ansible.builtin.command: udevadm settle
-      changed_when: false
-      when: rook_ceph_prepare_disk | bool
-
-    - name: Determine Rook Ceph partition path
-      ansible.builtin.set_fact:
-        rook_ceph_partition_path: >-
-          {{
-            rook_ceph_disk ~
-            (('p' ~ rook_ceph_partition_number)
-             if (rook_ceph_disk | regex_search('[0-9]$'))
-             else rook_ceph_partition_number)
-          }}
-      when: rook_ceph_prepare_disk | bool
-
-    - name: Force wipe filesystem signatures from prepared Rook Ceph partition
-      ansible.builtin.command: "wipefs --all --force {{ rook_ceph_partition_path }}"
-      when:
-        - rook_ceph_prepare_disk | bool
-        - rook_ceph_wipe_disk | bool
-
-    - name: Refresh udev after final Rook Ceph partition wipe
-      ansible.builtin.command: udevadm trigger --subsystem-match=block
-      changed_when: false
-      when: rook_ceph_prepare_disk | bool
-
-    - name: Wait for Rook Ceph partition label symlink
-      ansible.builtin.wait_for:
-        path: "/dev/disk/by-partlabel/{{ rook_ceph_partition_name }}"
-        state: present
-        timeout: 20
-      when: rook_ceph_prepare_disk | bool
-
-    - name: Keep existing empty Rook Ceph partition
+    - name: Confirm Rook Ceph will consume the whole raw disk
       ansible.builtin.debug:
-        msg: "Rook Ceph disk {{ rook_ceph_disk }} already has {{ rook_ceph_existing_partitions | length }} empty partition(s); leaving the partition table unchanged."
-      when:
-        - rook_ceph_prepare_disk | bool
-        - rook_ceph_existing_partitions | length > 0
+        msg: "Rook Ceph disk {{ rook_ceph_disk }} is prepared as a whole raw OSD disk; no filesystem or partition is created."
+      when: rook_ceph_prepare_disk | bool
 
     - name: Check expected Rook Ceph devices when configured
       ansible.builtin.stat:

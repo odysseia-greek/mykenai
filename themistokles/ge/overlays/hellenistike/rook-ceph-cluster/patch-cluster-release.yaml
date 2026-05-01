@@ -15,8 +15,8 @@ spec:
               operator: Exists
               effect: NoSchedule
       storage:
-        # Keep the allowed nodes explicit and only consume the prepared Rook partition.
-        devicePathFilter: "^/dev/disk/by-partlabel/rook-ceph$"
+        # Keep the allowed nodes explicit and only consume the dedicated external SSD.
+        deviceFilter: "^sda$"
         nodes:
           - name: pella-hellenistike
           - name: antioch-hellenistike
