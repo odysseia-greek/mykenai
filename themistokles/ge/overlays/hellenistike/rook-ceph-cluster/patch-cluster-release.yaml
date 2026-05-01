@@ -9,7 +9,8 @@ spec:
         spec:
           failureDomain: host
           replicated:
-            size: 2
+            size: 1
+            requireSafeReplicaSize: false
         storageClass:
           enabled: true
           name: pyxis
@@ -21,7 +22,8 @@ spec:
         spec:
           failureDomain: host
           replicated:
-            size: 2
+            size: 1
+            requireSafeReplicaSize: false
         storageClass:
           enabled: true
           name: kibotos
@@ -30,6 +32,43 @@ spec:
           allowVolumeExpansion: true
           volumeBindingMode: WaitForFirstConsumer
     cephClusterSpec:
+      cephConfig:
+        global:
+          osd_pool_default_size: "1"
+          mon_warn_on_pool_no_redundancy: "false"
+        osd:
+          osd_memory_target: "536870912"
+      mon:
+        count: 1
+        allowMultiplePerNode: true
+      mgr:
+        count: 1
+        allowMultiplePerNode: true
+      logCollector:
+        enabled: false
+      resources:
+        mon:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            memory: 128Mi
+        mgr:
+          requests:
+            cpu: 50m
+            memory: 256Mi
+          limits:
+            memory: 512Mi
+        osd:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            memory: 256Mi
+        prepareosd:
+          requests:
+            cpu: 50m
+            memory: 50Mi
       placement:
         all:
           tolerations:
@@ -40,8 +79,9 @@ spec:
               operator: Exists
               effect: NoSchedule
       storage:
-        # Keep OSDs off the 4GB antioch node and only consume the dedicated external SSD.
+        # Start with the smallest useful Ceph profile: all three SSDs, one replica.
         deviceFilter: "^sda$"
         nodes:
           - name: pella-hellenistike
+          - name: antioch-hellenistike
           - name: alexandreia-hellenistike
