@@ -5,9 +5,9 @@ metadata:
   name: rook-ceph
   namespace: flux-system
 spec:
-  interval: 4h
+  interval: 10m
   retryInterval: 2m
-  timeout: 10m
+  timeout: 30m
   sourceRef:
     kind: GitRepository
     name: themistokles

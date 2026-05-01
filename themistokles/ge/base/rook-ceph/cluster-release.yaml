@@ -27,6 +27,10 @@ spec:
       enabled: true
     monitoring:
       enabled: false
+    cephFileSystems: []
+    cephObjectStores: []
+    cephObjectStoreUsers: []
+    cephFilesystemSubVolumeGroups: []
     cephBlockPools:
       - name: pyxis
         spec:
