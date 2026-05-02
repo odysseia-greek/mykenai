@@ -43,6 +43,8 @@ data:
               "content": [
                 {
                   "prefix": "/elasticsearch/elasticsearch",
+                  "destination": "/elastic",
+                  "stripPrefix": true,
                   "tags": {
                     "regex": "^9.2.2$"
                   }
