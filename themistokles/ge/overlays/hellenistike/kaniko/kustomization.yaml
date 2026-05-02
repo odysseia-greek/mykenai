@@ -3,3 +3,10 @@ kind: Kustomization
 namespace: tekton-pipelines
 resources:
   - ../../../base/kaniko
+
+patches:
+  - target:
+      version: v1
+      kind: Secret
+      name: registry-creds
+    path: secret.yaml
