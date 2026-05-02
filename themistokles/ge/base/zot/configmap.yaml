@@ -30,6 +30,25 @@ data:
       },
       "extensions": {
         "search": {},
+        "sync": {
+          "registries": [
+            {
+              "urls": [
+                "https://docker.elastic.co"
+              ],
+              "onDemand": true,
+              "tlsVerify": true,
+              "maxRetries": 3,
+              "retryDelay": "5m",
+              "content": [
+                {
+                  "prefix": "**",
+                  "destination": "/elastic"
+                }
+              ]
+            }
+          ]
+        },
         "ui": {}
       }
     }
