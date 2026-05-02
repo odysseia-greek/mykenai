@@ -5,7 +5,7 @@ metadata:
 data:
   config.json: |
     {
-      "distSpecVersion": "1.1.0",
+      "distSpecVersion": "1.0.1",
       "storage": {
         "rootDirectory": "/var/lib/zot",
         "gc": true,
