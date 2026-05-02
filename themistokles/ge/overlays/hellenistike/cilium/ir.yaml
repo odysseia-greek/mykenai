@@ -6,7 +6,7 @@ spec:
   entryPoints:
     - web
   routes:
-    - match: Host(`hubble.hellinstike.odysseia-greek`)
+    - match: Host(`hubble.hellenistike.odysseia-greek`)
       kind: Rule
       services:
         - name: hubble-ui
