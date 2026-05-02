@@ -26,11 +26,7 @@ data:
         "level": "info"
       },
       "extensions": {
-        "search": {
-          "enable": true
-        },
-        "ui": {
-          "enable": true
-        }
+        "search": {},
+        "ui": {}
       }
     }
