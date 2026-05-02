@@ -4,6 +4,7 @@ namespace: longhorn-system
 resources:
   - ../../../base/longhorn
   - storageclasses.yaml
+  - ir.yaml
 patches:
   - target:
       group: helm.toolkit.fluxcd.io

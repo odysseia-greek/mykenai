@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: longhorn-test
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pyxis-test
+  namespace: longhorn-test
+spec:
+  storageClassName: pyxis
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pyxis-test
+  namespace: longhorn-test
+spec:
+  containers:
+    - name: test
+      image: busybox:1.36
+      command:
+        - sh
+        - -c
+        - "while true; do date >> /data/heartbeat.txt; sync; sleep 5; done"
+      volumeMounts:
+        - name: data
+          mountPath: /data
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: pyxis-test
