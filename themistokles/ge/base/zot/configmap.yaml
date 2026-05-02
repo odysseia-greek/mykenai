@@ -29,6 +29,29 @@ data:
         "search": {
           "enable": true
         },
+        "sync": {
+          "enable": true,
+          "registries": [
+            {
+              "urls": [
+                "https://docker.elastic.co"
+              ],
+              "onDemand": true,
+              "pollInterval": "12h",
+              "tlsVerify": true,
+              "maxRetries": 3,
+              "retryDelay": "5m",
+              "content": [
+                {
+                  "prefix": "/elasticsearch/elasticsearch",
+                  "tags": {
+                    "regex": "^9.2.2$"
+                  }
+                }
+              ]
+            }
+          ]
+        },
         "ui": {
           "enable": true
         }
