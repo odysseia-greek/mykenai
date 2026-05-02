@@ -49,6 +49,40 @@ data:
                   "destination": "/elastic"
                 }
               ]
+            },
+            {
+              "urls": ["https://docker.io/library"],
+              "onDemand": false,
+              "pollInterval": "12h",
+              "content": [
+                {
+                  "prefix": "/golang",
+                  "tags": { "regex": "^1.25-alpine$" }
+                },
+                {
+                  "prefix": "/alpine",
+                  "tags": { "regex": "^3.23.2$" }
+                },
+                {
+                  "prefix": "/debian",
+                  "tags": { "regex": "^trixie-slim$" }
+                }
+              ]
+            },
+            {
+              "urls": [
+                "https://docker.io/hashicorp"
+              ],
+              "onDemand": true,
+              "tlsVerify": true,
+              "maxRetries": 3,
+              "retryDelay": "5m",
+              "content": [
+                {
+                  "prefix": "**",
+                  "destination": "/hashicorp"
+                }
+              ]
             }
           ]
         },

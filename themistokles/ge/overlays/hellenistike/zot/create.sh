@@ -10,6 +10,8 @@ ZOT_HTPASSWD="$(printf '%s\n' "${ZOT_PASSWORD}" | htpasswd -BinB "${ZOT_USER}")"
 
 kubectl create secret generic zot-auth \
   --namespace=zot \
+  --from-literal=username="${ZOT_USER}" \
+  --from-literal=password="${ZOT_PASSWORD}" \
   --from-literal=htpasswd="${ZOT_HTPASSWD}" \
   --dry-run=client -o yaml > secret.yaml
 

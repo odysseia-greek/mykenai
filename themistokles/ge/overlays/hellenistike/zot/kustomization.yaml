@@ -4,6 +4,7 @@ namespace: zot
 resources:
   - ../../../base/zot
   - ir.yaml
+  - mirror-base-images.yaml
   - secret.yaml
 
 patches:
