@@ -12,8 +12,12 @@ spec:
     kind: GitRepository
     name: themistokles
   dependsOn:
-    - name: rook-ceph-cluster
+    - name: longhorn
     - name: traefik
   path: themistokles/ge/overlays/hellenistike/zot
   prune: true
   wait: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-gpg

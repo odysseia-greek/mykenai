@@ -3,7 +3,8 @@ kind: Kustomization
 namespace: zot
 resources:
   - ../../../base/zot
-  - ingressroute.yaml
+  - ir.yaml
+  - secret.yaml
 
 patches:
   - target:
