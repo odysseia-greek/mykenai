@@ -23,12 +23,10 @@ spec:
             - name: http
               containerPort: 5000
           livenessProbe:
-            httpGet:
-              path: /v2/
+            tcpSocket:
               port: http
           readinessProbe:
-            httpGet:
-              path: /v2/
+            tcpSocket:
               port: http
           resources:
             requests:
