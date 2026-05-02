@@ -12,3 +12,8 @@ patches:
       kind: PersistentVolumeClaim
       name: zot-data
     path: patch-pvc.yaml
+  - target:
+      version: v1
+      kind: Service
+      name: zot
+    path: patch-service.yaml
