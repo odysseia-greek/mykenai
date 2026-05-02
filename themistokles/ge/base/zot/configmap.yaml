@@ -29,8 +29,11 @@ data:
         "level": "info"
       },
       "extensions": {
-        "search": {},
+        "search": {
+          "enable": true
+        },
         "sync": {
+          "enable": true,
           "registries": [
             {
               "urls": [
@@ -49,6 +52,8 @@ data:
             }
           ]
         },
-        "ui": {}
+        "ui": {
+          "enable": true
+        }
       }
     }
