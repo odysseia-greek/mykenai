@@ -1,0 +1,18 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: longhorn
+  namespace: flux-system
+spec:
+  interval: 4h
+  retryInterval: 2m
+  timeout: 20m
+  sourceRef:
+    kind: GitRepository
+    name: themistokles
+  dependsOn:
+    - name: cert-manager
+  path: themistokles/ge/overlays/hellenistike/longhorn
+  prune: true
+  wait: true

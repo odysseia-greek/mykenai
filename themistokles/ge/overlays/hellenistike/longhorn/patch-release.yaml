@@ -1,0 +1,45 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: longhorn
+spec:
+  values:
+    persistence:
+      defaultClass: false
+      defaultClassReplicaCount: 2
+    csi:
+      kubeletRootDir: /var/lib/k0s/kubelet
+      attacherReplicaCount: 2
+      provisionerReplicaCount: 2
+      resizerReplicaCount: 2
+      snapshotterReplicaCount: 2
+    defaultSettings:
+      defaultDataPath: /var/lib/longhorn
+      replicaAutoBalance: best-effort
+      storageOverProvisioningPercentage: 100
+      storageMinimalAvailablePercentage: 15
+      taintToleration: "node-role.kubernetes.io/master:NoSchedule; node-role.kubernetes.io/control-plane:NoSchedule"
+    longhornManager:
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+    longhornDriver:
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+    longhornUI:
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule

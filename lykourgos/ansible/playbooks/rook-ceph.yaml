@@ -1,0 +1,171 @@
+---
+- name: Prepare Hellenistike Raspberry Pi disks for Rook Ceph
+  hosts: poleis
+  become: yes
+  serial: 1
+  vars:
+    ssd_mount_path: /mnt/ssd
+  handlers:
+    - name: Reload systemd daemon
+      ansible.builtin.systemd:
+        daemon_reload: true
+  tasks:
+    - name: Skip disabled hosts
+      ansible.builtin.meta: end_host
+      when: hostvars[inventory_hostname].disabled | default(false) | bool
+
+    - name: Set Rook Ceph defaults
+      ansible.builtin.set_fact:
+        rook_expected_devices: "{{ rook_expected_devices | default([]) }}"
+        rook_ceph_prepare_disk: "{{ rook_ceph_prepare_disk | default(false) }}"
+        rook_ceph_wipe_disk: "{{ rook_ceph_wipe_disk | default(false) }}"
+        rook_ceph_disk: "{{ rook_ceph_disk | default('') }}"
+
+    - name: Ensure Rook Ceph disk tools are installed
+      ansible.builtin.apt:
+        name:
+          - gdisk
+          - parted
+          - util-linux
+        state: present
+        update_cache: yes
+
+    - name: Show block devices for Rook Ceph planning
+      ansible.builtin.command: lsblk -e7 -o NAME,PATH,SIZE,TYPE,FSTYPE,MOUNTPOINTS,MODEL
+      register: rook_lsblk
+      changed_when: false
+
+    - name: Print block devices
+      ansible.builtin.debug:
+        var: rook_lsblk.stdout_lines
+
+    - name: Skip Rook Ceph disk preparation when not configured
+      ansible.builtin.debug:
+        msg: "Rook Ceph disk preparation is disabled on {{ inventory_hostname }}. Set rook_ceph_prepare_disk=true and rook_ceph_disk=/dev/... to prepare a raw OSD disk."
+      when: not rook_ceph_prepare_disk | bool
+
+    - name: Require rook_ceph_disk when Rook Ceph preparation is enabled
+      ansible.builtin.fail:
+        msg: "rook_ceph_prepare_disk=true requires rook_ceph_disk to be set on {{ inventory_hostname }}."
+      when:
+        - rook_ceph_prepare_disk | bool
+        - rook_ceph_disk | length == 0
+
+    - name: Check configured Rook Ceph disk
+      ansible.builtin.stat:
+        path: "{{ rook_ceph_disk }}"
+      register: rook_ceph_disk_stat
+      when: rook_ceph_prepare_disk | bool
+
+    - name: Fail when configured Rook Ceph disk is missing
+      ansible.builtin.fail:
+        msg: "Configured Rook Ceph disk {{ rook_ceph_disk }} is not present on {{ inventory_hostname }}."
+      when:
+        - rook_ceph_prepare_disk | bool
+        - not rook_ceph_disk_stat.stat.exists
+
+    - name: Remove external SSD mount when repurposing disk for Rook Ceph
+      ansible.posix.mount:
+        path: "{{ ssd_mount_path }}"
+        state: absent
+      notify: Reload systemd daemon
+      when:
+        - rook_ceph_prepare_disk | bool
+        - rook_ceph_wipe_disk | bool
+
+    - name: Flush systemd daemon reload after removing SSD mount
+      ansible.builtin.meta: flush_handlers
+
+    - name: Inspect configured Rook Ceph disk
+      ansible.builtin.command: "lsblk -J -o NAME,PATH,TYPE,FSTYPE,MOUNTPOINTS {{ rook_ceph_disk }}"
+      register: rook_ceph_disk_lsblk
+      changed_when: false
+      when: rook_ceph_prepare_disk | bool
+
+    - name: Derive configured Rook Ceph disk facts
+      ansible.builtin.set_fact:
+        rook_ceph_disk_info: "{{ (rook_ceph_disk_lsblk.stdout | from_json).blockdevices[0] }}"
+        rook_ceph_existing_partitions: "{{ (rook_ceph_disk_lsblk.stdout | from_json).blockdevices[0].children | default([]) }}"
+      when: rook_ceph_prepare_disk | bool
+
+    - name: Zap existing partition table from Rook Ceph disk
+      ansible.builtin.command: "sgdisk --zap-all {{ rook_ceph_disk }}"
+      when:
+        - rook_ceph_prepare_disk | bool
+        - rook_ceph_wipe_disk | bool
+
+    - name: Force wipe existing filesystem signatures from Rook Ceph disk
+      ansible.builtin.command: "wipefs --all --force {{ rook_ceph_disk }}"
+      when:
+        - rook_ceph_prepare_disk | bool
+        - rook_ceph_wipe_disk | bool
+
+    - name: Force wipe existing filesystem signatures from Rook Ceph partitions
+      ansible.builtin.command: "wipefs --all --force {{ item.path }}"
+      failed_when: false
+      loop: "{{ rook_ceph_existing_partitions }}"
+      when:
+        - rook_ceph_prepare_disk | bool
+        - rook_ceph_wipe_disk | bool
+        - item.path is defined
+
+    - name: Refresh partition table after Rook Ceph wipe
+      ansible.builtin.command: "partprobe {{ rook_ceph_disk }}"
+      changed_when: false
+      failed_when: false
+      when:
+        - rook_ceph_prepare_disk | bool
+        - rook_ceph_wipe_disk | bool
+
+    - name: Reread Rook Ceph disk partition table
+      ansible.builtin.command: "blockdev --rereadpt {{ rook_ceph_disk }}"
+      changed_when: false
+      failed_when: false
+      when:
+        - rook_ceph_prepare_disk | bool
+        - rook_ceph_wipe_disk | bool
+
+    - name: Wait for Rook Ceph disk udev settle after wipe
+      ansible.builtin.command: udevadm settle
+      changed_when: false
+      when:
+        - rook_ceph_prepare_disk | bool
+        - rook_ceph_wipe_disk | bool
+
+    - name: Reset Rook Ceph partition facts after wipe
+      ansible.builtin.set_fact:
+        rook_ceph_existing_partitions: []
+      when:
+        - rook_ceph_prepare_disk | bool
+        - rook_ceph_wipe_disk | bool
+
+    - name: Refuse to prepare mounted or formatted Rook Ceph disks
+      ansible.builtin.fail:
+        msg: "Refusing to prepare {{ rook_ceph_disk }} on {{ inventory_hostname }} because it or its partitions are mounted or formatted. Rook OSD disks must be empty."
+      when:
+        - rook_ceph_prepare_disk | bool
+        - >-
+          rook_ceph_disk_info.fstype
+          or (rook_ceph_disk_info.mountpoints | default([]) | select() | list | length > 0)
+          or (rook_ceph_existing_partitions | selectattr('fstype') | list | length > 0)
+          or (rook_ceph_existing_partitions | selectattr('mountpoints', 'defined') | map(attribute='mountpoints') | flatten | select() | list | length > 0)
+
+    - name: Confirm Rook Ceph will consume the whole raw disk
+      ansible.builtin.debug:
+        msg: "Rook Ceph disk {{ rook_ceph_disk }} is prepared as a whole raw OSD disk; no filesystem or partition is created."
+      when: rook_ceph_prepare_disk | bool
+
+    - name: Check expected Rook Ceph devices when configured
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      loop: "{{ rook_expected_devices }}"
+      register: rook_expected_device_stats
+      when: rook_expected_devices | length > 0
+
+    - name: Fail if expected Rook Ceph devices are missing
+      ansible.builtin.fail:
+        msg: "Expected Rook Ceph device {{ item.item }} is not present on {{ inventory_hostname }}."
+      loop: "{{ rook_expected_device_stats.results | default([]) }}"
+      when:
+        - rook_expected_devices | length > 0
+        - not item.stat.exists

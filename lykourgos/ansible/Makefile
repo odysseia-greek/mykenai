@@ -3,7 +3,7 @@ INVENTORY_PRD = inventories/prd/hosts.yaml
 INVENTORY_SINGLE = inventories/single/hosts.yaml
 INVENTORY_LIMA = inventories/lima/hosts.yaml
 
-.PHONY: ping ping-prd bootstrap bootstrap-hellenistike bootstrap-prd k0s-hellenistike k3s-hellenistike k0s-single k0s-lima-single k0s-lima-ha
+.PHONY: ping ping-prd bootstrap bootstrap-hellenistike bootstrap-prd rook-ceph k0s-hellenistike k3s-hellenistike k0s-single k0s-lima-single k0s-lima-ha
 
 KUBECONFIG_FILE ?= $(HOME)/.kube/config
 K0S_KUBECONFIG := playbooks/k0s-kubeconfig-pella
@@ -54,6 +54,9 @@ bootstrap: bootstrap-hellenistike
 
 bootstrap-hellenistike:
 	ansible-playbook -i $(INVENTORY_HELLENISTIKE) playbooks/bootstrap-hellenistike.yaml
+
+rook-ceph:
+	ansible-playbook -i $(INVENTORY_HELLENISTIKE) playbooks/rook-ceph.yaml
 
 bootstrap-single:
 	ansible-playbook -i $(INVENTORY_SINGLE) playbooks/bootstrap-raspies.yaml
