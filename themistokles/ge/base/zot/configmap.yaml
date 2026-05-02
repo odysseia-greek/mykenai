@@ -42,9 +42,8 @@ data:
               "retryDelay": "5m",
               "content": [
                 {
-                  "prefix": "/elasticsearch/elasticsearch",
+                  "prefix": "**",
                   "destination": "/elastic",
-                  "stripPrefix": true,
                   "tags": {
                     "regex": "^9.2.2$"
                   }
