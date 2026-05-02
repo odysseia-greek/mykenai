@@ -24,5 +24,10 @@ data:
       },
       "log": {
         "level": "info"
+      },
+      "extensions": {
+        "ui": {
+          "enable": true
+        }
       }
     }
