@@ -5,9 +5,9 @@ metadata:
   labels:
     app: tissaphernes
 spec:
+  storageClassName: "pyxis"
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 5Gi
-      storageClassName: "pyxis"
