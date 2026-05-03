@@ -46,7 +46,7 @@ metadata:
   name: mykenai-main-poller
   namespace: tekton-pipelines
 spec:
-  schedule: "*/5 * * * *"
+  schedule: "0 */12 * * *"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
