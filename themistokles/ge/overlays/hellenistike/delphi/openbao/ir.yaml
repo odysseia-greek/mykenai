@@ -1,0 +1,24 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: openbao-ui
+spec:
+  entryPoints:
+    - websecure
+    - web
+  routes:
+    - match: Host(`openbao.hellenistike.odysseia-greek`)
+      kind: Rule
+      services:
+        - name: openbao-ui
+          port: 8200
+          scheme: https
+          serversTransport: insecure-backend
+  tls: {}
+---
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: insecure-backend
+spec:
+  insecureSkipVerify: true
