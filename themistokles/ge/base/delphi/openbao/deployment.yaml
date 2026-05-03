@@ -23,11 +23,15 @@ spec:
             - name: https
               containerPort: 8200
           livenessProbe:
-            tcpSocket:
+            httpGet:
+              path: /v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204
               port: https
+              scheme: HTTPS
           readinessProbe:
-            tcpSocket:
+            httpGet:
+              path: /v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204
               port: https
+              scheme: HTTPS
           resources:
             requests:
               cpu: 100m
