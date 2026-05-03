@@ -12,6 +12,7 @@ spec:
     kind: GitRepository
     name: themistokles
   dependsOn:
+    - name: tekton-operator
     - name: traefik
   path: themistokles/ge/overlays/hellenistike/tekton
   prune: true

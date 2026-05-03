@@ -4,6 +4,8 @@ namespace: delphi
 resources:
   - ../../../../base/delphi/openbao
   - certificate.yaml
+  - ir.yaml
+  - patch-pvc.yaml
 
 patches:
   - target:
