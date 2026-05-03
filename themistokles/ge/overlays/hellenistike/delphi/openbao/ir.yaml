@@ -10,7 +10,7 @@ spec:
     - match: Host(`openbao.hellenistike.odysseia-greek`)
       kind: Rule
       services:
-        - name: openbao-ui
+        - name: openbao
           port: 8200
           scheme: https
           serversTransport: insecure-backend
