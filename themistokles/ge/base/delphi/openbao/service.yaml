@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: vault
+  name: openbao
 spec:
   selector:
     app: openbao

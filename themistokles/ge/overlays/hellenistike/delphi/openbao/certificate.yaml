@@ -1,9 +1,9 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: vault-server
+  name: openbao-server
 spec:
-  secretName: vault-server-tls
+  secretName: openbao-server-tls
   duration: 2160h
   renewBefore: 168h
   privateKey:
@@ -12,10 +12,10 @@ spec:
   usages:
     - server auth
   dnsNames:
-    - vault
-    - vault.delphi
-    - vault.delphi.svc
-    - vault.delphi.svc.cluster.local
+    - openbao
+    - openbao.delphi
+    - openbao.delphi.svc
+    - openbao.delphi.svc.cluster.local
   issuerRef:
     name: delphi-internal
     kind: Issuer

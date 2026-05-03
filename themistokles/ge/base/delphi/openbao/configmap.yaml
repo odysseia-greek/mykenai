@@ -1,22 +1,22 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: vault-config
+  name: openbao-config
 data:
   openbao.hcl: |
     disable_mlock = true
     ui            = false
-    api_addr      = "https://vault.delphi.svc:8200"
-    cluster_addr  = "https://vault.delphi.svc:8201"
+    api_addr      = "https://openbao.delphi.svc:8200"
+    cluster_addr  = "https://openbao.delphi.svc:8201"
 
     listener "tcp" {
       address             = "[::]:8200"
       cluster_address     = "[::]:8201"
-      tls_cert_file       = "/vault/userconfig/vault-server-tls/tls.crt"
-      tls_key_file        = "/vault/userconfig/vault-server-tls/tls.key"
-      tls_client_ca_file  = "/vault/userconfig/vault-server-tls/ca.crt"
+      tls_cert_file       = "/openbao/userconfig/openbao-server-tls/tls.crt"
+      tls_key_file        = "/openbao/userconfig/openbao-server-tls/tls.key"
+      tls_client_ca_file  = "/openbao/userconfig/openbao-server-tls/ca.crt"
     }
 
     storage "file" {
-      path = "/vault/data"
+      path = "/openbao/data"
     }

@@ -39,17 +39,17 @@ spec:
               mountPath: /etc/openbao
               readOnly: true
             - name: tls
-              mountPath: /vault/userconfig/vault-server-tls
+              mountPath: /openbao/userconfig/openbao-server-tls
               readOnly: true
             - name: data
-              mountPath: /vault/data
+              mountPath: /openbao/data
       volumes:
         - name: config
           configMap:
-            name: vault-config
+            name: openbao-config
         - name: tls
           secret:
-            secretName: vault-server-tls
+            secretName: openbao-server-tls
         - name: data
           persistentVolumeClaim:
-            claimName: vault-data
+            claimName: openbao-data

@@ -2,7 +2,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: kaniko
+  name: delphi
   namespace: flux-system
 spec:
   interval: 4h
@@ -12,7 +12,8 @@ spec:
     kind: GitRepository
     name: themistokles
   dependsOn:
-    - name: zot
-  path: themistokles/ge/overlays/hellenistike/kaniko
+    - name: cert-manager
+    - name: longhorn
+  path: themistokles/ge/overlays/hellenistike/delphi
   prune: true
   wait: true
