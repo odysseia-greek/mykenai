@@ -16,3 +16,7 @@ spec:
   path: themistokles/ge/overlays/hellenistike/kaniko
   prune: true
   wait: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-gpg
