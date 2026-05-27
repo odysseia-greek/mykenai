@@ -6,6 +6,10 @@ spec:
   values:
     nodeSelector:
       kubernetes.io/hostname: lima-byzantion
+    tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
     service:
       enabled: true
       type: NodePort
