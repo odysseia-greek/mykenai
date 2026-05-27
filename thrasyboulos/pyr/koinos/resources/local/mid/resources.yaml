@@ -4,6 +4,5 @@
   value:
     requests:
       memory: 64Mi
-      cpu: 200m
     limits:
       memory: 64Mi
