@@ -4,6 +4,8 @@ metadata:
   name: traefik
 spec:
   values:
+    nodeSelector:
+      kubernetes.io/hostname: lima-byzantion
     service:
       enabled: true
       type: NodePort
