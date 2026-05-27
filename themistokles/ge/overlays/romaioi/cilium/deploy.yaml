@@ -38,7 +38,7 @@ spec:
       mode: kubernetes
     kubeProxyReplacement: false
     operator:
-      replicas: 1
+      replicas: 3
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository

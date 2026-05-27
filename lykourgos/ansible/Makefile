@@ -1,7 +1,9 @@
 INVENTORY_HELLENISTIKE = inventories/hellenistike/hosts.yaml
-INVENTORY_PRD = inventories/prd/hosts.yaml
+INVENTORY_HELLAS = inventories/hellas/hosts.yaml
+INVENTORY_PRD = $(INVENTORY_HELLAS)
 INVENTORY_SINGLE = inventories/single/hosts.yaml
-INVENTORY_LIMA = inventories/lima/hosts.yaml
+INVENTORY_ROMAIOI_SINGLE = inventories/romaioi/single/hosts.yaml
+INVENTORY_ROMAIOI_HA = inventories/romaioi/ha/hosts.yaml
 
 .PHONY: ping ping-prd bootstrap bootstrap-hellenistike bootstrap-prd rook-ceph k0s-hellenistike k3s-hellenistike k0s-single k0s-lima-single k0s-lima-ha
 
@@ -74,9 +76,9 @@ k0s-single:
 	ansible-playbook -i $(INVENTORY_SINGLE) playbooks/k0s-single-node.yaml
 
 k0s-lima-single: ## Install k0s single-node on Lima VM
-	ansible-playbook -i $(INVENTORY_LIMA) playbooks/k0s-lima-single.yaml
+	ansible-playbook -i $(INVENTORY_ROMAIOI_SINGLE) playbooks/k0s-lima-single.yaml
 
 k0s-lima-ha: ## Install k0s HA cluster on Lima VMs
-	ansible-playbook -i $(INVENTORY_LIMA) playbooks/k0s-lima-ha.yaml
+	ansible-playbook -i $(INVENTORY_ROMAIOI_HA) playbooks/k0s-lima-ha.yaml
 
 poc: bootstrap-single lvm-storage k0s-single

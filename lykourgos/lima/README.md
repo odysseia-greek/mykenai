@@ -26,7 +26,7 @@ make single-start
 
 # Get kubeconfig
 make kubeconfig-single
-export KUBECONFIG=~/.kube/k0s-byzantium-config
+export KUBECONFIG=~/.kube/k0s-byzantion-config
 
 # Update /etc/hosts
 make update-hosts
@@ -45,7 +45,7 @@ make ha-start
 
 # Get kubeconfig
 make kubeconfig-ha
-export KUBECONFIG=~/.kube/k0s-byzantium-ha-config
+export KUBECONFIG=~/.kube/k0s-byzantion-ha-config
 
 # Update /etc/hosts
 make update-hosts
@@ -60,35 +60,35 @@ kubectl get nodes -o wide
 
 ```bash
 cd lykourgos/ansible
-ansible-playbook -i inventories/lima/hosts.yaml playbooks/k0s-lima-single.yaml
+ansible-playbook -i inventories/romaioi/single/hosts.yaml playbooks/k0s-lima-single.yaml
 ```
 
 ### HA Cluster with Ansible
 
 ```bash
 cd lykourgos/ansible
-ansible-playbook -i inventories/lima/hosts.yaml playbooks/k0s-lima-ha.yaml
+ansible-playbook -i inventories/romaioi/ha/hosts.yaml playbooks/k0s-lima-ha.yaml
 ```
 
 ## IP Addresses
 
 | Cluster Type | Node | IP | Hostname |
 |--------------|------|-----|----------|
-| Single | k0s-byzantium | 192.168.105.2 | k0s-byzantium.odysseia-greek |
-| HA | k0s-controller | 192.168.105.10 | k0s-byzantium.odysseia-greek |
-| HA | k0s-worker1 | 192.168.105.11 | - |
-| HA | k0s-worker2 | 192.168.105.12 | - |
+| Single | k0s-byzantion | 192.168.105.2 | k0s-byzantion.odysseia-greek |
+| HA | k0s-byzantion | 192.168.105.2 | k0s-byzantion.odysseia-greek |
+| HA | trapezous | 192.168.105.3 | - |
+| HA | nikaia | 192.168.105.4 | - |
 
 ## /etc/hosts Configuration
 
 ### Single-Node
 ```
-192.168.105.2 k0s-byzantium.odysseia-greek byzantium.odysseia-greek
+192.168.105.2 k0s-byzantion.odysseia-greek byzantion.odysseia-greek
 ```
 
 ### HA Cluster
 ```
-192.168.105.10 k0s-byzantium.odysseia-greek byzantium.odysseia-greek
+192.168.105.2 k0s-byzantion.odysseia-greek byzantion.odysseia-greek
 ```
 
 ## Resource Allocation
@@ -103,13 +103,13 @@ ansible-playbook -i inventories/lima/hosts.yaml playbooks/k0s-lima-ha.yaml
 - CPU: 4 cores
 - Memory: 8 GiB
 - Root Disk: 50 GiB
-- Additional Disk (pyxis-controller): 30 GiB (for TopoLVM)
+- Additional Disk (pyxis-byzantion): 30 GiB (for TopoLVM)
 
 ### HA Workers
 - CPU: 3 cores each
 - Memory: 6 GiB each
 - Root Disk: 40 GiB each
-- Additional Disk (pyxis-worker1/2): 30 GiB each (for TopoLVM)
+- Additional Disks: pyxis-trapezous and pyxis-nikaia, 30 GiB each (for TopoLVM)
 
 **Total HA**: 10 cores, 20 GiB RAM, 130 GiB root + 90 GiB additional
 
@@ -158,18 +158,18 @@ limactl disk create pyxis --size 30G
 limactl disk delete pyxis
 
 # Shell into VM
-limactl shell k0s-byzantium
+limactl shell k0s-byzantion
 
 # View logs
-limactl shell k0s-byzantium sudo journalctl -u k0scontroller -f
+limactl shell k0s-byzantion sudo journalctl -u k0scontroller -f
 
 # Get cluster status
-limactl shell k0s-byzantium sudo k0s kubectl get nodes -o wide
-limactl shell k0s-byzantium sudo k0s status
+limactl shell k0s-byzantion sudo k0s kubectl get nodes -o wide
+limactl shell k0s-byzantion sudo k0s status
 
 # Check disk in VM
-limactl shell k0s-byzantium lsblk
-limactl shell k0s-byzantium sudo fdisk -l
+limactl shell k0s-byzantion lsblk
+limactl shell k0s-byzantion sudo fdisk -l
 ```
 
 ## Installing CNI (Cilium)
@@ -204,7 +204,7 @@ make ha-delete       # Keeps disks
 make delete-disks    # Delete disks
 
 # Remove from /etc/hosts
-sudo sed -i.bak '/k0s-byzantium.odysseia-greek/d' /etc/hosts
+sudo sed -i.bak '/k0s-byzantion.odysseia-greek/d' /etc/hosts
 ```
 
 ## Installing TopoLVM
@@ -213,12 +213,12 @@ The additional disks are ready for TopoLVM setup, matching your ACC/production e
 
 ```bash
 # Check disk is available
-limactl shell k0s-byzantium lsblk
+limactl shell k0s-byzantion lsblk
 
 # You should see a disk like /dev/vdb (30GB)
 # Set up LVM similar to your Raspberry Pi setup
-limactl shell k0s-byzantium sudo pvcreate /dev/vdb
-limactl shell k0s-byzantium sudo vgcreate topolvm /dev/vdb
+limactl shell k0s-byzantion sudo pvcreate /dev/vdb
+limactl shell k0s-byzantion sudo vgcreate topolvm /dev/vdb
 
 # Install TopoLVM via Helm or kubectl
 # (Use your existing TopoLVM configurations)
@@ -244,16 +244,16 @@ limactl shell k0s-byzantium sudo vgcreate topolvm /dev/vdb
 ### VM won't start
 ```bash
 # Check Lima logs
-limactl shell k0s-byzantium cat /var/log/cloud-init-output.log
+limactl shell k0s-byzantion cat /var/log/cloud-init-output.log
 
 # Check system logs
-limactl shell k0s-byzantium sudo journalctl -xe
+limactl shell k0s-byzantion sudo journalctl -xe
 ```
 
 ### Network issues
 ```bash
 # Check IP address
-limactl shell k0s-byzantium ip addr show
+limactl shell k0s-byzantion ip addr show
 
 # Test connectivity
 ping 192.168.105.2
@@ -262,24 +262,24 @@ ping 192.168.105.2
 ### k0s not starting
 ```bash
 # Check k0s status
-limactl shell k0s-byzantium sudo systemctl status k0scontroller
+limactl shell k0s-byzantion sudo systemctl status k0scontroller
 
 # View logs
-limactl shell k0s-byzantium sudo journalctl -u k0scontroller -n 100
+limactl shell k0s-byzantion sudo journalctl -u k0scontroller -n 100
 
 # Restart k0s
-limactl shell k0s-byzantium sudo systemctl restart k0scontroller
+limactl shell k0s-byzantion sudo systemctl restart k0scontroller
 ```
 
 ### Worker won't join
 ```bash
 # Verify token
-limactl shell k0s-controller cat /tmp/worker-token.txt
+limactl shell k0s-byzantion cat /tmp/worker-token.txt
 
 # Check controller connectivity from worker
-limactl shell k0s-worker1 ping -c 3 192.168.105.10
-limactl shell k0s-worker1 cat /etc/hosts
+limactl shell trapezous ping -c 3 192.168.105.2
+limactl shell trapezous cat /etc/hosts
 
 # Generate new token (expires in 24h by default)
-limactl shell k0s-controller sudo k0s token create --role=worker --expiry=24h
+limactl shell k0s-byzantion sudo k0s token create --role=worker --expiry=24h
 ```

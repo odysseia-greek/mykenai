@@ -1,8 +1,8 @@
 # Lima configuration for HA k0s cluster (1 controller + 2 workers)
 # Usage:
-#   limactl start --name=k0s-controller lykourgos/lima/k0s-ha.yaml
-#   limactl start --name=k0s-worker1 lykourgos/lima/k0s-ha-worker.yaml
-#   limactl start --name=k0s-worker2 lykourgos/lima/k0s-ha-worker.yaml
+#   limactl start --name=k0s-byzantion lykourgos/lima/k0s-ha.yaml
+#   limactl start --name=trapezous lykourgos/lima/k0s-ha-worker.yaml
+#   limactl start --name=nikaia lykourgos/lima/k0s-ha-worker.yaml
 
 vmType: "vz"
 os: "Linux"
@@ -29,7 +29,7 @@ dns:
   - 1.1.1.1
 
 additionalDisks:
-  - name: pyxis-controller
+  - name: pyxis-byzantion
     format: false
 
 provision:
@@ -52,16 +52,16 @@ provision:
       apiVersion: k0s.k0sproject.io/v1beta1
       kind: ClusterConfig
       metadata:
-        name: byzantium-ha
+        name: byzantion-ha
       spec:
         api:
-          address: 192.168.105.10
+          address: 192.168.105.2
           port: 6443
           k0sApiPort: 9443
           sans:
-            - 192.168.105.10
-            - k0s-byzantium.odysseia-greek
-            - byzantium.odysseia-greek
+            - 192.168.105.2
+            - k0s-byzantion.odysseia-greek
+            - byzantion.odysseia-greek
             - localhost
             - 127.0.0.1
         network:
@@ -73,7 +73,7 @@ provision:
         storage:
           type: etcd
           etcd:
-            peerAddress: 192.168.105.10
+            peerAddress: 192.168.105.2
       EOF
 
       # Install k0s controller (no worker role on controller for HA setup)
@@ -108,13 +108,13 @@ provision:
       chmod 644 /tmp/worker-token.txt
 
       echo "k0s HA controller ready!"
-      echo "IP: 192.168.105.10"
+      echo "IP: 192.168.105.2"
       echo "Worker token saved to /tmp/worker-token.txt"
       echo ""
       echo "Next steps:"
       echo "1. Start worker VMs with k0s-ha-worker.yaml"
       echo "2. Copy worker token to workers"
-      echo "3. Add to /etc/hosts: 192.168.105.10 k0s-byzantium.odysseia-greek byzantium.odysseia-greek"
+      echo "3. Add to /etc/hosts: 192.168.105.2 k0s-byzantion.odysseia-greek byzantion.odysseia-greek"
 
 probes:
   - mode: readiness
@@ -128,19 +128,19 @@ probes:
       fi
     hint: |
       See "/var/log/cloud-init-output.log" in the guest
-      Run "limactl shell k0s-controller sudo journalctl -u k0scontroller"
+      Run "limactl shell k0s-byzantion sudo journalctl -u k0scontroller"
 
 message: |
   k0s HA controller is ready!
 
   Get kubeconfig:
-    limactl shell k0s-controller sudo k0s kubeconfig admin > ~/.kube/k0s-byzantium-ha-config
-    export KUBECONFIG=~/.kube/k0s-byzantium-ha-config
+    limactl shell k0s-byzantion sudo k0s kubeconfig admin > ~/.kube/k0s-byzantion-ha-config
+    export KUBECONFIG=~/.kube/k0s-byzantion-ha-config
 
   Get worker token:
-    limactl shell k0s-controller cat /tmp/worker-token.txt
+    limactl shell k0s-byzantion cat /tmp/worker-token.txt
 
   Add to /etc/hosts:
-    192.168.105.10 k0s-byzantium.odysseia-greek byzantium.odysseia-greek
+    192.168.105.2 k0s-byzantion.odysseia-greek byzantion.odysseia-greek
 
   Next: Start workers with k0s-ha-worker.yaml

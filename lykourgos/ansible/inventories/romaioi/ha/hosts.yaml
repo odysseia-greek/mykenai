@@ -1,0 +1,47 @@
+---
+all:
+  vars:
+    ansible_connection: local
+    k0s_version: "v1.34.2+k0s.0"
+
+  children:
+    poleis:
+      hosts:
+        k0s-byzantion:
+          ansible_host: 192.168.105.2
+          lima_vm_name: k0s-byzantion
+          cluster_name: byzantion-ha
+          cluster_domain: byzantion
+          cluster_role: controller
+          pod_cidr: 10.244.0.0/16
+          service_cidr: 10.96.0.0/12
+
+        trapezous:
+          ansible_host: 192.168.105.3
+          lima_vm_name: trapezous
+          cluster_role: worker
+
+        nikaia:
+          ansible_host: 192.168.105.4
+          lima_vm_name: nikaia
+          cluster_role: worker
+      children:
+        poleis-romaioi-controller:
+          hosts:
+            k0s-byzantion:
+
+        poleis-romaioi-workers:
+          hosts:
+            trapezous:
+            nikaia:
+
+    k0s_lima_ha:
+      children:
+        k0s_lima_ha_controllers:
+          hosts:
+            k0s-byzantion:
+
+        k0s_lima_ha_workers:
+          hosts:
+            trapezous:
+            nikaia:

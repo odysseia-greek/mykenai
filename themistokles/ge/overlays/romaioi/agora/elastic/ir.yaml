@@ -7,7 +7,7 @@ spec:
     - web
     - websecure
   routes:
-    - match: Host(`kibana.byzantium.odysseia-greek`)
+    - match: Host(`kibana.byzantion.odysseia-greek`)
       kind: Rule
       services:
         - name: kibana-kb-http

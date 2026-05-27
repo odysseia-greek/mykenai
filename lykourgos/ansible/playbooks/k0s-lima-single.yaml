@@ -1,6 +1,6 @@
 ---
 # Install k0s single-node cluster on Lima VM
-# Usage: ansible-playbook -i inventories/lima/hosts.yaml playbooks/k0s-lima-single.yaml
+# Usage: ansible-playbook -i inventories/romaioi/single/hosts.yaml playbooks/k0s-lima-single.yaml
 
 - name: Install k0s single-node on Lima VM
   hosts: k0s_lima_single
@@ -77,8 +77,8 @@
             k0sApiPort: 9443
             sans:
               - {{ vm_ip }}
-              - {{ cluster_name }}.odysseia-greek
-              - k0s-{{ cluster_name }}.odysseia-greek
+              - {{ cluster_domain | default(cluster_name) }}.odysseia-greek
+              - k0s-{{ cluster_domain | default(cluster_name) }}.odysseia-greek
               - localhost
               - 127.0.0.1
           network:
@@ -196,9 +196,11 @@
       when: lookup('file', ansible_env.HOME + '/.kube/config', errors='ignore') is not none
       ignore_errors: yes
 
-    - name: Remove old k0s-byzantium entries from kubeconfig
+    - name: Remove stale k0s Lima entries from kubeconfig
       shell: |
         if [ -f {{ ansible_env.HOME }}/.kube/config ]; then
+          kubectl config delete-cluster k0s-byzantium 2>/dev/null || true
+          kubectl config delete-context k0s-byzantium 2>/dev/null || true
           kubectl config delete-cluster {{ lima_vm_name }} 2>/dev/null || true
           kubectl config delete-context {{ lima_vm_name }} 2>/dev/null || true
           kubectl config delete-user admin 2>/dev/null || true
@@ -254,7 +256,7 @@
           - "Test with: kubectl get nodes"
           - ""
           - "/etc/hosts updated:"
-          - "{{ vm_ip }} {{ lima_vm_name }}.odysseia-greek {{ cluster_name }}.odysseia-greek"
+          - "{{ vm_ip }} {{ lima_vm_name }}.odysseia-greek {{ cluster_domain | default(cluster_name) }}.odysseia-greek"
           - ""
           - "Cluster nodes:"
           - "{{ cluster_status.stdout_lines }}"

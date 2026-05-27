@@ -1,0 +1,24 @@
+---
+all:
+  vars:
+    ansible_connection: local
+    k0s_version: "v1.34.2+k0s.0"
+
+  children:
+    poleis:
+      hosts:
+        k0s-byzantion:
+          ansible_host: 192.168.105.2
+          lima_vm_name: k0s-byzantion
+          cluster_name: byzantion
+          cluster_domain: byzantion
+          pod_cidr: 10.244.0.0/16
+          service_cidr: 10.96.0.0/12
+
+    k0s_lima_single:
+      hosts:
+        k0s-byzantion:
+
+    poleis-romaioi-single:
+      hosts:
+        k0s-byzantion:

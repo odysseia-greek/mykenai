@@ -5,4 +5,4 @@ metadata:
 spec:
   values:
     operator:
-      replicas: 1
+      replicas: 3

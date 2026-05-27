@@ -1,6 +1,6 @@
 ---
 # Install k0s HA cluster on Lima VMs (1 controller + workers)
-# Usage: ansible-playbook -i inventories/lima/hosts.yaml playbooks/k0s-lima-ha.yaml
+# Usage: ansible-playbook -i inventories/romaioi/ha/hosts.yaml playbooks/k0s-lima-ha.yaml
 
 - name: Install k0s controller on Lima VM
   hosts: k0s_lima_ha_controllers
@@ -62,9 +62,9 @@
             k0sApiPort: 9443
             sans:
               - {{ ansible_host }}
-              - {{ cluster_name }}.odysseia-greek
-              - k0s-{{ cluster_name }}.odysseia-greek
-              - k0s-controller
+              - {{ cluster_domain | default(cluster_name) }}.odysseia-greek
+              - k0s-{{ cluster_domain | default(cluster_name) }}.odysseia-greek
+              - {{ lima_vm_name }}
               - localhost
               - 127.0.0.1
           network:
@@ -171,8 +171,8 @@
     - name: Add controller to worker /etc/hosts
       shell: |
         limactl shell {{ lima_vm_name }} sudo sh -c '
-        grep -q "k0s-controller" /etc/hosts || \
-        echo "{{ controller_ip }} k0s-controller" >> /etc/hosts
+        grep -q "{{ hostvars[controller_host].lima_vm_name }}" /etc/hosts || \
+        echo "{{ controller_ip }} {{ hostvars[controller_host].lima_vm_name }} k0s-{{ hostvars[controller_host].cluster_domain | default(hostvars[controller_host].cluster_name) }}.odysseia-greek" >> /etc/hosts
         '
       delegate_to: localhost
 
@@ -222,7 +222,7 @@
           - "Kubeconfig: {{ playbook_dir }}/k0s-kubeconfig-{{ lima_vm_name }}"
           - ""
           - "Add to /etc/hosts:"
-          - "{{ ansible_host }} k0s-{{ cluster_name }}.odysseia-greek {{ cluster_name }}.odysseia-greek"
+          - "{{ ansible_host }} k0s-{{ cluster_domain | default(cluster_name) }}.odysseia-greek {{ cluster_domain | default(cluster_name) }}.odysseia-greek"
           - ""
           - "Cluster nodes:"
           - "{{ cluster_status.stdout_lines }}"
