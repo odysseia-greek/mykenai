@@ -123,7 +123,7 @@ func BuildImage(rootPath, tag, destRepo, target string, multi bool) error {
 
 	for _, innerFile := range innerFiles {
 		if innerFile.Name() == "Dockerfile" || innerFile.Name() == "Containerfile" {
-			logging.Info(fmt.Sprintf(fmt.Sprintf("working on project: %s", projectName)))
+			logging.Info(fmt.Sprintf("working on project: %s", projectName))
 			if multi {
 				if err := buildImageMultiArch(rootPath, projectName, tag, destRepo, target); err != nil {
 					return err

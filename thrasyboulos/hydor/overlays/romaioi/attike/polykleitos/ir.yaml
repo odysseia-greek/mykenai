@@ -6,7 +6,7 @@ spec:
   entryPoints:
     - web
   routes:
-    - match: Host(`attike.byzantium.odysseia-greek`)
+    - match: Host(`attike.byzantion.odysseia-greek`)
       kind: Rule
       services:
         - name: polykleitos

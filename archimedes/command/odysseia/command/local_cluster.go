@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/odysseia-greek/agora/plato/logging"
@@ -19,6 +20,9 @@ const (
 	defaultFluxBranch  = "main"
 	defaultSOPSSecret  = "sops-gpg"
 	defaultSOPSKeyFP   = "3C8B5BB6281C34C5E80C473086FCFB28CF0EC482"
+	byzantionVM        = "byzantion"
+	trapezousVM        = "trapezous"
+	nikaiaVM           = "nikaia"
 )
 
 type localClusterOptions struct {
@@ -92,7 +96,7 @@ func Restart() *cobra.Command {
 }
 
 func addClusterFlags(cmd *cobra.Command, opts *localClusterOptions) {
-	cmd.PersistentFlags().BoolVar(&opts.ha, "ha", false, "use the Lima HA topology instead of the default single-node topology")
+	cmd.PersistentFlags().BoolVar(&opts.ha, "ha", true, "use the Lima HA topology; pass --ha=false for the single-node topology")
 	cmd.PersistentFlags().StringVar(&opts.root, "root", "", "repo root path; defaults to the current directory or one of its parents")
 }
 
@@ -224,65 +228,48 @@ func validateRepoRoot(root string) error {
 func limaCreateSteps(ha bool, limaDir string) []commandStep {
 	if ha {
 		return []commandStep{
-			{
-				description: "start Lima HA controller",
-				dir:         limaDir,
-				name:        "limactl",
-				args:        []string{"start", "--name=k0s-controller", "k0s-ha.yaml"},
-			},
-			{
-				description: "wait for Lima controller token",
-				dir:         limaDir,
-				name:        "sleep",
-				args:        []string{"30"},
-			},
-			{
-				description: "start Lima HA worker 1",
-				dir:         limaDir,
-				name:        "limactl",
-				args:        []string{"start", "--name=k0s-worker1", "--set=.networks[0].macAddress=52:55:55:12:34:61", "--set=.additionalDisks[0].name=pyxis-worker1", "k0s-ha-worker.yaml"},
-			},
-			{
-				description: "start Lima HA worker 2",
-				dir:         limaDir,
-				name:        "limactl",
-				args:        []string{"start", "--name=k0s-worker2", "--set=.networks[0].macAddress=52:55:55:12:34:62", "--set=.additionalDisks[0].name=pyxis-worker2", "k0s-ha-worker.yaml"},
-			},
-			{
-				description: "join Lima HA worker 1",
-				dir:         limaDir,
-				name:        "/bin/sh",
-				args: []string{
-					"-c",
-					`TOKEN="$(limactl shell k0s-controller cat /tmp/worker-token.txt)" && printf "%s\n" "$TOKEN" | limactl shell k0s-worker1 sudo tee /tmp/worker-token.txt >/dev/null && limactl shell k0s-worker1 sudo k0s install worker --token-file /tmp/worker-token.txt && limactl shell k0s-worker1 sudo systemctl start k0sworker && limactl shell k0s-worker1 sudo systemctl enable k0sworker`,
-				},
-			},
-			{
-				description: "join Lima HA worker 2",
-				dir:         limaDir,
-				name:        "/bin/sh",
-				args: []string{
-					"-c",
-					`TOKEN="$(limactl shell k0s-controller cat /tmp/worker-token.txt)" && printf "%s\n" "$TOKEN" | limactl shell k0s-worker2 sudo tee /tmp/worker-token.txt >/dev/null && limactl shell k0s-worker2 sudo k0s install worker --token-file /tmp/worker-token.txt && limactl shell k0s-worker2 sudo systemctl start k0sworker && limactl shell k0s-worker2 sudo systemctl enable k0sworker`,
-				},
-			},
+			limaStartStep("start Lima HA controller", limaDir, byzantionVM, "k0s-ha.yaml"),
+			limaStartStep("start Lima HA worker 1", limaDir, trapezousVM, "k0s-ha-worker.yaml", `--set=.additionalDisks[0].name="pyxis-trapezous"`),
+			limaStartStep("start Lima HA worker 2", limaDir, nikaiaVM, "k0s-ha-worker.yaml", `--set=.additionalDisks[0].name="pyxis-nikaia"`),
 		}
 	}
 
 	return []commandStep{
-		{
-			description: "start Lima single-node cluster",
-			dir:         limaDir,
-			name:        "limactl",
-			args:        []string{"start", "--yes", "--name=k0s-byzantium", "k0s-single.yaml"},
-		},
+		limaStartStep("start Lima single-node cluster", limaDir, byzantionVM, "k0s-single.yaml"),
+	}
+}
+
+func limaStartStep(description, limaDir, vmName, template string, extraCreateArgs ...string) commandStep {
+	createArgs := []string{"start", "--yes", "--name=" + vmName}
+	createArgs = append(createArgs, extraCreateArgs...)
+	createArgs = append(createArgs, template)
+
+	quotedCreateArgs := make([]string, 0, len(createArgs))
+	for _, arg := range createArgs {
+		quotedCreateArgs = append(quotedCreateArgs, strconv.Quote(arg))
+	}
+
+	script := fmt.Sprintf(
+		`status="$(limactl list --format '{{.Name}} {{.Status}}' | awk '$1 == %s {print $2}')"; case "$status" in Running) exit 0 ;; "") exec limactl %s ;; *) exec limactl start %s ;; esac`,
+		strconv.Quote(vmName),
+		strings.Join(quotedCreateArgs, " "),
+		strconv.Quote(vmName),
+	)
+
+	return commandStep{
+		description: description,
+		dir:         limaDir,
+		name:        "/bin/sh",
+		args:        []string{"-c", script},
 	}
 }
 
 func ansibleSteps(ha bool, ansibleDir string) []commandStep {
 	playbook := "playbooks/k0s-lima-single.yaml"
+	inventory := "inventories/romaioi/single/hosts.yaml"
 	if ha {
 		playbook = "playbooks/k0s-lima-ha.yaml"
+		inventory = "inventories/romaioi/ha/hosts.yaml"
 	}
 
 	return []commandStep{
@@ -290,7 +277,7 @@ func ansibleSteps(ha bool, ansibleDir string) []commandStep {
 			description: "run Ansible on Lima cluster",
 			dir:         ansibleDir,
 			name:        "ansible-playbook",
-			args:        []string{"-i", "inventories/lima/hosts.yaml", playbook},
+			args:        []string{"-i", inventory, playbook},
 		},
 	}
 }
@@ -298,7 +285,7 @@ func ansibleSteps(ha bool, ansibleDir string) []commandStep {
 func bootstrapSteps(ha bool, ansibleDir, k0sDir string) []commandStep {
 	env := []string{}
 	if ha {
-		env = append(env, fmt.Sprintf("KUBECONFIG=%s", filepath.Join(ansibleDir, "playbooks", "k0s-kubeconfig-k0s-controller")))
+		env = append(env, fmt.Sprintf("KUBECONFIG=%s", filepath.Join(ansibleDir, "playbooks", "k0s-kubeconfig-"+byzantionVM)))
 	}
 
 	return []commandStep{
@@ -315,7 +302,7 @@ func fluxBootstrapSteps(ha bool, envName, ansibleDir, themistoklesDir string) []
 	pathInRepo := filepath.ToSlash(filepath.Join(".", "themistokles", "aer", envName))
 	env := []string{}
 	if ha {
-		env = append(env, fmt.Sprintf("KUBECONFIG=%s", filepath.Join(ansibleDir, "playbooks", "k0s-kubeconfig-k0s-controller")))
+		env = append(env, fmt.Sprintf("KUBECONFIG=%s", filepath.Join(ansibleDir, "playbooks", "k0s-kubeconfig-"+byzantionVM)))
 	}
 
 	return []commandStep{
@@ -363,22 +350,46 @@ func limaDeleteSteps(ha bool, limaDir string) []commandStep {
 	if ha {
 		return []commandStep{
 			{
-				description: "stop Lima HA cluster",
+				description: "stop Lima HA controller",
 				dir:         limaDir,
 				name:        "limactl",
-				args:        []string{"stop", "k0s-controller", "k0s-worker1", "k0s-worker2"},
+				args:        []string{"stop", byzantionVM},
 			},
 			{
-				description: "delete Lima HA VMs",
+				description: "stop Lima HA worker 1",
 				dir:         limaDir,
 				name:        "limactl",
-				args:        []string{"delete", "k0s-controller", "k0s-worker1", "k0s-worker2"},
+				args:        []string{"stop", trapezousVM},
+			},
+			{
+				description: "stop Lima HA worker 2",
+				dir:         limaDir,
+				name:        "limactl",
+				args:        []string{"stop", nikaiaVM},
+			},
+			{
+				description: "delete Lima HA controller",
+				dir:         limaDir,
+				name:        "limactl",
+				args:        []string{"delete", byzantionVM},
+			},
+			{
+				description: "delete Lima HA worker 1",
+				dir:         limaDir,
+				name:        "limactl",
+				args:        []string{"delete", trapezousVM},
+			},
+			{
+				description: "delete Lima HA worker 2",
+				dir:         limaDir,
+				name:        "limactl",
+				args:        []string{"delete", nikaiaVM},
 			},
 			{
 				description: "delete Lima HA disks",
 				dir:         limaDir,
 				name:        "/bin/sh",
-				args:        []string{"-c", "limactl disk delete pyxis-controller pyxis-worker1 pyxis-worker2"},
+				args:        []string{"-c", "limactl disk delete pyxis-byzantion pyxis-trapezous pyxis-nikaia"},
 			},
 		}
 	}
@@ -388,13 +399,13 @@ func limaDeleteSteps(ha bool, limaDir string) []commandStep {
 			description: "stop Lima single-node cluster",
 			dir:         limaDir,
 			name:        "limactl",
-			args:        []string{"stop", "k0s-byzantium"},
+			args:        []string{"stop", byzantionVM},
 		},
 		{
 			description: "delete Lima single-node VM",
 			dir:         limaDir,
 			name:        "limactl",
-			args:        []string{"delete", "k0s-byzantium"},
+			args:        []string{"delete", byzantionVM},
 		},
 		{
 			description: "delete Lima single-node disk",
@@ -408,7 +419,7 @@ func limaDeleteSteps(ha bool, limaDir string) []commandStep {
 func ensureLimaDisks(ha bool, limaDir string) error {
 	disks := []string{"pyxis"}
 	if ha {
-		disks = []string{"pyxis-controller", "pyxis-worker1", "pyxis-worker2"}
+		disks = []string{"pyxis-byzantion", "pyxis-trapezous", "pyxis-nikaia"}
 	}
 
 	output, err := runCommandCapture(limaDir, nil, "limactl", "disk", "ls")

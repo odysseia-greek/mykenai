@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Node
 metadata:
-  name: lima-k0s-byzantion
+  name: lima-byzantion
   annotations:
     kustomize.toolkit.fluxcd.io/prune: disabled
     kustomize.toolkit.fluxcd.io/ssa: disabled

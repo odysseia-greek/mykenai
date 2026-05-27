@@ -1,5 +1,5 @@
 # Lima configuration for single-node k0s cluster
-# Usage: limactl start --name=k0s-byzantion lykourgos/lima/k0s-single.yaml
+# Usage: limactl start --name=byzantion lykourgos/lima/k0s-single.yaml
 vmType: "vz"
 os: "Linux"
 

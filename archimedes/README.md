@@ -6,8 +6,9 @@ Archimedes is the CLI toolbox for the `mykenai` monorepo. It handles text ingest
 
 ## Status
 
-`odysseia`-based install flow is currently deprecated and is not used anymore for installs.
-It will be restored in the future.
+`odysseia` local-cluster commands manage the Romaioi Lima workflow. The default topology is HA:
+`byzantion` as controller, with `trapezous` and `nikaia` as workers. Use `--ha=false`
+for the single-node topology.
 
 ## How Archimedes Fits In Mykenai
 
@@ -18,7 +19,7 @@ This directory contains:
 - `command/parse`: list/quiz reshaping helpers for word datasets.
 - `command/images`: Docker image build helpers for one service or an entire repo.
 - `command/skene`: API/job scaffolding from embedded templates.
-- `command/odysseia`: legacy Odysseia install/docs helpers (deprecated install path).
+- `command/odysseia`: local Odysseia cluster lifecycle, status, and docs helpers.
 - `eratosthenes/bibliotheke`: source text files and parsing references.
 
 ## Build

@@ -8,10 +8,10 @@ INVENTORY_ROMAIOI_HA = inventories/romaioi/ha/hosts.yaml
 .PHONY: ping ping-prd bootstrap bootstrap-hellenistike bootstrap-prd rook-ceph k0s-hellenistike k3s-hellenistike k0s-single k0s-lima-single k0s-lima-ha
 
 KUBECONFIG_FILE ?= $(HOME)/.kube/config
-K0S_KUBECONFIG := playbooks/k0s-kubeconfig-pella
-CLUSTER_NAME := hellenistike-odysseia
-CONTEXT_NAME := hellenistike-odysseia
-USER_NAME := hellenistike-odysseia-admin
+K0S_KUBECONFIG := playbooks/k0s-kubeconfig-byzantion
+CLUSTER_NAME := byzantion-odysseia
+CONTEXT_NAME := byzantion-odysseia
+USER_NAME := byzantion-odysseia-admin
 
 ping-prd:
 	ansible -i $(INVENTORY_PRD) all -m ping

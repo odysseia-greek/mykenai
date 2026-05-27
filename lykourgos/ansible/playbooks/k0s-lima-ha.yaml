@@ -28,18 +28,73 @@
       delay: 5
       delegate_to: localhost
 
+    - name: Get actual controller VM IP address
+      shell: limactl shell {{ lima_vm_name }} hostname -I | awk '{print $1}'
+      register: controller_ip_result
+      changed_when: false
+      delegate_to: localhost
+
+    - name: Set controller IP fact
+      set_fact:
+        controller_ip: "{{ controller_ip_result.stdout | trim }}"
+
+    - name: Get unique controller node IP address
+      shell: |
+        limactl shell {{ lima_vm_name }} hostname -I | awk '{print ($2 != "" ? $2 : $1)}'
+      register: controller_node_ip_result
+      changed_when: false
+      delegate_to: localhost
+
+    - name: Set controller node IP fact
+      set_fact:
+        controller_node_ip: "{{ controller_node_ip_result.stdout | trim }}"
+
     - name: Install required packages
       shell: |
         limactl shell {{ lima_vm_name }} sudo sh -c '
         export DEBIAN_FRONTEND=noninteractive
         apt-get update
-        apt-get install -y curl iptables socat conntrack
+        apt-get install -y curl iptables socat conntrack lvm2
         '
       delegate_to: localhost
+
+    - name: Detect additional disk device (controller)
+      shell: limactl shell {{ lima_vm_name }} lsblk -ndo NAME,SIZE | grep -E '(30G|29\.[0-9]G)' | head -1 | awk '{print $1}'
+      register: disk_device
+      delegate_to: localhost
+      changed_when: false
+
+    - name: Set disk device fact (controller)
+      set_fact:
+        pyxis_disk: "/dev/{{ disk_device.stdout | trim }}"
+      when: disk_device.stdout | length > 0
+
+    - name: Check if LVM volume group pyxis exists (controller)
+      shell: limactl shell {{ lima_vm_name }} sudo vgs pyxis
+      register: vg_check
+      failed_when: false
+      changed_when: false
+      delegate_to: localhost
+      when: disk_device.stdout | length > 0
+
+    - name: Create LVM physical volume on pyxis disk (controller)
+      shell: limactl shell {{ lima_vm_name }} sudo pvcreate {{ pyxis_disk }}
+      delegate_to: localhost
+      when:
+        - disk_device.stdout | length > 0
+        - vg_check.rc != 0
+
+    - name: Create LVM volume group named pyxis (controller)
+      shell: limactl shell {{ lima_vm_name }} sudo vgcreate pyxis {{ pyxis_disk }}
+      delegate_to: localhost
+      when:
+        - disk_device.stdout | length > 0
+        - vg_check.rc != 0
 
     - name: Download and install k0s
       shell: |
         limactl shell {{ lima_vm_name }} sudo sh -c '
+        test -x /usr/local/bin/k0s || \
         curl -sSLf https://get.k0s.sh | K0S_VERSION={{ k0s_version }} sh
         '
       delegate_to: localhost
@@ -57,14 +112,16 @@
           name: {{ cluster_name }}
         spec:
           api:
-            address: {{ ansible_host }}
+            address: {{ controller_node_ip }}
             port: 6443
             k0sApiPort: 9443
             sans:
-              - {{ ansible_host }}
+              - {{ controller_ip }}
+              - {{ controller_node_ip }}
               - {{ cluster_domain | default(cluster_name) }}.odysseia-greek
               - k0s-{{ cluster_domain | default(cluster_name) }}.odysseia-greek
               - {{ lima_vm_name }}
+              - host.lima.internal
               - localhost
               - 127.0.0.1
           network:
@@ -76,15 +133,15 @@
           storage:
             type: etcd
             etcd:
-              peerAddress: {{ ansible_host }}
+              peerAddress: {{ controller_node_ip }}
         EOF
       delegate_to: localhost
 
-    - name: Install k0s controller (without worker)
+    - name: Install k0s controller with worker enabled
       shell: |
         limactl shell {{ lima_vm_name }} sudo sh -c '
         test -f /etc/systemd/system/k0scontroller.service || \
-        k0s install controller -c /etc/k0s/k0s.yaml
+        k0s install controller --enable-worker --kubelet-extra-args="--node-ip={{ controller_node_ip }}" -c /etc/k0s/k0s.yaml
         '
       delegate_to: localhost
 
@@ -103,14 +160,34 @@
       delay: 5
       delegate_to: localhost
 
+    - name: Remove stale nodes without a kubelet version (leftover from previous clusters)
+      shell: |
+        limactl shell {{ lima_vm_name }} sudo k0s kubectl get nodes -o json | \
+        python3 -c "
+        import json,sys,subprocess
+        nodes=json.load(sys.stdin)['items']
+        for n in nodes:
+          name=n['metadata']['name']
+          version=n.get('status',{}).get('nodeInfo',{}).get('kubeletVersion','')
+          if not version:
+            subprocess.run(['sudo','k0s','kubectl','delete','node',name],check=False)
+            print('Deleted stale node: '+name)
+        " 2>/dev/null || true
+      delegate_to: localhost
+      changed_when: false
+
     - name: Fetch kubeconfig
       shell: limactl shell {{ lima_vm_name }} sudo k0s kubeconfig admin
       register: kubeconfig_output
       delegate_to: localhost
 
+    - name: Point kubeconfig at localhost port forward
+      set_fact:
+        controller_kubeconfig: "{{ kubeconfig_output.stdout | regex_replace('https://[^:]+:6443', 'https://127.0.0.1:6443') }}"
+
     - name: Save kubeconfig locally
       copy:
-        content: "{{ kubeconfig_output.stdout }}"
+        content: "{{ controller_kubeconfig }}"
         dest: "{{ playbook_dir }}/k0s-kubeconfig-{{ lima_vm_name }}"
         mode: "0600"
       delegate_to: localhost
@@ -120,9 +197,19 @@
       register: worker_token
       delegate_to: localhost
 
+    - name: Point worker join token at Lima host API forward
+      shell: |
+        printf '%s' '{{ worker_token.stdout }}' | \
+        base64 -d | gzip -dc | \
+        sed 's#server: https://[^:]*:6443#server: https://{{ controller_node_ip }}:6443#' | \
+        gzip -c | base64 | tr -d '\n'
+      register: rewritten_worker_token
+      changed_when: false
+      delegate_to: localhost
+
     - name: Save worker token as fact
       set_fact:
-        k0s_worker_token: "{{ worker_token.stdout }}"
+        k0s_worker_token: "{{ rewritten_worker_token.stdout }}"
 
 - name: Join workers to k0s cluster
   hosts: k0s_lima_ha_workers
@@ -130,7 +217,7 @@
   vars:
     lima_user: "{{ ansible_env.USER }}"
     controller_host: "{{ groups['k0s_lima_ha_controllers'][0] }}"
-    controller_ip: "{{ hostvars[controller_host].ansible_host }}"
+    controller_ip: "{{ hostvars[controller_host].controller_ip }}"
   tasks:
     - name: Check Lima worker VM exists
       shell: limactl list --format '{{ "{{.Name}}" }}' | grep -x "{{ lima_vm_name }}"
@@ -152,18 +239,63 @@
       delay: 5
       delegate_to: localhost
 
+    - name: Get unique worker node IP address
+      shell: |
+        limactl shell {{ lima_vm_name }} hostname -I | awk '{print ($2 != "" ? $2 : $1)}'
+      register: worker_node_ip_result
+      changed_when: false
+      delegate_to: localhost
+
+    - name: Set worker node IP fact
+      set_fact:
+        worker_node_ip: "{{ worker_node_ip_result.stdout | trim }}"
+
     - name: Install required packages on worker
       shell: |
         limactl shell {{ lima_vm_name }} sudo sh -c '
         export DEBIAN_FRONTEND=noninteractive
         apt-get update
-        apt-get install -y curl iptables socat conntrack
+        apt-get install -y curl iptables socat conntrack lvm2
         '
       delegate_to: localhost
+
+    - name: Detect additional disk device (worker)
+      shell: limactl shell {{ lima_vm_name }} lsblk -ndo NAME,SIZE | grep -E '(30G|29\.[0-9]G)' | head -1 | awk '{print $1}'
+      register: disk_device
+      delegate_to: localhost
+      changed_when: false
+
+    - name: Set disk device fact (worker)
+      set_fact:
+        pyxis_disk: "/dev/{{ disk_device.stdout | trim }}"
+      when: disk_device.stdout | length > 0
+
+    - name: Check if LVM volume group pyxis exists (worker)
+      shell: limactl shell {{ lima_vm_name }} sudo vgs pyxis
+      register: vg_check
+      failed_when: false
+      changed_when: false
+      delegate_to: localhost
+      when: disk_device.stdout | length > 0
+
+    - name: Create LVM physical volume on pyxis disk (worker)
+      shell: limactl shell {{ lima_vm_name }} sudo pvcreate {{ pyxis_disk }}
+      delegate_to: localhost
+      when:
+        - disk_device.stdout | length > 0
+        - vg_check.rc != 0
+
+    - name: Create LVM volume group named pyxis (worker)
+      shell: limactl shell {{ lima_vm_name }} sudo vgcreate pyxis {{ pyxis_disk }}
+      delegate_to: localhost
+      when:
+        - disk_device.stdout | length > 0
+        - vg_check.rc != 0
 
     - name: Download and install k0s on worker
       shell: |
         limactl shell {{ lima_vm_name }} sudo sh -c '
+        test -x /usr/local/bin/k0s || \
         curl -sSLf https://get.k0s.sh | K0S_VERSION={{ k0s_version }} sh
         '
       delegate_to: localhost
@@ -186,7 +318,7 @@
       shell: |
         limactl shell {{ lima_vm_name }} sudo sh -c '
         test -f /etc/systemd/system/k0sworker.service || \
-        k0s install worker --token-file /tmp/worker-token.txt
+        k0s install worker --token-file /tmp/worker-token.txt --kubelet-extra-args="--node-ip={{ worker_node_ip }}"
         '
       delegate_to: localhost
 
@@ -218,11 +350,11 @@
       debug:
         msg:
           - "k0s HA cluster ready!"
-          - "Controller: {{ lima_vm_name }} ({{ ansible_host }})"
+          - "Controller: {{ lima_vm_name }} ({{ controller_ip }})"
           - "Kubeconfig: {{ playbook_dir }}/k0s-kubeconfig-{{ lima_vm_name }}"
           - ""
           - "Add to /etc/hosts:"
-          - "{{ ansible_host }} k0s-{{ cluster_domain | default(cluster_name) }}.odysseia-greek {{ cluster_domain | default(cluster_name) }}.odysseia-greek"
+          - "{{ controller_ip }} k0s-{{ cluster_domain | default(cluster_name) }}.odysseia-greek {{ cluster_domain | default(cluster_name) }}.odysseia-greek"
           - ""
           - "Cluster nodes:"
           - "{{ cluster_status.stdout_lines }}"

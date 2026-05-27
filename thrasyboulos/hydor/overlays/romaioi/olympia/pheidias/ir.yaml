@@ -6,7 +6,7 @@ spec:
   entryPoints:
     - web
   routes:
-    - match: Host(`byzantium.odysseia-greek`)
+    - match: Host(`byzantion.odysseia-greek`)
       kind: Rule
       services:
         - name: pheidias

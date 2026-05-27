@@ -12,7 +12,7 @@ all:
           ansible_ssh_private_key_file: ~/.ssh/id_raspie
           ansible_host: 192.168.1.122
           arch: rpi5
-        korinth.hellas:
+        korinthos.hellas:
           ansible_user: pi
           ansible_ssh_private_key_file: ~/.ssh/id_raspie
           ansible_host: 192.168.1.123
@@ -30,4 +30,4 @@ all:
           hosts:
             athenai.hellas:
             thebai.hellas:
-            korinth.hellas:
+            korinthos.hellas:

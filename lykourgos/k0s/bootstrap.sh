@@ -49,17 +49,38 @@ fi
 # Install Cilium
 echo -e "${GREEN} Installing Cilium ${CILIUM_VERSION} in cilium namespace...${NC}"
 
+# Get the real API server IP from the kubernetes endpoint so Cilium can reach it
+# on worker nodes before the CNI (and therefore ClusterIP routing) is set up.
+K8S_API_HOST=$(kubectl get endpoints kubernetes -o jsonpath='{.subsets[0].addresses[0].ip}')
+K8S_API_PORT=$(kubectl get endpoints kubernetes -o jsonpath='{.subsets[0].ports[0].port}')
+echo "Using k8s API server: ${K8S_API_HOST}:${K8S_API_PORT}"
+
 # Create cilium namespace
 kubectl create namespace cilium --dry-run=client -o yaml | kubectl apply -f -
 
-cilium install \
-  --version ${CILIUM_VERSION} \
-  --namespace cilium \
-  --set ipam.mode=kubernetes \
-  --set kubeProxyReplacement=false \
-  --set enableHostFirewall=false \
-  --set envoy.enabled=false \
-  --wait
+if helm status cilium -n cilium >/dev/null 2>&1; then
+  cilium upgrade \
+    --version ${CILIUM_VERSION} \
+    --namespace cilium \
+    --set ipam.mode=kubernetes \
+    --set kubeProxyReplacement=false \
+    --set enableHostFirewall=false \
+    --set envoy.enabled=false \
+    --set k8sServiceHost="${K8S_API_HOST}" \
+    --set k8sServicePort="${K8S_API_PORT}" \
+    --wait
+else
+  cilium install \
+    --version ${CILIUM_VERSION} \
+    --namespace cilium \
+    --set ipam.mode=kubernetes \
+    --set kubeProxyReplacement=false \
+    --set enableHostFirewall=false \
+    --set envoy.enabled=false \
+    --set k8sServiceHost="${K8S_API_HOST}" \
+    --set k8sServicePort="${K8S_API_PORT}" \
+    --wait
+fi
 
 echo "Waiting for cilium namespace to exist..."
 for i in {1..60}; do
@@ -71,8 +92,6 @@ kubectl get namespace cilium >/dev/null 2>&1 || {
   echo "ERROR: cilium namespace did not appear in time"
   exit 1
 }
-
-kubens cilium
 
 echo ""
 echo "Waiting for Cilium to be ready..."

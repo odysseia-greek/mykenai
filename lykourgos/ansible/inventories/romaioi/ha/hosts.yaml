@@ -2,14 +2,14 @@
 all:
   vars:
     ansible_connection: local
-    k0s_version: "v1.34.2+k0s.0"
+    k0s_version: "v1.35.2+k0s.0"
 
   children:
     poleis:
       hosts:
-        k0s-byzantion:
+        byzantion:
           ansible_host: 192.168.105.2
-          lima_vm_name: k0s-byzantion
+          lima_vm_name: byzantion
           cluster_name: byzantion-ha
           cluster_domain: byzantion
           cluster_role: controller
@@ -28,7 +28,7 @@ all:
       children:
         poleis-romaioi-controller:
           hosts:
-            k0s-byzantion:
+            byzantion:
 
         poleis-romaioi-workers:
           hosts:
@@ -39,7 +39,7 @@ all:
       children:
         k0s_lima_ha_controllers:
           hosts:
-            k0s-byzantion:
+            byzantion:
 
         k0s_lima_ha_workers:
           hosts:

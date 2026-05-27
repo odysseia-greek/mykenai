@@ -10,8 +10,13 @@ Each VM includes a 30GB additional disk (`pyxis`) for TopoLVM, matching your ACC
 # Install Lima
 brew install lima
 
+# HA requires Lima's shared vmnet networking so the VMs can route to each other.
+# The Homebrew socket_vmnet binary must be installed into Lima's secure path:
+# /opt/socket_vmnet/bin/socket_vmnet
+
 # Verify installation
 limactl --version
+limactl sudoers
 ```
 
 ## Quick Start
@@ -26,7 +31,7 @@ make single-start
 
 # Get kubeconfig
 make kubeconfig-single
-export KUBECONFIG=~/.kube/k0s-byzantion-config
+export KUBECONFIG=~/.kube/byzantion-config
 
 # Update /etc/hosts
 make update-hosts
@@ -45,7 +50,7 @@ make ha-start
 
 # Get kubeconfig
 make kubeconfig-ha
-export KUBECONFIG=~/.kube/k0s-byzantion-ha-config
+export KUBECONFIG=~/.kube/byzantion-ha-config
 
 # Update /etc/hosts
 make update-hosts
@@ -74,8 +79,8 @@ ansible-playbook -i inventories/romaioi/ha/hosts.yaml playbooks/k0s-lima-ha.yaml
 
 | Cluster Type | Node | IP | Hostname |
 |--------------|------|-----|----------|
-| Single | k0s-byzantion | 192.168.105.2 | k0s-byzantion.odysseia-greek |
-| HA | k0s-byzantion | 192.168.105.2 | k0s-byzantion.odysseia-greek |
+| Single | byzantion | 192.168.105.2 | byzantion.odysseia-greek |
+| HA | byzantion | 192.168.105.2 | byzantion.odysseia-greek |
 | HA | trapezous | 192.168.105.3 | - |
 | HA | nikaia | 192.168.105.4 | - |
 
@@ -83,12 +88,12 @@ ansible-playbook -i inventories/romaioi/ha/hosts.yaml playbooks/k0s-lima-ha.yaml
 
 ### Single-Node
 ```
-192.168.105.2 k0s-byzantion.odysseia-greek byzantion.odysseia-greek
+192.168.105.2 byzantion.odysseia-greek
 ```
 
 ### HA Cluster
 ```
-192.168.105.2 k0s-byzantion.odysseia-greek byzantion.odysseia-greek
+192.168.105.2 byzantion.odysseia-greek
 ```
 
 ## Resource Allocation
@@ -158,18 +163,18 @@ limactl disk create pyxis --size 30G
 limactl disk delete pyxis
 
 # Shell into VM
-limactl shell k0s-byzantion
+limactl shell byzantion
 
 # View logs
-limactl shell k0s-byzantion sudo journalctl -u k0scontroller -f
+limactl shell byzantion sudo journalctl -u k0scontroller -f
 
 # Get cluster status
-limactl shell k0s-byzantion sudo k0s kubectl get nodes -o wide
-limactl shell k0s-byzantion sudo k0s status
+limactl shell byzantion sudo k0s kubectl get nodes -o wide
+limactl shell byzantion sudo k0s status
 
 # Check disk in VM
-limactl shell k0s-byzantion lsblk
-limactl shell k0s-byzantion sudo fdisk -l
+limactl shell byzantion lsblk
+limactl shell byzantion sudo fdisk -l
 ```
 
 ## Installing CNI (Cilium)
@@ -204,7 +209,7 @@ make ha-delete       # Keeps disks
 make delete-disks    # Delete disks
 
 # Remove from /etc/hosts
-sudo sed -i.bak '/k0s-byzantion.odysseia-greek/d' /etc/hosts
+sudo sed -i.bak '/byzantion.odysseia-greek/d' /etc/hosts
 ```
 
 ## Installing TopoLVM
@@ -213,12 +218,12 @@ The additional disks are ready for TopoLVM setup, matching your ACC/production e
 
 ```bash
 # Check disk is available
-limactl shell k0s-byzantion lsblk
+limactl shell byzantion lsblk
 
 # You should see a disk like /dev/vdb (30GB)
 # Set up LVM similar to your Raspberry Pi setup
-limactl shell k0s-byzantion sudo pvcreate /dev/vdb
-limactl shell k0s-byzantion sudo vgcreate topolvm /dev/vdb
+limactl shell byzantion sudo pvcreate /dev/vdb
+limactl shell byzantion sudo vgcreate topolvm /dev/vdb
 
 # Install TopoLVM via Helm or kubectl
 # (Use your existing TopoLVM configurations)
@@ -244,16 +249,16 @@ limactl shell k0s-byzantion sudo vgcreate topolvm /dev/vdb
 ### VM won't start
 ```bash
 # Check Lima logs
-limactl shell k0s-byzantion cat /var/log/cloud-init-output.log
+limactl shell byzantion cat /var/log/cloud-init-output.log
 
 # Check system logs
-limactl shell k0s-byzantion sudo journalctl -xe
+limactl shell byzantion sudo journalctl -xe
 ```
 
 ### Network issues
 ```bash
 # Check IP address
-limactl shell k0s-byzantion ip addr show
+limactl shell byzantion ip addr show
 
 # Test connectivity
 ping 192.168.105.2
@@ -262,24 +267,24 @@ ping 192.168.105.2
 ### k0s not starting
 ```bash
 # Check k0s status
-limactl shell k0s-byzantion sudo systemctl status k0scontroller
+limactl shell byzantion sudo systemctl status k0scontroller
 
 # View logs
-limactl shell k0s-byzantion sudo journalctl -u k0scontroller -n 100
+limactl shell byzantion sudo journalctl -u k0scontroller -n 100
 
 # Restart k0s
-limactl shell k0s-byzantion sudo systemctl restart k0scontroller
+limactl shell byzantion sudo systemctl restart k0scontroller
 ```
 
 ### Worker won't join
 ```bash
 # Verify token
-limactl shell k0s-byzantion cat /tmp/worker-token.txt
+limactl shell byzantion cat /tmp/worker-token.txt
 
 # Check controller connectivity from worker
 limactl shell trapezous ping -c 3 192.168.105.2
 limactl shell trapezous cat /etc/hosts
 
 # Generate new token (expires in 24h by default)
-limactl shell k0s-byzantion sudo k0s token create --role=worker --expiry=24h
+limactl shell byzantion sudo k0s token create --role=worker --expiry=24h
 ```
