@@ -1,0 +1,42 @@
+---
+- name: Ensure TopoLVM prerequisites are present
+  hosts: poleis
+  become: yes
+  serial: 1
+  vars:
+    lvm_vg_name: pyxis
+    expected_lvm_path: /usr/sbin/lvm
+  tasks:
+    - name: Install LVM packages
+      ansible.builtin.apt:
+        name:
+          - lvm2
+          - thin-provisioning-tools
+        state: present
+        update_cache: yes
+
+    - name: Locate lvm binary
+      ansible.builtin.shell: command -v lvm
+      register: lvm_binary
+      changed_when: false
+
+    - name: Fail if lvm is not at the path used by TopoLVM
+      ansible.builtin.fail:
+        msg: "Expected lvm at {{ expected_lvm_path }}, found {{ lvm_binary.stdout }}. Update TopoLVM lvmd.args or add a symlink."
+      when: lvm_binary.stdout != expected_lvm_path
+
+    - name: Verify expected LVM volume group exists
+      ansible.builtin.command: "vgs --noheadings -o vg_name {{ lvm_vg_name }}"
+      register: lvm_vg_check
+      changed_when: false
+
+    - name: Show LVM volume group details
+      ansible.builtin.command: "vgs --noheadings -o vg_name,vg_size,vg_free {{ lvm_vg_name }}"
+      register: lvm_vg_details
+      changed_when: false
+
+    - name: Report TopoLVM prerequisites
+      ansible.builtin.debug:
+        msg:
+          - "lvm: {{ lvm_binary.stdout }}"
+          - "vg: {{ lvm_vg_details.stdout | trim }}"

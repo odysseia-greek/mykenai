@@ -7,7 +7,7 @@ RASPBERRY_PASSWORD_SECRET ?= odysseia/raspberry/password
 RASPBERRY_OLD_PASSWORD ?= raspberry
 ANSIBLE_FLAGS ?=
 
-.PHONY: ping ping-prd bootstrap bootstrap-hellas rotate-hellas-password bootstrap-hellenistike bootstrap-prd rook-ceph k0s-hellas k0s-hellenistike k3s-hellenistike k0s-single k0s-lima-single k0s-lima-ha
+.PHONY: ping ping-prd bootstrap bootstrap-hellas rotate-hellas-password bootstrap-hellenistike bootstrap-prd rook-ceph k0s-hellas k0s-hellenistike k3s-hellenistike lvm-storage-hellas k0s-single k0s-lima-single k0s-lima-ha
 
 KUBECONFIG_FILE ?= $(HOME)/.kube/config
 K0S_KUBECONFIG := playbooks/k0s-kubeconfig-byzantion
@@ -97,6 +97,13 @@ k3s-hellenistike:
 
 lvm-storage:
 	ansible-playbook -i $(INVENTORY_SINGLE) playbooks/lvm-node-storage.yaml
+
+lvm-storage-hellas:
+	@BECOME_PASS_FILE=$$(mktemp); \
+	trap 'rm -f "$$BECOME_PASS_FILE"' EXIT; \
+	chmod 600 "$$BECOME_PASS_FILE"; \
+	gopass show "$(RASPBERRY_PASSWORD_SECRET)" > "$$BECOME_PASS_FILE"; \
+	ANSIBLE_BECOME_PASSWORD_FILE="$$BECOME_PASS_FILE" ansible-playbook $(ANSIBLE_FLAGS) -i $(INVENTORY_HELLAS) playbooks/topolvm-prereqs.yaml
 
 k0s-single:
 	ansible-playbook -i $(INVENTORY_SINGLE) playbooks/k0s-single-node.yaml

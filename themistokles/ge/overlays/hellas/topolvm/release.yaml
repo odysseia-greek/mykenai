@@ -24,6 +24,8 @@ spec:
 
     lvmd:
       managed: true
+      args:
+        - --lvm-path=/usr/sbin/lvm
       deviceClasses:
         - name: pyxis
           default: true
