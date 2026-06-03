@@ -1,11 +1,45 @@
 apiVersion: v1
 kind: Node
 metadata:
+  name: sparta-hellas
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+    kustomize.toolkit.fluxcd.io/ssa: disabled
+  labels:
+    cilium.io/envoy-capable: "true"
+---
+apiVersion: v1
+kind: Node
+metadata:
   name: athenai-hellas
   annotations:
     kustomize.toolkit.fluxcd.io/prune: disabled
     kustomize.toolkit.fluxcd.io/ssa: disabled
   labels:
     cilium.io/envoy-capable: "true"
-    odysseia-greek/elastic-role: master
+    odysseia-greek/elastic-role: data-hot
     odysseia-greek/elastic-memory-tier: high
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: thebai-hellas
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+    kustomize.toolkit.fluxcd.io/ssa: disabled
+  labels:
+    cilium.io/envoy-capable: "true"
+    odysseia-greek/elastic-role: master
+    odysseia-greek/elastic-memory-tier: standard
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: korinthos-hellas
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+    kustomize.toolkit.fluxcd.io/ssa: disabled
+  labels:
+    cilium.io/envoy-capable: "true"
+    odysseia-greek/elastic-role: master
+    odysseia-greek/elastic-memory-tier: standard

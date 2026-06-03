@@ -12,17 +12,29 @@ all:
           ansible_ssh_private_key_file: ~/.ssh/id_raspie
           ansible_host: 192.168.1.122
           arch: rpi5
-        korinthos.hellas:
+        thebai.hellas:
           ansible_user: pi
           ansible_ssh_private_key_file: ~/.ssh/id_raspie
           ansible_host: 192.168.1.123
           arch: rpi5
-        thebai.hellas:
+        korinthos.hellas:
           ansible_user: pi
           ansible_ssh_private_key_file: ~/.ssh/id_raspie
           ansible_host: 192.168.1.124
           arch: rpi5
+      vars:
+        install_lvm2: true
+        verify_lvm_vg: true
+        lvm_vg_name: pyxis
       children:
+        poleis_hellas_controller:
+          hosts:
+            sparta.hellas:
+        poleis_hellas_workers:
+          hosts:
+            athenai.hellas:
+            thebai.hellas:
+            korinthos.hellas:
         servers-prd:
           hosts:
             sparta.hellas:

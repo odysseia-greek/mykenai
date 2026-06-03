@@ -5,7 +5,35 @@
   serial: 1
   vars:
     use_cilium: true           # flip to false if you don’t want cgroup2 mount
+    install_lvm2: false
+    verify_lvm_vg: false
+    lvm_vg_name: pyxis
   tasks:
+    - name: Ensure bootstrap packages are installed
+      ansible.builtin.apt:
+        name:
+          - lvm2
+        state: present
+        update_cache: yes
+      when: install_lvm2 | bool
+
+    - name: Verify expected LVM volume group exists
+      ansible.builtin.command: "vgs --noheadings -o vg_name {{ lvm_vg_name }}"
+      register: lvm_vg_check
+      changed_when: false
+      when: verify_lvm_vg | bool
+
+    - name: Show LVM volume group details
+      ansible.builtin.command: "vgs --noheadings -o vg_name,vg_size,vg_free {{ lvm_vg_name }}"
+      register: lvm_vg_details
+      changed_when: false
+      when: verify_lvm_vg | bool
+
+    - name: Report LVM volume group details
+      ansible.builtin.debug:
+        msg: "{{ lvm_vg_details.stdout | trim }}"
+      when: verify_lvm_vg | bool
+
     # Prefer newer path, then fall back
     - name: Candidate cmdline paths (newer first)
       ansible.builtin.set_fact:

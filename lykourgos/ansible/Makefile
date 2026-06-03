@@ -1,11 +1,13 @@
 INVENTORY_HELLENISTIKE = inventories/hellenistike/hosts.yaml
 INVENTORY_HELLAS = inventories/hellas/hosts.yaml
-INVENTORY_PRD = $(INVENTORY_HELLAS)
 INVENTORY_SINGLE = inventories/single/hosts.yaml
 INVENTORY_ROMAIOI_SINGLE = inventories/romaioi/single/hosts.yaml
 INVENTORY_ROMAIOI_HA = inventories/romaioi/ha/hosts.yaml
+RASPBERRY_PASSWORD_SECRET ?= odysseia/raspberry/password
+RASPBERRY_OLD_PASSWORD ?= raspberry
+ANSIBLE_FLAGS ?=
 
-.PHONY: ping ping-prd bootstrap bootstrap-hellenistike bootstrap-prd rook-ceph k0s-hellenistike k3s-hellenistike k0s-single k0s-lima-single k0s-lima-ha
+.PHONY: ping ping-prd bootstrap bootstrap-hellas rotate-hellas-password bootstrap-hellenistike bootstrap-prd rook-ceph k0s-hellas k0s-hellenistike k3s-hellenistike k0s-single k0s-lima-single k0s-lima-ha
 
 KUBECONFIG_FILE ?= $(HOME)/.kube/config
 K0S_KUBECONFIG := playbooks/k0s-kubeconfig-byzantion
@@ -49,8 +51,25 @@ merge-k0s-config: ## Merge k0s kubeconfig into main kubeconfig with meaningful n
 	@echo ""
 	@echo "To switch to k0s cluster, run: make switch-k0s"
 
-bootstrap-prd:
-	ansible-playbook -i $(INVENTORY_PRD) playbooks/bootstrap-raspies.yaml
+bootstrap-hellas:
+	@BECOME_PASS_FILE=$$(mktemp); \
+	trap 'rm -f "$$BECOME_PASS_FILE"' EXIT; \
+	chmod 600 "$$BECOME_PASS_FILE"; \
+	gopass show "$(RASPBERRY_PASSWORD_SECRET)" > "$$BECOME_PASS_FILE"; \
+	ANSIBLE_BECOME_PASSWORD_FILE="$$BECOME_PASS_FILE" ansible-playbook $(ANSIBLE_FLAGS) -i $(INVENTORY_HELLAS) playbooks/bootstrap-raspies.yaml
+
+rotate-hellas-password:
+	@BECOME_PASS_FILE=$$(mktemp); \
+	EXTRA_VARS_FILE=$$(mktemp); \
+	trap 'rm -f "$$BECOME_PASS_FILE" "$$EXTRA_VARS_FILE"' EXIT; \
+	chmod 600 "$$BECOME_PASS_FILE" "$$EXTRA_VARS_FILE"; \
+	printf '%s\n' "$(RASPBERRY_OLD_PASSWORD)" > "$$BECOME_PASS_FILE"; \
+	NEW_PASSWORD=$$(gopass show "$(RASPBERRY_PASSWORD_SECRET)"); \
+	PASSWORD_HASH=$$(printf '%s\n' "$$NEW_PASSWORD" | openssl passwd -6 -stdin); \
+	unset NEW_PASSWORD; \
+	printf "raspberry_password_hash: '%s'\n" "$$PASSWORD_HASH" > "$$EXTRA_VARS_FILE"; \
+	unset PASSWORD_HASH; \
+	ANSIBLE_BECOME_PASSWORD_FILE="$$BECOME_PASS_FILE" ansible-playbook $(ANSIBLE_FLAGS) -i $(INVENTORY_HELLAS) playbooks/rotate-raspberry-password.yaml -e "@$$EXTRA_VARS_FILE"
 
 bootstrap: bootstrap-hellenistike
 
@@ -65,6 +84,13 @@ bootstrap-single:
 
 k0s-hellenistike:
 	ansible-playbook -i $(INVENTORY_HELLENISTIKE) playbooks/k0s-hellenistike.yaml
+
+k0s-hellas:
+	@BECOME_PASS_FILE=$$(mktemp); \
+	trap 'rm -f "$$BECOME_PASS_FILE"' EXIT; \
+	chmod 600 "$$BECOME_PASS_FILE"; \
+	gopass show "$(RASPBERRY_PASSWORD_SECRET)" > "$$BECOME_PASS_FILE"; \
+	ANSIBLE_BECOME_PASSWORD_FILE="$$BECOME_PASS_FILE" ansible-playbook $(ANSIBLE_FLAGS) -i $(INVENTORY_HELLAS) playbooks/k0s-hellas.yaml
 
 k3s-hellenistike:
 	ansible-playbook -i $(INVENTORY_HELLENISTIKE) playbooks/k3s-install-hellenistike.yaml

@@ -1,0 +1,185 @@
+---
+- name: Install k0s controller with workloads enabled
+  hosts: "{{ k0s_controller_group }}"
+  become: yes
+  vars:
+    k0s_version: "v1.35.2+k0s.0"
+  tasks:
+    - name: Skip disabled hosts
+      ansible.builtin.meta: end_host
+      when: hostvars[inventory_hostname].disabled | default(false) | bool
+
+    - name: Download k0s install script
+      ansible.builtin.get_url:
+        url: https://get.k0s.sh
+        dest: /tmp/k0s-install.sh
+        mode: "0755"
+
+    - name: Install k0s binary
+      ansible.builtin.command: /tmp/k0s-install.sh
+      environment:
+        K0S_VERSION: "{{ k0s_version }}"
+      args:
+        creates: /usr/local/bin/k0s
+
+    - name: Create /etc/k0s
+      ansible.builtin.file:
+        path: /etc/k0s
+        state: directory
+        mode: "0755"
+
+    - name: Drop k0s config from template
+      ansible.builtin.template:
+        src: templates/k0s/config.yaml.j2
+        dest: /etc/k0s/k0s.yaml
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Install k0s controller with worker enabled
+      ansible.builtin.command: /usr/local/bin/k0s install controller --enable-worker -c /etc/k0s/k0s.yaml
+      args:
+        creates: /etc/systemd/system/k0scontroller.service
+
+    - name: Start and enable k0s controller
+      ansible.builtin.systemd:
+        name: k0scontroller
+        state: started
+        enabled: yes
+        daemon_reload: yes
+
+    - name: Wait for k0s API to be ready
+      ansible.builtin.wait_for:
+        host: 127.0.0.1
+        port: 6443
+        delay: 5
+        timeout: 300
+        state: started
+
+    - name: Wait for k0s status socket
+      ansible.builtin.wait_for:
+        path: /run/k0s/status.sock
+        state: present
+        timeout: 300
+
+    - name: Wait for k0s controller status
+      ansible.builtin.command: /usr/local/bin/k0s status
+      register: k0s_status
+      changed_when: false
+      retries: 30
+      delay: 5
+      until: k0s_status.rc == 0
+
+    - name: Ensure kube directory exists for {{ ansible_user }}
+      ansible.builtin.file:
+        path: "/home/{{ ansible_user }}/.kube"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0755"
+
+    - name: Generate kubeconfig for admin
+      ansible.builtin.command: /usr/local/bin/k0s kubeconfig admin
+      register: kubeconfig_content
+      changed_when: false
+
+    - name: Point kubeconfig at the controller address
+      ansible.builtin.set_fact:
+        controller_kubeconfig: >-
+          {{
+            kubeconfig_content.stdout
+            | regex_replace('server: https://(127\\.0\\.0\\.1|localhost):6443', 'server: https://' ~ ansible_host ~ ':6443')
+          }}
+
+    - name: Write kubeconfig for {{ ansible_user }}
+      ansible.builtin.copy:
+        content: "{{ controller_kubeconfig }}"
+        dest: "/home/{{ ansible_user }}/.kube/config"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0600"
+
+    - name: Fetch kubeconfig locally
+      ansible.builtin.fetch:
+        src: "/home/{{ ansible_user }}/.kube/config"
+        dest: "./k0s-kubeconfig-{{ inventory_hostname }}"
+        flat: yes
+
+    - name: Create worker join token
+      ansible.builtin.command: /usr/local/bin/k0s token create --role=worker --expiry 1h
+      register: k0s_worker_token
+      changed_when: false
+      retries: 12
+      delay: 5
+      until: k0s_worker_token.rc == 0
+
+    - name: Share worker token with worker play
+      ansible.builtin.set_fact:
+        worker_join_token: "{{ k0s_worker_token.stdout }}"
+
+- name: Join workers to k0s
+  hosts: "{{ k0s_worker_group }}"
+  become: yes
+  vars:
+    k0s_version: "v1.35.2+k0s.0"
+    controller_host: "{{ groups[k0s_controller_group][0] }}"
+  tasks:
+    - name: Skip disabled hosts
+      ansible.builtin.meta: end_host
+      when: hostvars[inventory_hostname].disabled | default(false) | bool
+
+    - name: Download k0s install script
+      ansible.builtin.get_url:
+        url: https://get.k0s.sh
+        dest: /tmp/k0s-install.sh
+        mode: "0755"
+
+    - name: Install k0s binary
+      ansible.builtin.command: /tmp/k0s-install.sh
+      environment:
+        K0S_VERSION: "{{ k0s_version }}"
+      args:
+        creates: /usr/local/bin/k0s
+
+    - name: Write join token to file
+      ansible.builtin.copy:
+        content: "{{ hostvars[controller_host].worker_join_token }}"
+        dest: /tmp/k0s-worker.token
+        owner: root
+        group: root
+        mode: "0600"
+
+    - name: Install k0s worker
+      ansible.builtin.command: /usr/local/bin/k0s install worker --token-file /tmp/k0s-worker.token
+      args:
+        creates: /etc/systemd/system/k0sworker.service
+
+    - name: Start and enable k0s worker
+      ansible.builtin.systemd:
+        name: k0sworker
+        state: started
+        enabled: yes
+        daemon_reload: yes
+
+- name: Verify k0s cluster
+  hosts: "{{ k0s_controller_group }}"
+  become: yes
+  vars:
+    expected_node_count: "{{ k0s_expected_node_count | default(groups[k0s_all_group] | length) }}"
+  tasks:
+    - name: Wait for all k0s nodes to register
+      ansible.builtin.command: /usr/local/bin/k0s kubectl get nodes --no-headers
+      register: k0s_nodes
+      changed_when: false
+      retries: 30
+      delay: 10
+      until: k0s_nodes.stdout_lines | length >= (expected_node_count | int)
+
+    - name: Show node registration
+      ansible.builtin.command: /usr/local/bin/k0s kubectl get nodes -o wide
+      register: cluster_status
+      changed_when: false
+
+    - name: Print node registration
+      ansible.builtin.debug:
+        var: cluster_status.stdout_lines

@@ -31,7 +31,7 @@ set -Eeuo pipefail
 #   p1 = boot, p2 = root
 # - It creates p3 as an LVM PV and VG named "pyxis"
 # - It enables SSH by placing /boot/firmware/ssh
-# - It creates userconf.txt with a temporary password hash
+# - It creates userconf.txt with a password hash read from gopass by default
 # - After first boot, disable password auth in sshd_config if desired
 
 usage() {
@@ -45,6 +45,7 @@ Usage:
     --ssh-pubkey /path/to/id_ed25519.pub \
     [--username pi] \
     [--password-hash '$6$...'] \
+    [--password-gopass-path odysseia/raspberry/password] \
     [--vg-name pyxis] \
     [--yes]
 
@@ -58,12 +59,15 @@ Required:
 Optional:
   --username       Linux user to create; default: pi
   --password-hash  precomputed SHA-512 password hash for userconf.txt
-                   if omitted, a temporary bootstrap password "raspberry" is hashed
+                   if omitted, the password is read from gopass and hashed
+  --password-gopass-path
+                   gopass secret path for the bootstrap password;
+                   default: odysseia/raspberry/password
   --vg-name        LVM volume group name; default: pyxis
   --yes            do not prompt for confirmation
 
 Examples:
-  openssl passwd -6 raspberry
+  gopass show odysseia/raspberry/password
   ssh-keygen -t ed25519
 
 EOF
@@ -76,6 +80,7 @@ ROOT_SIZE=""
 SSH_PUBKEY_FILE=""
 USERNAME="pi"
 PASSWORD_HASH=""
+PASSWORD_GOPASS_PATH="odysseia/raspberry/password"
 VG_NAME="pyxis"
 ASSUME_YES="false"
 
@@ -88,6 +93,7 @@ while [[ $# -gt 0 ]]; do
     --ssh-pubkey) SSH_PUBKEY_FILE="${2:-}"; shift 2 ;;
     --username) USERNAME="${2:-}"; shift 2 ;;
     --password-hash) PASSWORD_HASH="${2:-}"; shift 2 ;;
+    --password-gopass-path) PASSWORD_GOPASS_PATH="${2:-}"; shift 2 ;;
     --vg-name) VG_NAME="${2:-}"; shift 2 ;;
     --yes) ASSUME_YES="true"; shift ;;
     -h|--help) usage; exit 0 ;;
@@ -115,6 +121,16 @@ fail() {
   exit 1
 }
 
+read_gopass_secret() {
+  local path="$1"
+
+  if [[ $EUID -eq 0 && -n "${SUDO_USER:-}" && "$SUDO_USER" != "root" ]]; then
+    sudo -u "$SUDO_USER" gopass show "$path"
+  else
+    gopass show "$path"
+  fi
+}
+
 [[ $EUID -eq 0 ]] || fail "Run as root or with sudo."
 [[ -n "$DEVICE" ]] || fail "--device is required"
 [[ -n "$IMAGE" ]] || fail "--image is required"
@@ -126,11 +142,11 @@ fail() {
 [[ -f "$IMAGE" ]] || fail "Image file not found: $IMAGE"
 [[ -f "$SSH_PUBKEY_FILE" ]] || fail "SSH public key file not found: $SSH_PUBKEY_FILE"
 
-for cmd in dd parted e2fsck resize2fs lsblk mount umount sync wipefs sed awk grep tee chmod chown mkdir touch; do
+for cmd in dd parted partprobe e2fsck resize2fs lsblk mount umount sync wipefs sed awk grep tee chmod chown mkdir touch; do
   require_cmd "$cmd"
 done
 
-if ! command -v pvcreate >/dev/null 2>&1 || ! command -v vgcreate >/dev/null 2>&1; then
+if ! command -v pvcreate >/dev/null 2>&1 || ! command -v vgcreate >/dev/null 2>&1 || ! command -v pvs >/dev/null 2>&1 || ! command -v vgchange >/dev/null 2>&1; then
   echo "LVM tools not found. Install lvm2 first." >&2
   echo "Example: sudo apt update && sudo apt install -y lvm2" >&2
   exit 1
@@ -141,7 +157,12 @@ SSH_PUBKEY="$(<"$SSH_PUBKEY_FILE")"
 
 if [[ -z "$PASSWORD_HASH" ]]; then
   require_cmd openssl
-  PASSWORD_HASH="$(openssl passwd -6 raspberry)"
+  [[ -n "$PASSWORD_GOPASS_PATH" ]] || fail "--password-gopass-path cannot be empty when --password-hash is omitted"
+
+  BOOTSTRAP_PASSWORD="$(read_gopass_secret "$PASSWORD_GOPASS_PATH")" || fail "Could not read password from gopass path: $PASSWORD_GOPASS_PATH"
+  [[ -n "$BOOTSTRAP_PASSWORD" ]] || fail "gopass secret is empty: $PASSWORD_GOPASS_PATH"
+  PASSWORD_HASH="$(printf '%s\n' "$BOOTSTRAP_PASSWORD" | openssl passwd -6 -stdin)"
+  unset BOOTSTRAP_PASSWORD
 fi
 
 echo "=== Provisioning plan ==="
@@ -150,6 +171,7 @@ echo "Image      : $IMAGE"
 echo "Hostname   : $HOSTNAME_SET"
 echo "Root size  : $ROOT_SIZE"
 echo "User       : $USERNAME"
+echo "Password   : ${PASSWORD_HASH:+configured}"
 echo "VG name    : $VG_NAME"
 echo "SSH pubkey : $SSH_PUBKEY_FILE"
 echo
@@ -161,11 +183,17 @@ if [[ "$ASSUME_YES" != "true" ]]; then
   [[ "$reply" == "yes" ]] || fail "Aborted."
 fi
 
-echo "==> Unmounting any mounted partitions on target"
-while read -r part _; do
-  [[ "$part" == NAME ]] && continue
-  umount "/dev/$part" 2>/dev/null || true
-done < <(lsblk -ln -o NAME,MOUNTPOINT "$DEVICE")
+echo "==> Unmounting any mounted filesystems on target"
+while read -r mountpoint; do
+  [[ -n "$mountpoint" ]] || continue
+  umount "$mountpoint" 2>/dev/null || true
+done < <(lsblk -rn -o MOUNTPOINT "$DEVICE" | awk 'NF')
+
+echo "==> Deactivating any LVM volume groups on target"
+while read -r vg_name; do
+  [[ -n "$vg_name" ]] || continue
+  vgchange -an "$vg_name"
+done < <(pvs --noheadings -o vg_name,pv_name 2>/dev/null | awk -v device="$DEVICE" '$2 ~ "^" device { print $1 }')
 
 echo "==> Wiping old signatures"
 wipefs -a "$DEVICE"
@@ -210,7 +238,8 @@ sleep 2
 [[ -b "$DATA_PART" ]] || fail "Data partition not found after creation: $DATA_PART"
 
 echo "==> Creating LVM PV and VG"
-pvcreate "$DATA_PART"
+wipefs -a "$DATA_PART"
+pvcreate -ff -y "$DATA_PART"
 vgcreate "$VG_NAME" "$DATA_PART"
 
 echo "==> Mounting root and boot partitions"

@@ -52,7 +52,7 @@ spec:
                 limits:
                   memory: 2Gi
     - name: data-hot
-      count: 2
+      count: 1
       config:
         node.roles:
           - data_hot

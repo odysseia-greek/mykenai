@@ -1,0 +1,11 @@
+---
+- name: Bootstrap Hellas Raspberry Pis
+  ansible.builtin.import_playbook: bootstrap-raspies.yaml
+
+- name: Install k0s on Hellas
+  ansible.builtin.import_playbook: k0s-cluster.yaml
+  vars:
+    k0s_controller_group: poleis_hellas_controller
+    k0s_worker_group: poleis_hellas_workers
+    k0s_all_group: poleis
+    k0s_expected_node_count: 4

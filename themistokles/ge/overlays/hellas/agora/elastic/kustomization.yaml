@@ -4,6 +4,6 @@ namespace: agora
 
 resources:
   - ../../../../base/elastic
-  - cluster.yaml
+  - cluster-all-nodes.yaml
   - kibana.yaml
   - ir.yaml

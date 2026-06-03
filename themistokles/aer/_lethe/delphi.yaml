@@ -11,9 +11,9 @@ spec:
   sourceRef:
     kind: GitRepository
     name: themistokles
-  dependsOn:
-    - name: cert-manager
-    - name: rook-ceph
-  path: themistokles/ge/overlays/hellenistike/delphi
+  path: themistokles/ge/overlays/hellas/delphi
   prune: true
   wait: true
+  dependsOn:
+    - name: topolvm
+    - name: traefik
