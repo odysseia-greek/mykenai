@@ -1,0 +1,165 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: olympia-github-webhook
+  namespace: tekton-pipelines
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: olympia-github-webhook
+  namespace: tekton-pipelines
+rules:
+  - apiGroups:
+      - triggers.tekton.dev
+    resources:
+      - eventlisteners
+      - interceptors
+      - triggers
+      - triggerbindings
+      - triggertemplates
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - tekton.dev
+    resources:
+      - pipelineruns
+    verbs:
+      - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: olympia-github-webhook
+  namespace: tekton-pipelines
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: olympia-github-webhook
+subjects:
+  - kind: ServiceAccount
+    name: olympia-github-webhook
+    namespace: tekton-pipelines
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: olympia-github-webhook
+rules:
+  - apiGroups:
+      - triggers.tekton.dev
+    resources:
+      - clusterinterceptors
+      - clustertriggerbindings
+    verbs:
+      - get
+      - list
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: olympia-github-webhook
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: olympia-github-webhook
+subjects:
+  - kind: ServiceAccount
+    name: olympia-github-webhook
+    namespace: tekton-pipelines
+---
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: olympia-github-pr
+  namespace: tekton-pipelines
+spec:
+  params:
+    - name: git-url
+      value: $(body.repository.clone_url)
+    - name: git-ref
+      value: refs/heads/$(body.pull_request.head.ref)
+    - name: git-revision
+      value: $(body.pull_request.head.sha)
+    - name: github-repo
+      value: $(body.repository.full_name)
+    - name: commit-message
+      value: $(body.pull_request.title)
+    - name: commit-author
+      value: $(body.pull_request.user.login)
+    - name: commit-url
+      value: $(body.pull_request.html_url)
+---
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: olympia-github-pr
+  namespace: tekton-pipelines
+spec:
+  params:
+    - name: git-url
+    - name: git-ref
+    - name: git-revision
+    - name: github-repo
+    - name: commit-message
+    - name: commit-author
+    - name: commit-url
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1
+      kind: PipelineRun
+      metadata:
+        generateName: olympia-github-pr-
+        namespace: tekton-pipelines
+        labels:
+          app.kubernetes.io/name: olympia-github-webhook
+          odysseia-greek/repo: olympia
+      spec:
+        pipelineRef:
+          name: olympia-pr-checks
+        params:
+          - name: git-url
+            value: $(tt.params.git-url)
+          - name: git-ref
+            value: $(tt.params.git-ref)
+          - name: git-revision
+            value: $(tt.params.git-revision)
+          - name: github-repo
+            value: $(tt.params.github-repo)
+          - name: commit-message
+            value: $(tt.params.commit-message)
+          - name: commit-author
+            value: $(tt.params.commit-author)
+          - name: commit-url
+            value: $(tt.params.commit-url)
+---
+apiVersion: triggers.tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: olympia-github
+  namespace: tekton-pipelines
+spec:
+  serviceAccountName: olympia-github-webhook
+  triggers:
+    - name: pull-request
+      bindings:
+        - ref: olympia-github-pr
+      template:
+        ref: olympia-github-pr
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: olympia-github-webhook
+  namespace: tekton-pipelines
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`pella-hellenistike.tailcf9d9a.ts.net`) && PathPrefix(`/olympia`)
+      kind: Rule
+      services:
+        - name: el-olympia-github
+          port: 8080

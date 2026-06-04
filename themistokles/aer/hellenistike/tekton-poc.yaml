@@ -14,3 +14,7 @@ spec:
   path: themistokles/ge/overlays/hellenistike/tekton-poc
   prune: true
   wait: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-gpg

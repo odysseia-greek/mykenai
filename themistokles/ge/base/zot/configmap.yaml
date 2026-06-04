@@ -53,7 +53,7 @@ data:
             {
               "urls": ["https://docker.io/library"],
               "onDemand": false,
-              "pollInterval": "5m",
+              "pollInterval": "12h",
               "content": [
                 {
                   "prefix": "/golang",

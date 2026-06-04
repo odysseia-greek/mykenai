@@ -1,0 +1,244 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: github-status
+  namespace: tekton-pipelines
+spec:
+  params:
+    - name: repo
+      type: string
+      default: ""
+    - name: git-url
+      type: string
+      default: ""
+    - name: sha
+      type: string
+    - name: state
+      type: string
+      default: ""
+    - name: pipeline-status
+      type: string
+      default: ""
+    - name: description
+      type: string
+      default: ""
+    - name: context
+      type: string
+      default: tekton/olympia-gofmt
+  steps:
+    - name: update-status
+      image: curlimages/curl:latest
+      env:
+        - name: GITHUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: github-status-token
+              key: token
+        - name: GITHUB_REPO
+          value: $(params.repo)
+        - name: GIT_URL
+          value: $(params.git-url)
+        - name: GIT_SHA
+          value: $(params.sha)
+        - name: STATUS_STATE
+          value: $(params.state)
+        - name: PIPELINE_STATUS
+          value: $(params.pipeline-status)
+        - name: STATUS_DESCRIPTION
+          value: $(params.description)
+        - name: STATUS_CONTEXT
+          value: $(params.context)
+      script: |
+        #!/bin/sh
+        set -eu
+
+        repo="${GITHUB_REPO}"
+        if [ -z "${repo}" ]; then
+          repo="${GIT_URL#https://github.com/}"
+          repo="${repo%.git}"
+        fi
+
+        state="${STATUS_STATE}"
+        description="${STATUS_DESCRIPTION}"
+        if [ -n "${PIPELINE_STATUS}" ]; then
+          case "${PIPELINE_STATUS}" in
+            Succeeded|Completed)
+              state="success"
+              description="Tekton gofmt check passed"
+              ;;
+            Failed)
+              state="failure"
+              description="Tekton gofmt check failed"
+              ;;
+            *)
+              state="error"
+              description="Tekton gofmt check ended with status ${PIPELINE_STATUS}"
+              ;;
+          esac
+        fi
+
+        curl -sSf -X POST \
+          -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+          -H "Accept: application/vnd.github+json" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          "https://api.github.com/repos/${repo}/statuses/${GIT_SHA}" \
+          -d "{
+            \"state\": \"${state}\",
+            \"context\": \"${STATUS_CONTEXT}\",
+            \"description\": \"${description}\"
+          }"
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: olympia-gofmt-check
+  namespace: tekton-pipelines
+spec:
+  params:
+    - name: git-url
+      type: string
+    - name: git-ref
+      type: string
+    - name: git-revision
+      type: string
+    - name: github-repo
+      type: string
+      default: ""
+    - name: commit-message
+      type: string
+    - name: commit-author
+      type: string
+    - name: commit-url
+      type: string
+  steps:
+    - name: fmt
+      image: golang:1.25.5
+      computeResources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 500m
+          memory: 256Mi
+      env:
+        - name: GIT_URL
+          value: $(params.git-url)
+        - name: GIT_REF
+          value: $(params.git-ref)
+        - name: GIT_REVISION
+          value: $(params.git-revision)
+        - name: COMMIT_MESSAGE
+          value: $(params.commit-message)
+        - name: COMMIT_AUTHOR
+          value: $(params.commit-author)
+        - name: COMMIT_URL
+          value: $(params.commit-url)
+      script: |
+        #!/bin/sh
+        set -eu
+
+        echo "repository: ${GIT_URL}"
+        echo "ref: ${GIT_REF}"
+        echo "revision: ${GIT_REVISION}"
+        echo "author: ${COMMIT_AUTHOR}"
+        echo "message: ${COMMIT_MESSAGE}"
+        echo "url: ${COMMIT_URL}"
+
+        workdir=/workspace/source
+        git clone "${GIT_URL}" "${workdir}"
+        cd "${workdir}"
+
+        if git cat-file -e "${GIT_REVISION}^{commit}" 2>/dev/null; then
+          git checkout --detach "${GIT_REVISION}"
+        else
+          git fetch origin "${GIT_REF}"
+          if ! git cat-file -e "${GIT_REVISION}^{commit}" 2>/dev/null; then
+            echo "requested revision ${GIT_REVISION} was not found after fetching ${GIT_REF}"
+            exit 1
+          fi
+          git checkout --detach "${GIT_REVISION}"
+        fi
+
+        files="$(git ls-files '*.go' ':!:hippokrates/**')"
+        if [ -z "${files}" ]; then
+          echo "no Go files found"
+          exit 0
+        fi
+
+        unformatted="$(gofmt -l ${files})"
+        if [ -n "${unformatted}" ]; then
+          echo "gofmt check failed; unformatted files:"
+          echo "${unformatted}"
+          exit 1
+        fi
+
+        echo "gofmt check passed"
+---
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: olympia-pr-checks
+  namespace: tekton-pipelines
+spec:
+  params:
+    - name: git-url
+      type: string
+    - name: git-ref
+      type: string
+    - name: git-revision
+      type: string
+    - name: github-repo
+      type: string
+      default: ""
+    - name: commit-message
+      type: string
+    - name: commit-author
+      type: string
+    - name: commit-url
+      type: string
+  tasks:
+    - name: github-status-pending
+      taskRef:
+        name: github-status
+      params:
+        - name: repo
+          value: $(params.github-repo)
+        - name: git-url
+          value: $(params.git-url)
+        - name: sha
+          value: $(params.git-revision)
+        - name: state
+          value: pending
+        - name: description
+          value: Tekton gofmt check started
+    - name: gofmt-check
+      taskRef:
+        name: olympia-gofmt-check
+      params:
+        - name: git-url
+          value: $(params.git-url)
+        - name: git-ref
+          value: $(params.git-ref)
+        - name: git-revision
+          value: $(params.git-revision)
+        - name: github-repo
+          value: $(params.github-repo)
+        - name: commit-message
+          value: $(params.commit-message)
+        - name: commit-author
+          value: $(params.commit-author)
+        - name: commit-url
+          value: $(params.commit-url)
+  finally:
+    - name: github-status-final
+      taskRef:
+        name: github-status
+      params:
+        - name: repo
+          value: $(params.github-repo)
+        - name: git-url
+          value: $(params.git-url)
+        - name: sha
+          value: $(params.git-revision)
+        - name: pipeline-status
+          value: $(tasks.status)
