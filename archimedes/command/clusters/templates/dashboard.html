@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Odysseia Cluster Dashboard</title>
+  <style>
+    :root {
+      --ink: #1f261f;
+      --muted: #69736a;
+      --paper: #f4f0e5;
+      --card: #fffaf0;
+      --line: #d9cfb8;
+      --green: #2d7d46;
+      --red: #b63f31;
+      --amber: #b97822;
+      --blue: #395f82;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(57, 95, 130, 0.16), transparent 34rem),
+        linear-gradient(135deg, #f8f4e8 0%, var(--paper) 48%, #ebe2cf 100%);
+      font: 16px/1.45 ui-serif, Georgia, Cambria, "Times New Roman", serif;
+    }
+
+    main {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 32px auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: flex-end;
+      margin-bottom: 28px;
+      border-bottom: 2px solid var(--line);
+      padding-bottom: 18px;
+    }
+
+    h1, h2, p { margin: 0; }
+    h1 {
+      font-size: clamp(2rem, 6vw, 4.4rem);
+      line-height: 0.9;
+      letter-spacing: -0.055em;
+    }
+
+    .meta {
+      color: var(--muted);
+      text-align: right;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.84rem;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .summary-card, .node-card {
+      background: color-mix(in srgb, var(--card) 88%, white);
+      border: 1px solid var(--line);
+      box-shadow: 0 14px 32px rgba(46, 40, 24, 0.08);
+    }
+
+    .summary-card {
+      padding: 14px 16px;
+      border-radius: 18px;
+    }
+
+    .summary-card strong {
+      display: block;
+      font-size: 1.55rem;
+      line-height: 1;
+    }
+
+    .summary-card span {
+      color: var(--muted);
+      font-size: 0.83rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .cluster { margin: 26px 0; }
+
+    .cluster-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      font-size: clamp(1.6rem, 4vw, 2.7rem);
+      letter-spacing: -0.04em;
+    }
+
+    .cluster-health {
+      color: var(--muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.9rem;
+    }
+
+    .nodes {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .node-card {
+      border-radius: 22px;
+      padding: 16px;
+    }
+
+    .node-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .node-name {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+    }
+
+    .node-address {
+      color: var(--muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.84rem;
+    }
+
+    .role {
+      height: fit-content;
+      border-radius: 999px;
+      padding: 5px 10px;
+      background: rgba(57, 95, 130, 0.12);
+      color: var(--blue);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .health-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      padding: 6px 9px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.78rem;
+      background: rgba(255, 255, 255, 0.42);
+    }
+
+    .light {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px rgba(0,0,0,0.04);
+    }
+
+    .ok .light { background: var(--green); }
+    .bad .light { background: var(--red); }
+    .unknown .light { background: var(--amber); }
+
+    dl {
+      display: grid;
+      grid-template-columns: 86px 1fr;
+      gap: 8px 12px;
+      margin: 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.86rem;
+    }
+
+    dt { color: var(--muted); }
+    dd { margin: 0; overflow-wrap: anywhere; }
+
+    .error, .fetch-error {
+      margin-top: 10px;
+      color: var(--red);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.78rem;
+    }
+
+    .loading {
+      color: var(--muted);
+      padding: 24px;
+      border: 1px dashed var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.3);
+    }
+
+    @media (max-width: 760px) {
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .meta { text-align: left; }
+      .summary, .nodes { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <h1>Cluster<br>Status</h1>
+    </div>
+    <div class="meta">
+      <div>generated <span id="generated-at">waiting</span></div>
+      <div>cluster={{ .Cluster }} timeout={{ .Timeout }}</div>
+      <div>refresh every <span id="refresh-seconds"></span>s</div>
+    </div>
+  </header>
+
+  <section class="summary">
+    <div class="summary-card"><strong id="total-nodes">-</strong><span>nodes</span></div>
+    <div class="summary-card"><strong id="ping-ok">-</strong><span>ping ok</span></div>
+    <div class="summary-card"><strong id="ssh-ok">-</strong><span>ssh ok</span></div>
+    <div class="summary-card"><strong id="problem-count">-</strong><span>problems</span></div>
+  </section>
+
+  <div id="fetch-error" class="fetch-error" hidden></div>
+  <section id="clusters"><div class="loading">loading cluster state...</div></section>
+</main>
+
+<script>
+const apiPath = "{{ .APIPath }}";
+const intervalMS = {{ .IntervalMS }};
+
+document.getElementById("refresh-seconds").textContent = Math.round(intervalMS / 1000);
+
+function text(value, fallback = "-") {
+  if (value === null || value === undefined || value === "") return fallback;
+  return String(value);
+}
+
+function el(tag, className, content) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (content !== undefined) node.textContent = content;
+  return node;
+}
+
+function renderHealth(kind, cssClass, label) {
+  const pill = el("div", `pill ${cssClass}`);
+  pill.appendChild(el("span", "light"));
+  pill.appendChild(document.createTextNode(` ${kind} ${label}`));
+  return pill;
+}
+
+function renderNode(node) {
+  const card = el("article", "node-card");
+
+  const head = el("div", "node-head");
+  const title = el("div");
+  title.appendChild(el("div", "node-name", node.Name));
+  title.appendChild(el("div", "node-address", `${node.Address} · ${node.Arch}`));
+  head.appendChild(title);
+  head.appendChild(el("div", "role", node.Role));
+  card.appendChild(head);
+
+  const health = el("div", "health-row");
+  health.appendChild(renderHealth("ping", node.PingClass, node.PingLabel));
+  health.appendChild(renderHealth("ssh", node.SSHClass, node.SSHLabel));
+  card.appendChild(health);
+
+  const stats = document.createElement("dl");
+  for (const [key, value] of [["load", node.Load], ["memory", node.Memory], ["disks", node.Disks]]) {
+    stats.appendChild(el("dt", "", key));
+    stats.appendChild(el("dd", "", text(value)));
+  }
+  card.appendChild(stats);
+
+  if (node.Error) {
+    card.appendChild(el("div", "error", node.Error));
+  }
+
+  return card;
+}
+
+function render(data) {
+  document.getElementById("generated-at").textContent = data.GeneratedAt;
+  document.getElementById("total-nodes").textContent = data.TotalNodes;
+  document.getElementById("ping-ok").textContent = data.PingOK;
+  document.getElementById("ssh-ok").textContent = data.SSHOK;
+  document.getElementById("problem-count").textContent = data.ProblemCount;
+
+  const root = document.getElementById("clusters");
+  root.replaceChildren();
+
+  for (const cluster of data.Clusters || []) {
+    const section = el("section", "cluster");
+    const title = el("div", "cluster-title");
+    title.appendChild(el("h2", "", cluster.Name));
+    title.appendChild(el("div", "cluster-health", `${cluster.HealthyNodes}/${cluster.TotalNodes} nodes fully reachable`));
+    section.appendChild(title);
+
+    const nodes = el("div", "nodes");
+    for (const node of cluster.Nodes || []) {
+      nodes.appendChild(renderNode(node));
+    }
+    section.appendChild(nodes);
+    root.appendChild(section);
+  }
+}
+
+async function refresh() {
+  const error = document.getElementById("fetch-error");
+  try {
+    const response = await fetch(apiPath, { cache: "no-store" });
+    if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+    render(await response.json());
+    error.hidden = true;
+    error.textContent = "";
+  } catch (err) {
+    error.hidden = false;
+    error.textContent = `dashboard refresh failed: ${err.message}`;
+  }
+}
+
+refresh();
+setInterval(refresh, intervalMS);
+</script>
+</body>
+</html>

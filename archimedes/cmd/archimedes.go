@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/odysseia-greek/agora/plato/logging"
+	"github.com/odysseia-greek/mykenai/archimedes/command/clusters"
 	"github.com/odysseia-greek/mykenai/archimedes/command/images"
 	"github.com/odysseia-greek/mykenai/archimedes/command/odysseia"
 	"github.com/odysseia-greek/mykenai/archimedes/command/parse"
@@ -47,6 +48,7 @@ work with vault and much more is coming`,
 	}
 
 	rootCmd.AddCommand(
+		clusters.Manager(),
 		images.Manager(),
 		parse.Manager(),
 		odysseia.Manager(),
