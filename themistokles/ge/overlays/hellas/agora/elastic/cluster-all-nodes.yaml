@@ -26,6 +26,10 @@ spec:
           labels:
             odysseia-greek/elastic-node-set: master
         spec:
+          tolerations:
+            - key: node-role.kubernetes.io/control-plane
+              operator: Exists
+              effect: NoSchedule
           affinity:
             nodeAffinity:
               requiredDuringSchedulingIgnoredDuringExecution:
