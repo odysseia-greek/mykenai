@@ -22,6 +22,8 @@ spec:
           ports:
             - name: https
               containerPort: 8200
+            - name: cluster
+              containerPort: 8201
           livenessProbe:
             httpGet:
               path: /v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204
@@ -37,7 +39,7 @@ spec:
               cpu: 100m
               memory: 256Mi
             limits:
-              memory: 512Mi
+              memory: 256Mi
           volumeMounts:
             - name: config
               mountPath: /etc/openbao

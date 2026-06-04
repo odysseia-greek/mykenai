@@ -4,10 +4,9 @@ metadata:
   name: openbao-config
 data:
   openbao.hcl: |
-    disable_mlock = true
     ui            = true
-    api_addr      = "[::]:8200"
-    cluster_addr  = "[::]:8201"
+    api_addr      = "https://openbao.delphi.svc.cluster.local:8200"
+    cluster_addr  = "https://openbao.delphi.svc.cluster.local:8201"
 
     listener "tcp" {
       address             = "[::]:8200"

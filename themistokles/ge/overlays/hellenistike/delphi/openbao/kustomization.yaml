@@ -10,5 +10,5 @@ patches:
   - target:
       version: v1
       kind: PersistentVolumeClaim
-      name: vault-data
+      name: openbao-data
     path: patch-pvc.yaml
