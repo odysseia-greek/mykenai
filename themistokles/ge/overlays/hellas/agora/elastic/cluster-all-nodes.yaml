@@ -14,7 +14,7 @@ spec:
       selfSignedCertificate:
         disabled: true
   nodeSets:
-    - name: master
+    - name: master-pyxis
       count: 1
       config:
         node.roles:
@@ -53,7 +53,7 @@ spec:
             resources:
               requests:
                 storage: 20Gi
-    - name: data-hot
+    - name: data-hot-pyxis
       count: 2
       config:
         node.roles:
