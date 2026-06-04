@@ -4,6 +4,7 @@ namespace: agora
 
 resources:
   - ../../../../base/elastic
+  - cnp-internal-transport.yaml
   - cluster-all-nodes.yaml
   - kibana.yaml
   - ir.yaml
