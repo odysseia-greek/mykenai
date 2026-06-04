@@ -9,7 +9,7 @@ resources:
 components:
   - ../../../../../pyr/koinos/deployment/aristophanes
   - ../../../../../pyr/koinos/services/grpc
-  - ../../../../../pyr/koinos/resources/prod/low
+  - ../../../../../pyr/koinos/resources/hellas/low
   - ../../../../../pyr/koinos/transformers/volumes/elastic
   - ../../../../../pyr/koinos/common-env/base/deploy
   - ../../../../../pyr/koinos/downwardapi/version/deploy

@@ -14,8 +14,8 @@ components:
   - ../../../../../pyr/koinos/deployment/periandros
   - ../../../../../pyr/koinos/deployment/aristides
   - ../../../../../pyr/koinos/services/http
-  - ../../../../../pyr/koinos/resources/prod/high
-  - ../../../../../pyr/koinos/resources/prod/job
+  - ../../../../../pyr/koinos/resources/hellas/high
+  - ../../../../../pyr/koinos/resources/hellas/job
   - ../../../../../pyr/koinos/transformers/volumes/secrets
   - ../../../../../pyr/koinos/common-env/base/deploy
   - ../../../../../pyr/koinos/common-env/base/job

@@ -7,10 +7,10 @@ resources:
   - ../../../../base/attike/aiskhylos
 
 components:
-  - ../../../../../pyr/koinos/resources/prod/mid
+  - ../../../../../pyr/koinos/resources/hellas/mid
   - ../../../../../pyr/koinos/deployment/periandros
   - ../../../../../pyr/koinos/deployment/aristides
-  - ../../../../../pyr/koinos/resources/prod/job
+  - ../../../../../pyr/koinos/resources/hellas/job
   - ../../../../../pyr/koinos/transformers/volumes/secrets
   - ../../../../../pyr/koinos/common-env/base/job
   - ../../../../../pyr/koinos/common-env/base/deploy

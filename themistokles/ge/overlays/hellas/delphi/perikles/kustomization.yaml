@@ -7,7 +7,7 @@ resources:
   - ../../../../base/delphi/perikles
 
 components:
-  - ../../../../../../thrasyboulos/pyr/koinos/resources/prod/high
+  - ../../../../../../thrasyboulos/pyr/koinos/resources/hellas/high
   - ../../../../../../thrasyboulos/pyr/koinos/downwardapi/version/deploy
 
 labels:

@@ -8,7 +8,7 @@ resources:
   - ../../../../base/olympia/melissos
 
 components:
-  - ../../../../../pyr/koinos/resources/prod/low
+  - ../../../../../pyr/koinos/resources/hellas/low
   - ../../../../../pyr/koinos/common-env/base/cronjob
   - ../../../../../pyr/koinos/common-env/base/job
   - ../../../../../pyr/koinos/job/periandros

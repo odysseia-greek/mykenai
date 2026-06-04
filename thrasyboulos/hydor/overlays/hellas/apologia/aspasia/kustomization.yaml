@@ -12,7 +12,7 @@ components:
   - ../stoicheia/images
 
   - ../../../../../pyr/koinos/services/grpc
-  - ../../../../../pyr/koinos/resources/prod/low
+  - ../../../../../pyr/koinos/resources/hellas/low
   - ../../../../../pyr/koinos/common-env/base/deploy
   - ../../../../../pyr/koinos/downwardapi/version/deploy
 
