@@ -9,6 +9,7 @@ metadata:
     cilium.io/envoy-capable: "true"
     odysseia-greek/topolvm: pyxis
     odysseia-greek/elastic-role: master
+    odysseia-greek/ingress-role: primary
 ---
 apiVersion: v1
 kind: Node

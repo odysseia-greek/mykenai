@@ -4,6 +4,12 @@ metadata:
   name: traefik
 spec:
   values:
+    nodeSelector:
+      odysseia-greek/ingress-role: primary
+    tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
     service:
       enabled: true
       type: NodePort
