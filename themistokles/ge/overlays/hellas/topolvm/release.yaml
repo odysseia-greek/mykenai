@@ -24,6 +24,8 @@ spec:
 
     lvmd:
       managed: true
+      nodeSelector:
+        odysseia-greek/topolvm: pyxis
       args:
         - --lvm-path=/usr/sbin/lvm
       deviceClasses:
@@ -33,6 +35,8 @@ spec:
 
     node:
       kubeletWorkDirectory: /var/lib/k0s/kubelet
+      nodeSelector:
+        odysseia-greek/topolvm: pyxis
 
     storageClasses:
       - name: pyxis-delete

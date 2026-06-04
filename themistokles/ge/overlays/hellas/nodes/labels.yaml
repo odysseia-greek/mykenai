@@ -7,6 +7,7 @@ metadata:
     kustomize.toolkit.fluxcd.io/ssa: disabled
   labels:
     cilium.io/envoy-capable: "true"
+    odysseia-greek/topolvm: pyxis
     odysseia-greek/elastic-role: master
 ---
 apiVersion: v1
@@ -18,6 +19,7 @@ metadata:
     kustomize.toolkit.fluxcd.io/ssa: disabled
   labels:
     cilium.io/envoy-capable: "true"
+    odysseia-greek/topolvm: pyxis
     odysseia-greek/elastic-role: data-hot
     odysseia-greek/elastic-memory-tier: high
 ---
@@ -30,6 +32,7 @@ metadata:
     kustomize.toolkit.fluxcd.io/ssa: disabled
   labels:
     cilium.io/envoy-capable: "true"
+    odysseia-greek/topolvm: pyxis
     odysseia-greek/elastic-role: data-hot
     odysseia-greek/elastic-memory-tier: standard
 ---
@@ -42,5 +45,6 @@ metadata:
     kustomize.toolkit.fluxcd.io/ssa: disabled
   labels:
     cilium.io/envoy-capable: "true"
+    odysseia-greek/topolvm: pyxis
     odysseia-greek/vault-role: primary
     odysseia-greek/elastic-memory-tier: standard
