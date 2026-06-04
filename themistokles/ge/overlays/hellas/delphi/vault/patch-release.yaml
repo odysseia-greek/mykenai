@@ -5,6 +5,8 @@ metadata:
 spec:
   values:
     server:
+      nodeSelector:
+        odysseia-greek/vault-role: primary
       extraEnvironmentVars:
         VAULT_CACERT: /vault/userconfig/vault-server-tls/ca.crt
       volumes:
@@ -38,4 +40,4 @@ spec:
           memory: "128Mi"
       dataStorage:
         enabled: true
-        size: 20Gi
+        size: 30Gi

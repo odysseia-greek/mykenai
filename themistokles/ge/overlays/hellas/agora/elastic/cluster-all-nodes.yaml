@@ -28,21 +28,13 @@ spec:
         spec:
           affinity:
             nodeAffinity:
-              preferredDuringSchedulingIgnoredDuringExecution:
-                - weight: 100
-                  preference:
-                    matchExpressions:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
                       - key: odysseia-greek/elastic-role
                         operator: In
                         values:
                           - master
-                - weight: 50
-                  preference:
-                    matchExpressions:
-                      - key: odysseia-greek/elastic-memory-tier
-                        operator: In
-                        values:
-                          - high
           containers:
             - name: elasticsearch
               resources:
@@ -51,8 +43,18 @@ spec:
                   memory: 2Gi
                 limits:
                   memory: 2Gi
+      volumeClaimTemplates:
+        - metadata:
+            name: elasticsearch-data
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            storageClassName: pyxis-delete
+            resources:
+              requests:
+                storage: 20Gi
     - name: data-hot
-      count: 1
+      count: 2
       config:
         node.roles:
           - data_hot
@@ -101,3 +103,13 @@ spec:
                   memory: 4Gi
                 limits:
                   memory: 4Gi
+      volumeClaimTemplates:
+        - metadata:
+            name: elasticsearch-data
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            storageClassName: pyxis-delete
+            resources:
+              requests:
+                storage: 40Gi
