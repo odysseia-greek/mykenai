@@ -26,6 +26,10 @@ spec:
       managed: true
       nodeSelector:
         odysseia-greek/topolvm: pyxis
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
       args:
         - --lvm-path=/usr/sbin/lvm
       deviceClasses:
@@ -37,6 +41,10 @@ spec:
       kubeletWorkDirectory: /var/lib/k0s/kubelet
       nodeSelector:
         odysseia-greek/topolvm: pyxis
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
 
     storageClasses:
       - name: pyxis-delete
