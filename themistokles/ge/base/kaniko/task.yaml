@@ -18,6 +18,9 @@ spec:
     - name: dockerfile
       type: string
       default: Dockerfile
+    - name: extra-args
+      type: array
+      default: []
   results:
     - name: image-digest
       description: Digest reported by Kaniko.
@@ -47,3 +50,4 @@ spec:
         - --cache=true
         - --cache-copy-layers
         - --use-new-run
+        - $(params.extra-args[*])
