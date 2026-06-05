@@ -32,6 +32,13 @@ spec:
     - name: build-and-push
       image: $(params.builder-image)
       workingDir: $(workspaces.source.path)
+      computeResources:
+        requests:
+          cpu: "2"
+          memory: 4Gi
+        limits:
+          cpu: "3"
+          memory: 4Gi
       args:
         - --context=$(workspaces.source.path)/$(params.context)
         - --dockerfile=$(workspaces.source.path)/$(params.dockerfile)

@@ -27,3 +27,5 @@ metadata:
     kustomize.toolkit.fluxcd.io/ssa: disabled
   labels:
     cilium.io/envoy-capable: "false"
+    odysseia-greek/build-node: "kaniko"
+    odysseia-greek/build-profile: "large"
