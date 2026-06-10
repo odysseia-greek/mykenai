@@ -21,4 +21,4 @@ images:
   - name: ghcr.io/odysseia-greek/meletos
     newTag: v0.1.2
   - name: ghcr.io/odysseia-greek/parmenides
-    newTag: v0.2.1
+    newTag: v0.2.2
