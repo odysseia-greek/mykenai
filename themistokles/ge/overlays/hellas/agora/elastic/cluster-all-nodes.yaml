@@ -14,7 +14,7 @@ spec:
       selfSignedCertificate:
         disabled: true
   nodeSets:
-    - name: master-pyxis
+    - name: master
       count: 1
       config:
         node.roles:
