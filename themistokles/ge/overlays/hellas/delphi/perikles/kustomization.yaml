@@ -4,6 +4,7 @@ namespace: delphi
 
 resources:
   - deployment.yaml
+  - ir.yaml
   - ../../../../base/delphi/perikles
 
 components:
