@@ -22,13 +22,16 @@ spec:
       serviceAccountName: periklessa
       containers:
         - name: perikles
-          image: ghcr.io/odysseia-greek/perikles:v0.2.1
+          image: ghcr.io/odysseia-greek/perikles:v0.2.2
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: perikles
             - configMapRef:
                 name: elastic-roles-and-cnp
+          ports:
+            - name: dashboard
+              containerPort: 8080
           env:
             - name: CRD_NAME
               value: perikles-mapping

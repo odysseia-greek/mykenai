@@ -7,3 +7,4 @@ data:
   ELASTIC_NAMESPACE: "agora"
   WATCHED_NAMESPACES: "attike;olympia;apologia;makedonia;alexandreia"
   CONFIGMAP_NAME: "elastic-roles-and-cnp"
+  DASHBOARD_ADDR: ":8080"

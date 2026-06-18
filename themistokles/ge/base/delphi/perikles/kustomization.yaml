@@ -5,3 +5,4 @@ resources:
   - configmap.yaml
   - rbac.yaml
   - roles-cnp-map.yaml
+  - service.yaml
