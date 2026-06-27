@@ -5,6 +5,10 @@ metadata:
 spec:
   interval: 10m
   targetNamespace: topolvm
+  install:
+    crds: Create
+  upgrade:
+    crds: CreateReplace
   chart:
     spec:
       chart: topolvm

@@ -33,4 +33,5 @@ metadata:
   labels:
     cilium.io/envoy-capable: "true"
     odysseia-greek/topolvm: pyxis
+    odysseia-greek/vault-role: primary
     odysseia-greek/elastic-memory-tier: standard
