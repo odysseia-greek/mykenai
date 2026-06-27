@@ -20,7 +20,7 @@ metadata:
   labels:
     cilium.io/envoy-capable: "true"
     odysseia-greek/topolvm: pyxis
-    odysseia-greek/elastic-role: data-hot
+    odysseia-greek/elastic-role: all
     odysseia-greek/elastic-memory-tier: high
 ---
 apiVersion: v1
@@ -33,19 +33,4 @@ metadata:
   labels:
     cilium.io/envoy-capable: "true"
     odysseia-greek/topolvm: pyxis
-    odysseia-greek/elastic-role: data-hot
-    odysseia-greek/elastic-memory-tier: standard
----
-apiVersion: v1
-kind: Node
-metadata:
-  name: korinthos-hellas
-  annotations:
-    kustomize.toolkit.fluxcd.io/prune: disabled
-    kustomize.toolkit.fluxcd.io/ssa: disabled
-  labels:
-    cilium.io/envoy-capable: "true"
-    odysseia-greek/topolvm: pyxis
-    odysseia-greek/vault-role: primary
-    odysseia-greek/elastic-role: master
     odysseia-greek/elastic-memory-tier: standard

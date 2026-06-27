@@ -14,17 +14,52 @@ spec:
       selfSignedCertificate:
         disabled: true
   nodeSets:
-    - name: worker
+    - name: all-pyxis
       count: 1
       config:
+        node.roles:
+          - master
+          - data
+          - data_content
+          - data_hot
+          - data_warm
+          - data_cold
+          - data_frozen
+          - ingest
+          - ml
+          - transform
+          - remote_cluster_client
         node.store.allow_mmap: false
         xpack.security.http.ssl.enabled: false
       podTemplate:
+        metadata:
+          labels:
+            odysseia-greek/elastic-node-set: all
         spec:
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: odysseia-greek/elastic-role
+                        operator: In
+                        values:
+                          - all
           containers:
             - name: elasticsearch
-          resources:
-            requests:
-              memory: 2Gi
-            limits:
-              memory: 2Gi
+              resources:
+                requests:
+                  cpu: 500m
+                  memory: 10Gi
+                limits:
+                  memory: 10Gi
+      volumeClaimTemplates:
+        - metadata:
+            name: elasticsearch-data
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            storageClassName: pyxis-delete
+            resources:
+              requests:
+                storage: 40Gi
