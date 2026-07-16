@@ -23,8 +23,8 @@ all:
           ansible_host: 192.168.1.124
           arch: rpi5
       vars:
-        install_lvm2: true
-        verify_lvm_vg: true
+        install_lvm2: false
+        verify_lvm_vg: false
         lvm_vg_name: pyxis
       children:
         poleis_hellas_controller:
@@ -43,3 +43,19 @@ all:
             athenai.hellas:
             thebai.hellas:
             korinthos.hellas:
+        topolvm_storage_nodes:
+          vars:
+            install_lvm2: true
+            verify_lvm_vg: true
+            lvm_vg_name: pyxis
+          hosts:
+            sparta.hellas:
+            athenai.hellas:
+            thebai.hellas:
+        compute_only_nodes:
+          hosts:
+            korinthos.hellas:
+              boot_disk: sd
+              install_lvm2: false
+              verify_lvm_vg: false
+              topolvm_storage_node: false

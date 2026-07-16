@@ -20,6 +20,8 @@ spec:
         version: v0.2.1
     spec:
       serviceAccountName: periklessa
+      nodeSelector:
+        kubernetes.io/hostname: korinthos-hellas
       containers:
         - name: perikles
           image: ghcr.io/odysseia-greek/perikles:v0.2.2

@@ -45,6 +45,10 @@ spec:
                         operator: In
                         values:
                           - all
+                      - key: topolvm.cybozu.com/storage-node
+                        operator: In
+                        values:
+                          - "true"
           containers:
             - name: elasticsearch
               resources:

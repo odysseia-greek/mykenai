@@ -1,6 +1,6 @@
 ---
 - name: Ensure TopoLVM prerequisites are present
-  hosts: poleis
+  hosts: topolvm_storage_nodes
   become: yes
   serial: 1
   vars:

@@ -7,7 +7,7 @@ metadata:
     kustomize.toolkit.fluxcd.io/ssa: disabled
   labels:
     cilium.io/envoy-capable: "true"
-    odysseia-greek/topolvm: pyxis
+    topolvm.cybozu.com/storage-node: "true"
     odysseia-greek/ingress-role: primary
 ---
 apiVersion: v1
@@ -19,7 +19,7 @@ metadata:
     kustomize.toolkit.fluxcd.io/ssa: disabled
   labels:
     cilium.io/envoy-capable: "true"
-    odysseia-greek/topolvm: pyxis
+    topolvm.cybozu.com/storage-node: "true"
     odysseia-greek/elastic-role: all
     odysseia-greek/elastic-memory-tier: high
 ---
@@ -32,6 +32,17 @@ metadata:
     kustomize.toolkit.fluxcd.io/ssa: disabled
   labels:
     cilium.io/envoy-capable: "true"
-    odysseia-greek/topolvm: pyxis
+    topolvm.cybozu.com/storage-node: "true"
     odysseia-greek/vault-role: primary
     odysseia-greek/elastic-memory-tier: standard
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: korinthos-hellas
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+    kustomize.toolkit.fluxcd.io/ssa: disabled
+  labels:
+    cilium.io/envoy-capable: "true"
+    node-role.hellas/compute-only: "true"

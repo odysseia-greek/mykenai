@@ -7,6 +7,15 @@ spec:
     server:
       nodeSelector:
         odysseia-greek/vault-role: primary
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: topolvm.cybozu.com/storage-node
+                    operator: In
+                    values:
+                      - "true"
       extraEnvironmentVars:
         VAULT_CACERT: /vault/userconfig/vault-server-tls/ca.crt
       volumes:

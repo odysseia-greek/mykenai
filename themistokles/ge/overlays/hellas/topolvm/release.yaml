@@ -29,7 +29,7 @@ spec:
     lvmd:
       managed: true
       nodeSelector:
-        odysseia-greek/topolvm: pyxis
+        topolvm.cybozu.com/storage-node: "true"
       tolerations:
         - key: node-role.kubernetes.io/control-plane
           operator: Exists
@@ -44,7 +44,7 @@ spec:
     node:
       kubeletWorkDirectory: /var/lib/k0s/kubelet
       nodeSelector:
-        odysseia-greek/topolvm: pyxis
+        topolvm.cybozu.com/storage-node: "true"
       tolerations:
         - key: node-role.kubernetes.io/control-plane
           operator: Exists
