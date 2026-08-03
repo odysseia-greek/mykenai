@@ -23,6 +23,7 @@ spec:
               value: ":50061"
             - name: HTTP_PORT
               value: ":8080"
+          envFrom: []
           ports:
             - name: grpc
               containerPort: 50061

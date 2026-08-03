@@ -6,3 +6,7 @@ resources:
   - deployment.yaml
   - service.yaml
   - ir.yaml
+
+components:
+  - ../../../../../pyr/koinos/deployment/aristophanes
+  - ../../../../../pyr/koinos/common-env/base/deploy
