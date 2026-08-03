@@ -12,7 +12,7 @@ spec:
       labels:
         app: "pheidias"
         release: pheidias
-        version: v0.2.3
+        version: v0.2.4
     spec:
       containers:
         - name: "pheidias"
