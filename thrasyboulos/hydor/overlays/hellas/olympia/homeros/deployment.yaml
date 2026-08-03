@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: homeros
-          image: ghcr.io/odysseia-greek/homeros:v0.3.2
+          image: ghcr.io/odysseia-greek/homeros:v0.3.3
           imagePullPolicy: Always
           env:
             - name: TRACE_CONFIG_PATH
