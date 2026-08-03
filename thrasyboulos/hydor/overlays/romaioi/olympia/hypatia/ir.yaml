@@ -1,0 +1,13 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: hypatia-route
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`hypatia.byzantion.odysseia-greek`)
+      kind: Rule
+      services:
+        - name: hypatia
+          port: 8080

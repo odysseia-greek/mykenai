@@ -9,6 +9,7 @@ resources:
   - melissos
   - protagoras
   - hippokrates
+  - hypatia
 
 labels:
   - pairs:
