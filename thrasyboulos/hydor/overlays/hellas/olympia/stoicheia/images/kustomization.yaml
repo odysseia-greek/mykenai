@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+images:
+  - name: ghcr.io/odysseia-greek/herakleitos
+    newTag: v0.2.1
+  - name: ghcr.io/odysseia-greek/herodotos
+    newTag: v0.2.3
+  - name: ghcr.io/odysseia-greek/hippokrates
+    newTag: v0.2.0
+  - name: ghcr.io/odysseia-greek/homeros
+    newTag: v0.3.3
+  - name: ghcr.io/odysseia-greek/hypatia
+    newTag: v0.0.1
+  - name: ghcr.io/odysseia-greek/melissos
+    newTag: v0.2.3
+  - name: ghcr.io/odysseia-greek/pheidias
+    newTag: v0.2.4
+  - name: ghcr.io/odysseia-greek/protagoras
+    newTag: v0.2.1

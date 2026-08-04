@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+images:
+  - name: ghcr.io/odysseia-greek/alexandros
+    newTag: v0.3.2
+  - name: ghcr.io/odysseia-greek/antigonos
+    newTag: v0.0.3
+  - name: ghcr.io/odysseia-greek/dareios
+    newTag: v0.0.1
+  - name: ghcr.io/odysseia-greek/demokritos
+    newTag: v0.2.4
+  - name: ghcr.io/odysseia-greek/eukleides
+    newTag: v0.0.4
+  - name: ghcr.io/odysseia-greek/hefaistion
+    newTag: v0.0.3
+  - name: ghcr.io/odysseia-greek/parmenion
+    newTag: v0.0.3
+  - name: ghcr.io/odysseia-greek/perdikkas
+    newTag: v0.0.4
+  - name: ghcr.io/odysseia-greek/ptolemaios
+    newTag: v0.0.3
