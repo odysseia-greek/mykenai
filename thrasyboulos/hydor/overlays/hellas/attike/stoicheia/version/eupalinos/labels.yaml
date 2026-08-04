@@ -1,0 +1,9 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: eupalinos
+spec:
+  template:
+    metadata:
+      labels:
+        version: v0.3.1

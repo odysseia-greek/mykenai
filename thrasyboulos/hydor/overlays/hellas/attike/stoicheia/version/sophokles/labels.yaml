@@ -1,0 +1,9 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: sophokles
+spec:
+  template:
+    metadata:
+      labels:
+        version: v0.3.2

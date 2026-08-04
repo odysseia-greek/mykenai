@@ -9,6 +9,10 @@ resources:
   - euripides
   - polykleitos
 
+components:
+  - stoicheia/images
+  - stoicheia/version
+
 labels:
   - pairs:
       environment: "hellas"
