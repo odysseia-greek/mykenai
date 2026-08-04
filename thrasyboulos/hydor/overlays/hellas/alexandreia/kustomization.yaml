@@ -8,6 +8,10 @@ resources:
   - eratosthenes
   - kallimachos
 
+components:
+  - stoicheia/images
+  - stoicheia/version
+
 labels:
   - pairs:
       environment: "hellas"
