@@ -7,21 +7,10 @@ resources:
   - aristarchos
   - eratosthenes
   - kallimachos
-  - eupalinos
 
 components:
   - stoicheia/images
   - stoicheia/version
-
-patches:
-  - target:
-      version: v1
-      kind: ConfigMap
-      name: odysseia-common-env
-    patch: |-
-      - op: replace
-        path: /data/EUPALINOS_SERVICE
-        value: eupalinos.alexandreia.svc.cluster.local:50060
 
 labels:
   - pairs:
