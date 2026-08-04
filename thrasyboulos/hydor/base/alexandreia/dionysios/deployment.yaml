@@ -23,7 +23,7 @@ spec:
         perikles/accesses: "solon;eratosthenes;aristarchos;kallimachos"
     spec:
       containers:
-        - name: "dionysios"
+        - name: dionysios
           image: ghcr.io/odysseia-greek/dionysios:v0.2.4
           imagePullPolicy: Always
           env:
@@ -40,18 +40,20 @@ spec:
                 name: dionysios
           volumeMounts: []
           ports:
-            - containerPort: 5000
-              name: http
+            - name: http
+              containerPort: 5000
+            - name: grpc
+              containerPort: 50060
           livenessProbe:
             httpGet:
-              path: /dionysios/v1/health
-              port: 5000
+              path: /healthz
+              port: http
             initialDelaySeconds: 20
             periodSeconds: 20
           readinessProbe:
             httpGet:
-              path: /dionysios/v1/ping
-              port: 5000
+              path: /readyz
+              port: http
             initialDelaySeconds: 1
             periodSeconds: 20
       volumes: []

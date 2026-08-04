@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dionysios
+spec:
+  selector:
+    app: dionysios
+  ports:
+    - name: http
+      port: 5000
+      targetPort: http
+    - name: grpc
+      port: 50060
+      targetPort: grpc
