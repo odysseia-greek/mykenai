@@ -5,7 +5,7 @@ images:
   - name: ghcr.io/odysseia-greek/anaximander
     newTag: v0.2.1
   - name: ghcr.io/odysseia-greek/aristarchos
-    newTag: v0.2.2
+    newTag: v0.2.3
   - name: ghcr.io/odysseia-greek/dionysios
     newTag: v0.3.0
   - name: ghcr.io/odysseia-greek/eratosthenes
