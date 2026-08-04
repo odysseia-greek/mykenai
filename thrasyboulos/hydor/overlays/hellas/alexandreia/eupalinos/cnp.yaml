@@ -1,0 +1,17 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: alexandreia-to-eupalinos
+spec:
+  description: Allow only pods in the alexandreia namespace to access Eupalinos
+  endpointSelector:
+    matchLabels:
+      app: eupalinos
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: alexandreia
+      toPorts:
+        - ports:
+            - port: "50060"
+              protocol: TCP
