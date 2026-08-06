@@ -38,6 +38,5 @@ spec:
         enabled: true
         auto:
           enabled: true
-          method: cronJob
+          method: helm
           certValidityDuration: 365
-          schedule: "0 0 1 */4 *"
