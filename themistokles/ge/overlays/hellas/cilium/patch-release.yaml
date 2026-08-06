@@ -4,5 +4,40 @@ metadata:
   name: cilium
 spec:
   values:
+    cluster:
+      name: hellas-odysseia
     operator:
-      replicas: 1
+      replicas: 2
+      rollOutPods: true
+      podDisruptionBudget:
+        enabled: true
+        maxUnavailable: 1
+    rollOutCiliumPods: true
+    envoy:
+      rollOutPods: true
+    hubble:
+      enabled: true
+      relay:
+        enabled: true
+        replicas: 2
+        rollOutPods: true
+        podDisruptionBudget:
+          enabled: true
+          maxUnavailable: 1
+        topologySpreadConstraints:
+          - maxSkew: 1
+            topologyKey: kubernetes.io/hostname
+            whenUnsatisfiable: ScheduleAnyway
+            labelSelector:
+              matchLabels:
+                k8s-app: hubble-relay
+      ui:
+        enabled: true
+        rollOutPods: true
+      tls:
+        enabled: true
+        auto:
+          enabled: true
+          method: cronJob
+          certValidityDuration: 365
+          schedule: "0 0 1 */4 *"
