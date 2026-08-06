@@ -97,15 +97,6 @@ echo ""
 echo "Waiting for Cilium to be ready..."
 cilium status --wait --namespace cilium
 
-echo ""
-echo "Enabling Cilium Hubble..."
-cilium hubble enable --ui --namespace cilium
-
-echo ""
-echo "Waiting for Hubble to be ready..."
-kubectl wait --for=condition=Ready pods -n cilium -l k8s-app=hubble-relay --timeout=300s || true
-kubectl wait --for=condition=Ready pods -n cilium -l k8s-app=hubble-ui --timeout=300s || true
-
 echo -e "${GREEN}✓ Cilium installed successfully${NC}"
 echo ""
 
