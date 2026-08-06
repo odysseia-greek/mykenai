@@ -7,6 +7,7 @@ resources:
   - aristarchos
   - eratosthenes
   - kallimachos
+  - galenos
 
 components:
   - stoicheia/images
