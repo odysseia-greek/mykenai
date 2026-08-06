@@ -9,7 +9,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Versions
-CILIUM_VERSION="${CILIUM_VERSION:-1.18.1}"
+CILIUM_VERSION="${CILIUM_VERSION:-1.20.0}"
 FLUX_NAMESPACE="${FLUX_NAMESPACE:-flux-system}"
 
 # Kubeconfig
