@@ -4,3 +4,4 @@ namespace: alexandreia
 
 resources:
   - cronjob.yaml
+  - cnp.yaml

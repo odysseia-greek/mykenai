@@ -14,8 +14,6 @@ spec:
             app: galenos
             release: galenos
             version: v0.0.1
-          annotations:
-            perikles/accesses: "dionysios"
         spec:
           restartPolicy: Never
           containers:
