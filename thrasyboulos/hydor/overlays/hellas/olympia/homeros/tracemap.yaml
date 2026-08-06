@@ -93,7 +93,7 @@ data:
         },
         {
           "operation": "CounterTopFive",
-          "score": 100
+          "score": 10
         },
         {
           "operation": "status",
