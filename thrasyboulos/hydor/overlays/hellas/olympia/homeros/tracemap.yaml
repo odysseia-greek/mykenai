@@ -8,7 +8,11 @@ data:
     {
       "operationScores": [
         {
-          "operation": "dictionary",
+          "operation": "create",
+          "score": 100
+        },
+        {
+          "operation": "check",
           "score": 100
         },
         {
@@ -24,11 +28,7 @@ data:
           "score": 100
         },
         {
-          "operation": "text",
-          "score": 100
-        },
-        {
-          "operation": "options",
+          "operation": "analyze",
           "score": 100
         },
         {
@@ -56,6 +56,18 @@ data:
           "score": 100
         },
         {
+          "operation": "grammarAnswer",
+          "score": 100
+        },
+        {
+          "operation": "grammarQuiz",
+          "score": 100
+        },
+        {
+          "operation": "journeyQuiz",
+          "score": 100
+        },
+        {
           "operation": "mediaQuiz",
           "score": 100
         },
@@ -64,23 +76,23 @@ data:
           "score": 100
         },
         {
-          "operation": "fuzzy",
+          "operation": "DictionaryFuzzy",
           "score": 100
         },
         {
-          "operation": "exact",
+          "operation": "DictionaryExact",
           "score": 100
         },
         {
-          "operation": "phrase",
+          "operation": "DictionaryPhrase",
           "score": 100
         },
         {
-          "operation": "partial",
+          "operation": "DictionaryPartial",
           "score": 100
         },
         {
-          "operation": "counterTopFive",
+          "operation": "CounterTopFive",
           "score": 100
         },
         {
