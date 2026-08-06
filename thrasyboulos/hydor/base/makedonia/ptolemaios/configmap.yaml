@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: ptolemaios
 data:
-  HERODOTOS_SERVICE: "http://herodotos.olympia.svc.cluster.local:5000"
+  DIONYSIOS_SERVICE: "dionysios.alexandreia.svc.cluster.local:50060"
