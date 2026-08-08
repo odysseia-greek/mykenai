@@ -13,7 +13,7 @@ images:
   - name: ghcr.io/odysseia-greek/eukleides
     newTag: v0.1.0
   - name: ghcr.io/odysseia-greek/hefaistion
-    newTag: v0.0.4
+    newTag: v0.1.0
   - name: ghcr.io/odysseia-greek/parmenion
     newTag: v0.0.4
   - name: ghcr.io/odysseia-greek/perdikkas
