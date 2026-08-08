@@ -13,4 +13,4 @@ images:
   - name: ghcr.io/odysseia-greek/kallimachos
     newTag: v0.1.1
   - name: ghcr.io/odysseia-greek/galenos
-    newTag: v0.0.1
+    newTag: v0.0.2
