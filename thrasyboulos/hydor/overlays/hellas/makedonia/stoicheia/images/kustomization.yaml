@@ -3,7 +3,7 @@ kind: Component
 
 images:
   - name: ghcr.io/odysseia-greek/alexandros
-    newTag: v0.3.3
+    newTag: v0.3.4
   - name: ghcr.io/odysseia-greek/antigonos
     newTag: v0.0.4
   - name: ghcr.io/odysseia-greek/dareios
