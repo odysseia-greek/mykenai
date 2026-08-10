@@ -11,7 +11,7 @@ components:
 
 labels:
   - pairs:
-      environment: "romaioi"
+      environment: "hellas"
       variant: "k0s"
       domain: "elastic"
     includeSelectors: false

@@ -16,16 +16,14 @@ spec:
       labels:
         app: theofrastos
         release: theofrastos
-        version: v0.0.2
+        version: v0.1.0
     spec:
       serviceAccountName: theofrastossa
       containers:
         - name: "theofrastos"
-          image: ghcr.io/odysseia-greek/theofrastos:v0.0.2
+          image: ghcr.io/odysseia-greek/theofrastos:v0.1.0
           imagePullPolicy: Always
           env:
-            - name: ENV
-              value: "k3d"
             - name: CONFIGMAP_NAME
               value: elastic-roles-and-users
             - name: ELASTIC_SEARCH_PASSWORD
