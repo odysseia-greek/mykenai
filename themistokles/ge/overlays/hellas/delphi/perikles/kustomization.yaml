@@ -10,11 +10,3 @@ resources:
 components:
   - ../../../../../../thrasyboulos/pyr/koinos/resources/hellas/high
   - ../../../../../../thrasyboulos/pyr/koinos/downwardapi/version/deploy
-
-labels:
-  - pairs:
-      environment: "hellas"
-      variant: "k0s"
-      domain: "backend"
-    includeSelectors: false
-    includeTemplates: true
