@@ -11,7 +11,6 @@ spec:
       labels:
         app: hippokrates
         release: hippokrates
-        version: v0.2.0
       annotations:
         perikles/accesses: "homeros"
     spec:
@@ -20,12 +19,11 @@ spec:
           labels:
             app: hippokrates
             release: hippokrates
-            version: v0.0.1
         spec:
           restartPolicy: Never
           containers:
             - name: hippokrates
-              image: ghcr.io/odysseia-greek/hippokrates:v0.2.0
+              image: ghcr.io/odysseia-greek/hippokrates
               imagePullPolicy: Always
               envFrom:
                 - configMapRef:

@@ -16,7 +16,6 @@ spec:
       labels:
         app: kallimachos
         release: kallimachos
-        version: v0.0.1
       annotations:
         odysseia-greek/role: api
         odysseia-greek/access: text
@@ -24,7 +23,7 @@ spec:
     spec:
       containers:
         - name: "kallimachos"
-          image: ghcr.io/odysseia-greek/kallimachos:v0.0.1
+          image: ghcr.io/odysseia-greek/kallimachos
           imagePullPolicy: Always
           env:
             - name: ELASTIC_ACCESS

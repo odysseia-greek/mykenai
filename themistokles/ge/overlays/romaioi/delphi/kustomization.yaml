@@ -8,3 +8,14 @@ resources:
   - vault
   - ktesias
 
+components:
+  - stoicheia/images
+  - stoicheia/version
+
+labels:
+  - pairs:
+      environment: "romaioi"
+      variant: "k0s"
+      domain: "backend"
+    includeSelectors: false
+    includeTemplates: true

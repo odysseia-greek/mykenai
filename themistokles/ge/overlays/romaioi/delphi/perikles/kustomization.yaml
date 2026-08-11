@@ -9,11 +9,3 @@ resources:
 components:
   - ../../../../../../thrasyboulos/pyr/koinos/resources/local/low
   - ../../../../../../thrasyboulos/pyr/koinos/downwardapi/version/deploy
-
-labels:
-  - pairs:
-      environment: "romaioi"
-      variant: "k0s"
-      domain: "backend"
-    includeSelectors: false
-    includeTemplates: true

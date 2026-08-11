@@ -14,14 +14,13 @@ spec:
       labels:
         app: eukleides
         release: eukleides
-        version: v0.0.4
       annotations:
         odysseia-greek/role: api
         odysseia-greek/access: dictionary
     spec:
       containers:
         - name: "eukleides"
-          image: ghcr.io/odysseia-greek/eukleides:v0.0.4
+          image: ghcr.io/odysseia-greek/eukleides
           imagePullPolicy: Always
           envFrom: []
           env: []

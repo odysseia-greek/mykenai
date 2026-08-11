@@ -11,6 +11,10 @@ resources:
   - hippokrates
   - hypatia
 
+components:
+  - stoicheia/images
+  - stoicheia/version
+
 labels:
   - pairs:
       environment: "romaioi"

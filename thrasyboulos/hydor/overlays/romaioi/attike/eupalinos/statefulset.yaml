@@ -13,12 +13,11 @@ spec:
       labels:
         app: eupalinos-attike
         release: eupalinos
-        version: v0.2.7
     spec:
       terminationGracePeriodSeconds: 3
       containers:
         - name: eupalinos-attike
-          image: ghcr.io/odysseia-greek/eupalinos:v0.2.7
+          image: ghcr.io/odysseia-greek/eupalinos
           ports:
             - containerPort: 50060
           envFrom:

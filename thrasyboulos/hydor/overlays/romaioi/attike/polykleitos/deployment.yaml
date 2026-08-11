@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: "polykleitos"
-          image: ghcr.io/odysseia-greek/polykleitos:v0.0.1
+          image: ghcr.io/odysseia-greek/polykleitos
           imagePullPolicy: Always
           env:
             - name: ENV

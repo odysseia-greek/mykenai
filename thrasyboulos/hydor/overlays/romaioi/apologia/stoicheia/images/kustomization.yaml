@@ -3,22 +3,22 @@ kind: Component
 
 images:
   - name: ghcr.io/odysseia-greek/alkibiades
-    newTag: v0.1.4
+    newTag: v0.1.5
   - name: ghcr.io/odysseia-greek/antisthenes
-    newTag: v0.1.4
+    newTag: v0.1.5
   - name: ghcr.io/odysseia-greek/aristippos
-    newTag: v0.1.4
+    newTag: v0.1.5
   - name: ghcr.io/odysseia-greek/aspasia
-    newTag: v0.0.6
+    newTag: v0.0.7
   - name: ghcr.io/odysseia-greek/kritias
-    newTag: v0.1.4
+    newTag: v0.1.5
   - name: ghcr.io/odysseia-greek/kriton
-    newTag: v0.1.3
-  - name: ghcr.io/odysseia-greek/xenofon
     newTag: v0.1.4
+  - name: ghcr.io/odysseia-greek/xenofon
+    newTag: v0.1.5
   - name: ghcr.io/odysseia-greek/sokrates
-    newTag: v0.2.4
+    newTag: v0.2.5
   - name: ghcr.io/odysseia-greek/meletos
-    newTag: v0.1.2
+    newTag: v0.1.3
   - name: ghcr.io/odysseia-greek/parmenides
-    newTag: v0.2.3
+    newTag: v0.2.5

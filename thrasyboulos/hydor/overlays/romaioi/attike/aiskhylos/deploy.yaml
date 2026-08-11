@@ -32,7 +32,6 @@ spec:
       labels:
         app: aiskhylos
         release: aiskhylos
-        version: v0.2.2
     spec:
       containers:
       - env:
@@ -45,7 +44,7 @@ spec:
             name: aiskhylos
         - configMapRef:
             name: odysseia-common-env
-        image: ghcr.io/odysseia-greek/aiskhylos:v0.2.2
+        image: ghcr.io/odysseia-greek/aiskhylos
         imagePullPolicy: Always
         name: aiskhylos
         resources:
@@ -62,7 +61,7 @@ spec:
         envFrom:
         - configMapRef:
             name: odysseia-common-env
-        image: ghcr.io/odysseia-greek/aristides:v0.0.4
+        image: ghcr.io/odysseia-greek/aristides
         imagePullPolicy: Always
         name: aristides
         ports:
@@ -100,7 +99,7 @@ spec:
         envFrom:
         - configMapRef:
             name: odysseia-common-env
-        image: ghcr.io/odysseia-greek/periandros:v0.1.5
+        image: ghcr.io/odysseia-greek/periandros
         imagePullPolicy: Always
         name: periandros
         volumeMounts:
@@ -134,7 +133,6 @@ spec:
         perikles/accesses: solon
       labels:
         app: anaximenes
-        version: v0.1.2
     spec:
       containers:
       - env:
@@ -151,7 +149,7 @@ spec:
             name: sophokles
         - configMapRef:
             name: odysseia-common-env
-        image: ghcr.io/odysseia-greek/anaximenes:v0.1.2
+        image: ghcr.io/odysseia-greek/anaximenes
         imagePullPolicy: Always
         name: anaximenes
         resources:
@@ -168,7 +166,7 @@ spec:
         envFrom:
         - configMapRef:
             name: odysseia-common-env
-        image: ghcr.io/odysseia-greek/aristides:v0.0.4
+        image: ghcr.io/odysseia-greek/aristides
         imagePullPolicy: Always
         name: aristides
         ports:
@@ -206,7 +204,7 @@ spec:
         envFrom:
         - configMapRef:
             name: odysseia-common-env
-        image: ghcr.io/odysseia-greek/periandros:v0.1.5
+        image: ghcr.io/odysseia-greek/periandros
         imagePullPolicy: Always
         name: periandros
         volumeMounts:

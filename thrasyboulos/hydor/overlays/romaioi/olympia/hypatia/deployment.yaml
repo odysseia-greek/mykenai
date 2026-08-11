@@ -12,11 +12,10 @@ spec:
       labels:
         app: hypatia
         release: hypatia
-        version: v0.0.1
     spec:
       containers:
         - name: hypatia
-          image: ghcr.io/odysseia-greek/hypatia:v0.0.1
+          image: ghcr.io/odysseia-greek/hypatia
           imagePullPolicy: Always
           env:
             - name: PORT

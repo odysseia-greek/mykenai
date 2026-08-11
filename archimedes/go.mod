@@ -1,12 +1,12 @@
 module github.com/odysseia-greek/mykenai/archimedes
 
-go 1.25.5
+go 1.26.5
 
 require (
-	github.com/odysseia-greek/agora/plato v0.2.16
+	github.com/odysseia-greek/agora/plato v0.2.17
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.10.2
-	golang.org/x/text v0.34.0
+	golang.org/x/text v0.40.0
 )
 
 require (

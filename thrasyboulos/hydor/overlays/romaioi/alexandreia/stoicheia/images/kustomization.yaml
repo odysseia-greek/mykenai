@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+images:
+  - name: ghcr.io/odysseia-greek/anaximander
+    newTag: v0.2.2
+  - name: ghcr.io/odysseia-greek/aristarchos
+    newTag: v0.3.0
+  - name: ghcr.io/odysseia-greek/dionysios
+    newTag: v0.3.3
+  - name: ghcr.io/odysseia-greek/eratosthenes
+    newTag: v0.1.0
+  - name: ghcr.io/odysseia-greek/kallimachos
+    newTag: v0.1.1
+  - name: ghcr.io/odysseia-greek/galenos
+    newTag: v0.0.2

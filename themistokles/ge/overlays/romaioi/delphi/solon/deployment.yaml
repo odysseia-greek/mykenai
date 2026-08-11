@@ -4,10 +4,7 @@ kind: Deployment
 metadata:
   name: solon
   labels:
-    env: k3d
-    variant: k3d
     app: solon
-    domain: "backend"
 spec:
   replicas: 1
   selector:
@@ -18,16 +15,15 @@ spec:
       labels:
         app: solon
         release: solon
-        version: v0.2.2
       annotations:
         perikles/hostname: "solon"
         perikles/validity: "365"
-        solon/namespaces: "attike;olympia;makedonia;apologia;alexandreia"
+        solon/namespaces: "attike;olympia;makedonia;apologia;alexandreia;ionia"
     spec:
       serviceAccountName: solon-access-sa
       initContainers:
         - name: peisistratos
-          image: ghcr.io/odysseia-greek/peisistratos:v0.1.6
+          image: ghcr.io/odysseia-greek/peisistratos
           imagePullPolicy: Always
           env:
             - name: POD_NAME
@@ -51,7 +47,7 @@ spec:
               readOnly: true
       containers:
         - name: "solon"
-          image: ghcr.io/odysseia-greek/solon:v0.2.3
+          image: ghcr.io/odysseia-greek/solon
           imagePullPolicy: Always
           env:
             - name: NAMESPACE

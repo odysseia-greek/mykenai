@@ -11,7 +11,6 @@ spec:
           labels:
             app: ktesias
             release: ktesias
-            version: v0.0.5
           annotations:
             odysseia-greek/role: api
             odysseia-greek/access: dictionary
@@ -20,7 +19,7 @@ spec:
           serviceAccountName: ktesiassa
           containers:
             - name: "ktesias"
-              image: ghcr.io/odysseia-greek/ktesias:v0.0.5
+              image: ghcr.io/odysseia-greek/ktesias
               imagePullPolicy: Always
               command:
                 - sh

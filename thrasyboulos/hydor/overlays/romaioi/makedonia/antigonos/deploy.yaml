@@ -34,7 +34,6 @@ spec:
       labels:
         app: antigonos
         release: antigonos
-        version: v0.0.3
     spec:
       containers:
       - env:
@@ -49,7 +48,7 @@ spec:
         envFrom:
         - configMapRef:
             name: odysseia-common-env
-        image: ghcr.io/odysseia-greek/antigonos:v0.0.3
+        image: ghcr.io/odysseia-greek/antigonos
         imagePullPolicy: Always
         name: antigonos
         ports:
@@ -76,7 +75,7 @@ spec:
         envFrom:
         - configMapRef:
             name: odysseia-common-env
-        image: ghcr.io/odysseia-greek/aristophanes:v0.7.1
+        image: ghcr.io/odysseia-greek/aristophanes
         imagePullPolicy: Always
         name: aristophanes
         ports:
@@ -94,7 +93,7 @@ spec:
         envFrom:
         - configMapRef:
             name: odysseia-common-env
-        image: ghcr.io/odysseia-greek/aristides:v0.0.2
+        image: ghcr.io/odysseia-greek/aristides
         imagePullPolicy: Always
         name: aristides
         ports:
@@ -132,7 +131,7 @@ spec:
         envFrom:
         - configMapRef:
             name: odysseia-common-env
-        image: ghcr.io/odysseia-greek/periandros:v0.1.4
+        image: ghcr.io/odysseia-greek/periandros
         imagePullPolicy: Always
         name: periandros
         volumeMounts:

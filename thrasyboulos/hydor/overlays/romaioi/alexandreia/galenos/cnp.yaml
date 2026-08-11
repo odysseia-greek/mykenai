@@ -1,0 +1,18 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-galenos-access-dionysios
+  namespace: alexandreia
+spec:
+  endpointSelector:
+    matchLabels:
+      app: dionysios
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app: galenos
+            io.kubernetes.pod.namespace: alexandreia
+      toPorts:
+        - ports:
+            - port: "50060"
+              protocol: TCP

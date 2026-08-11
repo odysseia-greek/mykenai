@@ -10,13 +10,12 @@ spec:
       labels:
         app: protagoras
         release: protagoras
-        version: v0.2.1
       annotations:
         perikles/accesses: "herodotos;dionysios"
     spec:
       containers:
         - name: "protagoras"
-          image: ghcr.io/odysseia-greek/protagoras:v0.2.1
+          image: ghcr.io/odysseia-greek/protagoras
           imagePullPolicy: Always
           envFrom:
             - configMapRef:

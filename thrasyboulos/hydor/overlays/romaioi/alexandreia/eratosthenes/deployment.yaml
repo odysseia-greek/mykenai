@@ -16,7 +16,6 @@ spec:
       labels:
         app: eratosthenes
         release: eratosthenes
-        version: v0.0.1
       annotations:
         odysseia-greek/role: api
         odysseia-greek/access: dictionary
@@ -24,7 +23,7 @@ spec:
     spec:
       containers:
         - name: "eratosthenes"
-          image: ghcr.io/odysseia-greek/eratosthenes:v0.0.1
+          image: ghcr.io/odysseia-greek/eratosthenes
           imagePullPolicy: Always
           env:
             - name: ELASTIC_ACCESS

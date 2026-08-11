@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: galenos
+  labels:
+    app: galenos
+spec:
+  schedule: "*/20 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: galenos
+            release: galenos
+            version: v0.0.1
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: galenos
+              image: ghcr.io/odysseia-greek/galenos
+              imagePullPolicy: Always
+              env:
+                - name: DIONYSIOS_GRPC_ADDRESS
+                  value: "dionysios:50060"
+      backoffLimit: 3

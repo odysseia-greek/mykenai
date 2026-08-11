@@ -6,3 +6,15 @@ spec:
   values:
     operator:
       replicas: 3
+    hubble:
+      enabled: true
+      relay:
+        enabled: true
+      ui:
+        enabled: true
+      tls:
+        enabled: true
+        auto:
+          enabled: true
+          method: helm
+          certValidityDuration: 365

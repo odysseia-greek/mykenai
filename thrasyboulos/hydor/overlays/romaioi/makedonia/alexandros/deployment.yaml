@@ -16,13 +16,12 @@ spec:
       labels:
         app: alexandros
         release: alexandros
-        version: v0.3.2
       annotations:
         perikles/accesses: "antigonos;eukleides;ptolemaios;hefaistion"
     spec:
       containers:
         - name: alexandros
-          image: ghcr.io/odysseia-greek/alexandros:v0.3.2
+          image: ghcr.io/odysseia-greek/alexandros
           imagePullPolicy: Always
           env: []
           envFrom:

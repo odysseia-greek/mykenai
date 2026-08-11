@@ -13,6 +13,10 @@ resources:
   - perdikkas
   - dareios
 
+components:
+  - stoicheia/images
+  - stoicheia/version
+
 labels:
   - pairs:
       environment: "romaioi"

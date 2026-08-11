@@ -1,0 +1,11 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: hippokrates
+spec:
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            version: v0.2.0
