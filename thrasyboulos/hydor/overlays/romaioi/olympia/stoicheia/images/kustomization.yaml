@@ -9,7 +9,7 @@ images:
   - name: ghcr.io/odysseia-greek/hippokrates
     newTag: v0.2.0
   - name: ghcr.io/odysseia-greek/homeros
-    newTag: v0.4.0
+    newTag: v0.4.1
   - name: ghcr.io/odysseia-greek/hypatia
     newTag: v0.0.1
   - name: ghcr.io/odysseia-greek/melissos

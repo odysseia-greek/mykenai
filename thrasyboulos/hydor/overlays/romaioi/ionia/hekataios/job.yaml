@@ -11,7 +11,7 @@ spec:
     metadata:
       labels:
         app: hekataios
-        release: thoukydides
+        release: hekataios
       annotations:
         odysseia-greek/role: seeder
         odysseia-greek/access: reading
