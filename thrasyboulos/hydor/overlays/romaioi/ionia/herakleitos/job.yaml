@@ -1,39 +1,36 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1
+kind: Job
 metadata:
-  name: diodoros
+  name: herakleitos
   labels:
-    app: diodoros
+    app: herakleitos
   annotations:
     volumes.odysseia.io/secrets: "true"
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: diodoros
   template:
     metadata:
       labels:
-        app: diodoros
+        app: herakleitos
         release: diodoros
       annotations:
-        odysseia-greek/role: api
+        odysseia-greek/role: seeder
         odysseia-greek/access: text
-        perikles/accesses: "solon"
+        perikles/accesses: solon
     spec:
       containers:
-        - name: diodoros
-          image: ghcr.io/odysseia-greek/diodoros
+        - name: herakleitos
+          image: ghcr.io/odysseia-greek/herakleitos
           imagePullPolicy: Always
           env:
-            - name: PORT
-              value: ":50060"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
             - name: ELASTIC_ACCESS
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.annotations['odysseia-greek/access']
           envFrom: []
-          volumeMounts: []
-          ports:
-            - containerPort: 50060
+      restartPolicy: Never
       volumes: []
+  backoffLimit: 3

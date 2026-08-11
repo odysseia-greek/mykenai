@@ -5,6 +5,6 @@ metadata:
 data:
   VAULT_NAMESPACE: "delphi"
   ELASTIC_NAMESPACE: "agora"
-  WATCHED_NAMESPACES: "attike;olympia;apologia;makedonia;alexandreia;ionia"
+  WATCHED_NAMESPACES: "attike;olympia;makedonia;apologia;alexandreia;ionia"
   CONFIGMAP_NAME: "elastic-roles-and-cnp"
   DASHBOARD_ADDR: ":8080"

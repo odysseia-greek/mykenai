@@ -1,39 +1,36 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1
+kind: Job
 metadata:
-  name: thoukydides
+  name: hekataios
   labels:
-    app: thoukydides
+    app: hekataios
   annotations:
     volumes.odysseia.io/secrets: "true"
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: thoukydides
   template:
     metadata:
       labels:
-        app: thoukydides
+        app: hekataios
         release: thoukydides
       annotations:
-        odysseia-greek/role: api
+        odysseia-greek/role: seeder
         odysseia-greek/access: reading
-        perikles/accesses: "solon"
+        perikles/accesses: solon
     spec:
       containers:
-        - name: thoukydides
-          image: ghcr.io/odysseia-greek/thoukydides
+        - name: hekataios
+          image: ghcr.io/odysseia-greek/hekataios
           imagePullPolicy: Always
           env:
-            - name: PORT
-              value: ":50060"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
             - name: ELASTIC_ACCESS
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.annotations['odysseia-greek/access']
           envFrom: []
-          volumeMounts: []
-          ports:
-            - containerPort: 50060
+      restartPolicy: Never
       volumes: []
+  backoffLimit: 3
