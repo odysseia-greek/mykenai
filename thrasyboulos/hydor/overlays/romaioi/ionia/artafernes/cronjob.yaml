@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: artafernes
+  labels:
+    app: artafernes
+spec:
+  schedule: "*/20 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: artafernes
+            release: artafernes
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: artafernes
+              image: ghcr.io/odysseia-greek/artafernes
+              imagePullPolicy: Always
+              env:
+                - name: HERODOTOS_URL
+                  value: "http://herodotos:8080/query"
+      backoffLimit: 3

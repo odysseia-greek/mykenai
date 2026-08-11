@@ -1,0 +1,13 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: herodotos-graphql-route
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`byzantion.odysseia-greek`) && PathPrefix(`/query`)
+      kind: Rule
+      services:
+        - name: herodotos
+          port: 8080
