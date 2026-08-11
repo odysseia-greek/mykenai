@@ -9,10 +9,10 @@ images:
   - name: ghcr.io/odysseia-greek/ktesias
     newTag: v0.1.0
   - name: ghcr.io/odysseia-greek/peisistratos
-    newTag: v0.2.0
+    newTag: v0.2.1
   - name: ghcr.io/odysseia-greek/periandros
     newTag: v0.2.0
   - name: ghcr.io/odysseia-greek/perikles
     newTag: v0.3.0
   - name: ghcr.io/odysseia-greek/solon
-    newTag: v0.3.0
+    newTag: v0.3.1
