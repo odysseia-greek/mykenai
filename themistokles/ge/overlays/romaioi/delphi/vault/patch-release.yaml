@@ -10,7 +10,7 @@ spec:
     server:
       image:
         repository: hashicorp/vault
-        tag: "1.21.4"
+        tag: "2.0.3"
       extraEnvironmentVars:
         VAULT_CACERT: /vault/userconfig/vault-server-tls/ca.crt
       volumes:
