@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: herodotos
+data:
+  THOUKYDIDES_ADDRESS: "thoukydides:50060"
+  DIODOROS_ADDRESS: "diodoros:50060"
