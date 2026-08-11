@@ -36,6 +36,10 @@ spec:
                   fieldPath: metadata.namespace
             - name: AUTH_METHOD
               value: token
+            - name: VAULT_ROLE
+              value: peisistratos
+            - name: VAULT_KUBERNETES_TOKEN_PATH
+              value: /var/run/secrets/peisistratos-vault/token
           envFrom:
             - configMapRef:
                 name: solon
@@ -44,6 +48,9 @@ spec:
           volumeMounts:
             - name: vault-server-tls
               mountPath: /app/config/vault
+              readOnly: true
+            - name: peisistratos-vault-auth-token
+              mountPath: /var/run/secrets/peisistratos-vault
               readOnly: true
       containers:
         - name: "solon"
@@ -60,6 +67,10 @@ spec:
                   fieldPath: metadata.annotations['solon/namespaces']
             - name: AUTH_METHOD
               value: kubernetes
+            - name: VAULT_ROLE
+              value: solon
+            - name: VAULT_KUBERNETES_TOKEN_PATH
+              value: /var/run/secrets/vault/token
             - name: ELASTIC_SEARCH_USER
               valueFrom:
                 secretKeyRef:
@@ -102,6 +113,9 @@ spec:
             - mountPath: /app/config/vault
               name: vault-server-tls
               readOnly: true
+            - mountPath: /var/run/secrets/vault
+              name: vault-auth-token
+              readOnly: true
       volumes:
         - name: solon-certs
           secret:
@@ -109,3 +123,17 @@ spec:
         - name: vault-server-tls
           secret:
             secretName: vault-server-tls
+        - name: vault-auth-token
+          projected:
+            sources:
+              - serviceAccountToken:
+                  path: token
+                  audience: vault
+                  expirationSeconds: 3600
+        - name: peisistratos-vault-auth-token
+          projected:
+            sources:
+              - serviceAccountToken:
+                  path: token
+                  audience: peisistratos
+                  expirationSeconds: 600

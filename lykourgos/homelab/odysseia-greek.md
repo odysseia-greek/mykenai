@@ -4,10 +4,13 @@
 
 This document describes the current state and evolution of the homelab Kubernetes environments.
 
-Two primary clusters exist:
+Three primary clusters exist:
 
 - **hellenistike** → management cluster (Raspberry Pi)
-- **romaioi** → development cluster (Lima VM on macOS)
+- **hellas-odysseia** → homelab workload cluster (physical nodes)
+- **romaioi** → development cluster (Lima VMs on macOS)
+
+The current topology is also available as a [D2 diagram](./odysseia-greek.d2).
 
 ---
 
@@ -65,7 +68,7 @@ Cluster layout:
 
 ---
 
-### Deployment Structure
+### Hellenistike Deployment Structure
 
 Path: `mykenai/themistokles/ge/overlays/hellenistike`
 
@@ -80,6 +83,30 @@ Deployed components:
 - tekton
 - traefik
 - zot
+
+---
+
+### Cluster: hellas-odysseia
+
+#### Nodes
+
+| Node             | Status | Role          | Age | Kubernetes version | NVMe | TopoLVM |
+|------------------|--------|---------------|-----|--------------------|------|---------|
+| athenai-hellas   | Ready  | worker        | 68d | v1.35.2+k0s        | Yes  | Yes     |
+| korinthos-hellas | Ready  | worker        | 25d | v1.35.2+k0s        | No   | No      |
+| sparta-hellas    | Ready  | control-plane | 68d | v1.35.2+k0s        | Yes  | Yes     |
+| thebai-hellas    | Ready  | worker        | 68d | v1.35.2+k0s        | Yes  | Yes     |
+
+#### Characteristics
+
+- Four-node physical k0s cluster
+- `sparta-hellas` provides the control plane
+- All nodes except `korinthos-hellas` have NVMe storage and run TopoLVM
+- `korinthos-hellas` participates as a compute worker without TopoLVM-backed local storage
+
+#### Path
+
+Path: `mykenai/themistokles/ge/overlays/hellas`
 
 ---
 
@@ -111,26 +138,28 @@ Deployed components:
 
 #### Description
 
-- Single-node development cluster
-- Runs on Lima VM on macOS
+- Three-node development cluster
+- Runs on Lima VMs on macOS
 - Uses k0s
+- Uses TopoLVM for local storage
+
+#### Nodes
+
+| Node           | Status | Role          | Age  | Kubernetes version | Runtime |
+|----------------|--------|---------------|------|--------------------|---------|
+| lima-byzantion | Ready  | control-plane | 154m | v1.35.2+k0s        | Lima VM |
+| lima-nikaia    | Ready  | worker        | 153m | v1.35.2+k0s        | Lima VM |
+| lima-trapezous | Ready  | worker        | 153m | v1.35.2+k0s        | Lima VM |
 
 #### Path
 
 Path: `mykenai/themistokles/ge/overlays/romaioi`
 
-#### Specs
-
-| Resource | Value  |
-|----------|--------|
-| CPU      | 12     |
-| Memory   | 12 GiB |
-| Disk     | 25 GiB |
-
 #### Purpose
 
 - Local development
 - Fast iteration environment
+- Multi-node and TopoLVM testing before changes reach the physical clusters
 
 ---
 
@@ -158,6 +187,7 @@ to:
   - Flux structure
   - Kustomize overlays
   - cluster separation (dev vs mgmt)
+  - TopoLVM operations across physical and Lima-based clusters
 
 ---
 

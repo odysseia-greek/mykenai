@@ -1,0 +1,56 @@
+direction: right
+
+hellenistike: {
+  label: "hellenistike\nManagement cluster"
+  style.fill: "#e8f1fb"
+
+  pella: "pella-hellenistike\n8 GB • SSD"
+  alexandreia: "alexandreia-hellenistike\n8 GB • SSD"
+  antioch: "antioch-hellenistike\n4 GB • SSD"
+  longhorn: {
+    label: "Longhorn"
+    shape: cylinder
+  }
+
+  pella -> longhorn
+  alexandreia -> longhorn
+  antioch -> longhorn
+}
+
+hellas: {
+  label: "hellas-odysseia\nPhysical workload cluster"
+  style.fill: "#edf8ed"
+
+  sparta: "sparta-hellas\ncontrol-plane • NVMe"
+  athenai: "athenai-hellas\nworker • NVMe"
+  thebai: "thebai-hellas\nworker • NVMe"
+  korinthos: "korinthos-hellas\nworker • no NVMe"
+  topolvm: {
+    label: "TopoLVM\nlocal NVMe storage"
+    shape: cylinder
+  }
+
+  sparta -> topolvm
+  athenai -> topolvm
+  thebai -> topolvm
+}
+
+romaioi: {
+  label: "romaioi\nLima development cluster"
+  style.fill: "#fff4df"
+
+  byzantion: "lima-byzantion\ncontrol-plane"
+  nikaia: "lima-nikaia\nworker"
+  trapezous: "lima-trapezous\nworker"
+  topolvm: {
+    label: "TopoLVM\nlocal VM storage"
+    shape: cylinder
+  }
+
+  byzantion -> topolvm
+  nikaia -> topolvm
+  trapezous -> topolvm
+}
+
+hellenistike -> hellas: "manages"
+hellenistike -> romaioi: "manages"
