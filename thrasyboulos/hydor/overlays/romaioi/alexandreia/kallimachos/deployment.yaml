@@ -19,7 +19,7 @@ spec:
       annotations:
         odysseia-greek/role: api
         odysseia-greek/access: text
-        perikles/accesses: "solon;aristarchos"
+        perikles/accesses: "solon"
     spec:
       containers:
         - name: "kallimachos"

@@ -17,7 +17,7 @@ spec:
         app: ptolemaios
         release: ptolemaios
       annotations:
-        perikles/accesses: "herodotos"
+        perikles/accesses: "dionysios"
     spec:
       containers:
         - name: "ptolemaios"

@@ -15,7 +15,7 @@ spec:
         app: aspasia
         release: aspasia
       annotations:
-        perikles/accesses: "herodotos;antigonos"
+        perikles/accesses: "dionysios;antigonos"
     spec:
       containers:
         - name: "aspasia"
