@@ -19,7 +19,7 @@ data:
         - tracing
         - metrics
         - metrics_rollup
-        - readings
+        - reading
       role:
         privileges:
           - read
@@ -37,7 +37,7 @@ data:
         - dictionary
         - grammar
         - text
-        - readings
+        - reading
       role:
         privileges:
           - create_index
