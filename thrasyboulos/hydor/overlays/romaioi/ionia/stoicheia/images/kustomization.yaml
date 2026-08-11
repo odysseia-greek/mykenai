@@ -2,13 +2,13 @@ apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
 images:
   - name: ghcr.io/odysseia-greek/herodotos
-    newTag: v0.0.1
+    newTag: v0.3.0
   - name: ghcr.io/odysseia-greek/diodoros
     newTag: v0.0.1
   - name: ghcr.io/odysseia-greek/thoukydides
     newTag: v0.0.1
   - name: ghcr.io/odysseia-greek/herakleitos
-    newTag: v0.0.1
+    newTag: v0.2.1
   - name: ghcr.io/odysseia-greek/hekataios
     newTag: v0.0.1
   - name: ghcr.io/odysseia-greek/artafernes
