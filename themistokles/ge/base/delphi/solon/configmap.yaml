@@ -4,5 +4,4 @@ metadata:
   name: solon
 data:
   VAULT_ROLE: "solon"
-  VAULT_KUBERNETES_AUDIENCE: "https://kubernetes.default.svc.cluster.local"
-  SOMEENV: "SOMEVALUE"
+  VAULT_KUBERNETES_AUDIENCE: "vault"

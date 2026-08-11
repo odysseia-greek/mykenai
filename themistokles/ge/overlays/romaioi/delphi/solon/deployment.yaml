@@ -1,4 +1,3 @@
-# solon-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -60,6 +59,8 @@ spec:
                   fieldPath: metadata.annotations['solon/namespaces']
             - name: AUTH_METHOD
               value: kubernetes
+            - name: VAULT_KUBERNETES_TOKEN_PATH
+              value: /var/run/secrets/vault/token
             - name: ELASTIC_SEARCH_USER
               valueFrom:
                 secretKeyRef:
@@ -102,6 +103,9 @@ spec:
             - mountPath: /app/config/vault
               name: vault-server-tls
               readOnly: true
+            - mountPath: /var/run/secrets/vault
+              name: vault-auth-token
+              readOnly: true
       volumes:
         - name: solon-certs
           secret:
@@ -109,3 +113,10 @@ spec:
         - name: vault-server-tls
           secret:
             secretName: vault-server-tls
+        - name: vault-auth-token
+          projected:
+            sources:
+              - serviceAccountToken:
+                  path: token
+                  audience: vault
+                  expirationSeconds: 3600

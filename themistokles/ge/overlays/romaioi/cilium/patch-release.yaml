@@ -4,6 +4,8 @@ metadata:
   name: cilium
 spec:
   values:
+    cluster:
+      name: local
     operator:
       replicas: 3
     hubble:
