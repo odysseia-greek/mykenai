@@ -84,6 +84,22 @@ data:
           "score": 100
         },
         {
+          "operation": "chapter",
+          "score": 100
+        },
+        {
+          "operation": "checkChapter",
+          "score": 100
+        },
+        {
+          "operation": "corpusText",
+          "score": 100
+        },
+        {
+          "operation": "checkText",
+          "score": 100
+        },
+        {
           "operation": "status",
           "score": 1
         }
