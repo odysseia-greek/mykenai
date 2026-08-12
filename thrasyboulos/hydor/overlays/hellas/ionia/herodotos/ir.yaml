@@ -6,7 +6,7 @@ spec:
   entryPoints:
     - web
   routes:
-    - match: Host(`byzantion.odysseia-greek`) && PathPrefix(`/herodotos/graphql`)
+    - match: Host(`hellas.odysseia-greek`) && PathPrefix(`/herodotos/graphql`)
       kind: Rule
       services:
         - name: herodotos

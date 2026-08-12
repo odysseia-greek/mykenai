@@ -8,7 +8,7 @@ components:
   - ../../../../../pyr/koinos/deployment/aristides
   - ../../../../../pyr/koinos/deployment/periandros
   - ../../../../../pyr/koinos/services/grpc
-  - ../../../../../pyr/koinos/resources/local/mid
+  - ../../../../../pyr/koinos/resources/hellas/mid
   - ../../../../../pyr/koinos/transformers/volumes/secrets
   - ../../../../../pyr/koinos/common-env/base/deploy
   - ../../../../../pyr/koinos/downwardapi/version/deploy

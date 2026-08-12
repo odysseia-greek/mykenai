@@ -6,6 +6,6 @@ resources:
 components:
   - ../../../../../pyr/koinos/job/periandros
   - ../../../../../pyr/koinos/job/aristides
-  - ../../../../../pyr/koinos/resources/local/job
+  - ../../../../../pyr/koinos/resources/hellas/job
   - ../../../../../pyr/koinos/transformers/volumes/secrets
   - ../../../../../pyr/koinos/common-env/base/job

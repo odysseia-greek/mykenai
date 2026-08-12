@@ -3,6 +3,16 @@ kind: Kustomization
 
 resources:
   - ../../../base/ionia
+  - herodotos
+  - diodoros
+  - thoukydides
+  - herakleitos
+  - hekataios
+  - ../../../base/ionia/artafernes
+
+components:
+  - ../../../base/ionia/stoicheia/images
+  - ../../../base/ionia/stoicheia/version
 
 labels:
   - pairs:

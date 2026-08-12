@@ -8,11 +8,11 @@ resources:
   - thoukydides
   - herakleitos
   - hekataios
-  - artafernes
+  - ../../../base/ionia/artafernes
 
 components:
-  - stoicheia/images
-  - stoicheia/version
+  - ../../../base/ionia/stoicheia/images
+  - ../../../base/ionia/stoicheia/version
 
 labels:
   - pairs:

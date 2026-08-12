@@ -3,5 +3,3 @@ kind: Kustomization
 namespace: ionia
 resources:
   - deployment.yaml
-  - configmap.yaml
-  - cnp.yaml
