@@ -10,6 +10,7 @@ import (
 	"github.com/odysseia-greek/mykenai/archimedes/command/parse"
 	"github.com/odysseia-greek/mykenai/archimedes/command/skene"
 	"github.com/odysseia-greek/mykenai/archimedes/command/text"
+	"github.com/odysseia-greek/mykenai/archimedes/command/topo"
 	"github.com/spf13/cobra"
 )
 
@@ -54,6 +55,7 @@ work with vault and much more is coming`,
 		odysseia.Manager(),
 		skene.Manager(),
 		text.Manager(),
+		topo.Manager(),
 	)
 
 	err := rootCmd.Execute()

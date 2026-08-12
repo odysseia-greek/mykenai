@@ -8,11 +8,7 @@ data:
     {
       "operationScores": [
         {
-          "operation": "create",
-          "score": 100
-        },
-        {
-          "operation": "check",
+          "operation": "dictionary",
           "score": 100
         },
         {
@@ -28,7 +24,11 @@ data:
           "score": 100
         },
         {
-          "operation": "analyze",
+          "operation": "text",
+          "score": 100
+        },
+        {
+          "operation": "options",
           "score": 100
         },
         {
@@ -56,18 +56,6 @@ data:
           "score": 100
         },
         {
-          "operation": "grammarAnswer",
-          "score": 100
-        },
-        {
-          "operation": "grammarQuiz",
-          "score": 100
-        },
-        {
-          "operation": "journeyQuiz",
-          "score": 100
-        },
-        {
           "operation": "mediaQuiz",
           "score": 100
         },
@@ -76,24 +64,40 @@ data:
           "score": 100
         },
         {
-          "operation": "DictionaryFuzzy",
+          "operation": "fuzzy",
           "score": 100
         },
         {
-          "operation": "DictionaryExact",
+          "operation": "exact",
           "score": 100
         },
         {
-          "operation": "DictionaryPhrase",
+          "operation": "phrase",
           "score": 100
         },
         {
-          "operation": "DictionaryPartial",
+          "operation": "partial",
           "score": 100
         },
         {
-          "operation": "CounterTopFive",
+          "operation": "counterTopFive",
           "score": 10
+        },
+        {
+          "operation": "chapter",
+          "score": 100
+        },
+        {
+          "operation": "checkChapter",
+          "score": 100
+        },
+        {
+          "operation": "corpusText",
+          "score": 100
+        },
+        {
+          "operation": "checkText",
+          "score": 100
         },
         {
           "operation": "status",

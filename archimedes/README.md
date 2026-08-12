@@ -49,6 +49,7 @@ Top-level command groups:
 - `parse`: transform and regroup word lists.
 - `images`: build/push container images from `Dockerfile`/`Containerfile`.
 - `skene`: scaffold new API/job services from templates.
+- `topo`: inspect PVC, PV, and TopoLVM LogicalVolume relationships.
 - `odysseia`: legacy install/docs tooling.
 
 ## Text Commands
@@ -97,6 +98,17 @@ Optional: `--multi` for multi-arch (`linux/arm64,linux/amd64`) buildx builds.
 
 - `archimedes skene api --name <service> --repo <repo> --index <index> --port 5000`
 - `archimedes skene job --name <service> --repo <repo> --index <index> --embed <dir>`
+
+### TopoLVM storage
+
+- `archimedes topo list`: list PVC → PV → LogicalVolume relationships across namespaces.
+- `archimedes topo list -n delphi`: limit the list to one namespace.
+- `archimedes topo get vault-data -n delphi`: inspect a relationship by PVC name.
+- `archimedes topo get <pv-or-volume-handle>`: inspect by PV, CSI handle, or LogicalVolume name.
+
+The status column highlights broken links such as `missing-pvc`, `missing-lv`, and
+`orphan-lv`. The `get` view includes reclaim policy and finalizers to support safe
+cleanup decisions. Commands use the active `kubectl` context.
 
 ## External Tooling Used By Commands
 
