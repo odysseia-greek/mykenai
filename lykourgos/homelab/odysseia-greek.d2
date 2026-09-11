@@ -54,3 +54,18 @@ romaioi: {
 
 hellenistike -> hellas: "manages"
 hellenistike -> romaioi: "manages"
+
+minoan: {
+  label: "minoan\nSingle-node experiment"
+  style.fill: "#f0e8fb"
+
+  erebor: "erebor\nk0s controller + worker"
+  rook: {
+    label: "Rook-Ceph (planned)"
+    shape: cylinder
+  }
+  bao: "OpenBao (planned)"
+
+  erebor -> rook
+  erebor -> bao
+}

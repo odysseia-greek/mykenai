@@ -1,0 +1,109 @@
+---
+- name: Install the Minoan single-node experiment on Erebor
+  hosts: minoan
+  become: true
+  tasks:
+    - name: Check host prerequisites
+      ansible.builtin.assert:
+        that:
+          - ansible_service_mgr == 'systemd'
+          - ansible_system == 'Linux'
+          - ansible_swaptotal_mb == 0
+        fail_msg: "Use a systemd Linux host with swap disabled before installing k0s."
+
+    - name: Install host packages (including lvm2 for future Ceph OSDs)
+      ansible.builtin.package:
+        name: [curl, iptables, socat, conntrack, lvm2]
+        state: present
+
+    - name: Download k0s installer
+      ansible.builtin.get_url:
+        url: https://get.k0s.sh
+        dest: /tmp/k0s-install.sh
+        mode: "0755"
+
+    - name: Install pinned k0s binary
+      ansible.builtin.command: /tmp/k0s-install.sh
+      environment:
+        K0S_VERSION: "{{ k0s_version }}"
+      args:
+        creates: /usr/local/bin/k0s
+
+    - name: Check k0s host compatibility
+      ansible.builtin.command: /usr/local/bin/k0s sysinfo
+      changed_when: false
+
+    - name: Create configuration directory
+      ansible.builtin.file:
+        path: /etc/k0s
+        state: directory
+        mode: "0755"
+
+    - name: Configure single-node k0s
+      ansible.builtin.copy:
+        dest: /etc/k0s/k0s.yaml
+        mode: "0644"
+        content: |
+          apiVersion: k0s.k0sproject.io/v1beta1
+          kind: ClusterConfig
+          metadata:
+            name: {{ cluster_name }}
+          spec:
+            api:
+              address: {{ k0s_api_address | to_json }}
+              sans: {{ (k0s_api_sans + [k0s_api_address, 'localhost', '127.0.0.1']) | to_json }}
+            network:
+              provider: custom
+              podCIDR: 10.244.0.0/16
+              serviceCIDR: 10.96.0.0/12
+              kubeProxy:
+                mode: iptables
+      notify: Restart k0s
+
+    - name: Install controller and worker service
+      ansible.builtin.command: /usr/local/bin/k0s install controller --single -c /etc/k0s/k0s.yaml
+      args:
+        creates: /etc/systemd/system/k0scontroller.service
+
+    - name: Enable k0s
+      ansible.builtin.systemd:
+        name: k0scontroller
+        state: started
+        enabled: true
+        daemon_reload: true
+
+    - name: Apply configuration changes
+      ansible.builtin.meta: flush_handlers
+
+    - name: Wait for API readiness
+      ansible.builtin.command: /usr/local/bin/k0s kubectl get --raw=/readyz
+      register: api_ready
+      until: api_ready.rc == 0
+      retries: 60
+      delay: 5
+      changed_when: false
+
+    - name: Generate admin kubeconfig
+      ansible.builtin.command: /usr/local/bin/k0s kubeconfig admin
+      register: admin_config
+      changed_when: false
+      no_log: true
+
+    - name: Write a separate local kubeconfig with a reachable API endpoint
+      ansible.builtin.copy:
+        content: "{{ admin_config.stdout | regex_replace('https://[^\\s]+:6443', 'https://' ~ k0s_api_address ~ ':6443') }}"
+        dest: "{{ playbook_dir }}/k0s-kubeconfig-minoan"
+        mode: "0600"
+      delegate_to: localhost
+      become: false
+      no_log: true
+
+    - name: Explain networking bootstrap
+      ansible.builtin.debug:
+        msg: "API ready. Install Cilium using themistokles/docs/minoan/README.md before bootstrapping Flux; the node is NotReady until then."
+
+  handlers:
+    - name: Restart k0s
+      ansible.builtin.systemd:
+        name: k0scontroller
+        state: restarted

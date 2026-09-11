@@ -1,0 +1,15 @@
+all:
+  children:
+    minoan:
+      hosts:
+        erebor:
+          ansible_host: erebor
+          # Uses your SSH config/current user; override with -u if needed.
+      vars:
+        cluster_name: minoan
+        k0s_version: "v1.35.2+k0s.0"
+        # Defaults to Erebor's primary IPv4 address; override for another interface.
+        k0s_api_address: "{{ ansible_default_ipv4.address }}"
+        k0s_api_sans:
+          - erebor
+          - minoan.odysseia-greek

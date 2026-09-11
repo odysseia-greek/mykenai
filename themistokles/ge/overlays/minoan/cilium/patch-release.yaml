@@ -1,0 +1,15 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: cilium
+spec:
+  releaseName: cilium
+  values:
+    cluster:
+      name: minoan
+    operator:
+      replicas: 1
+    envoy:
+      enabled: false
+    hubble:
+      enabled: false

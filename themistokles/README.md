@@ -17,4 +17,6 @@ Themistokles is argueably the greatest Greek admiral. His victory at Salamis is 
 
 ## Installation
 
+For the minimal Erebor experiment, see [Minoan setup](docs/minoan/README.md).
+
 ## Usage

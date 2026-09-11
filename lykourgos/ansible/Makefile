@@ -115,3 +115,7 @@ k0s-lima-ha: ## Install k0s HA cluster on Lima VMs
 	ansible-playbook -i $(INVENTORY_ROMAIOI_HA) playbooks/k0s-lima-ha.yaml
 
 poc: bootstrap-single lvm-storage k0s-single
+
+.PHONY: k0s-minoan
+k0s-minoan: ## Install single-node k0s on Erebor
+	ansible-playbook $(ANSIBLE_FLAGS) -i inventories/minoan/hosts.yaml playbooks/k0s-minoan.yaml

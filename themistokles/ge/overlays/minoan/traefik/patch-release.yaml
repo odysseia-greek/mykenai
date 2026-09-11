@@ -1,0 +1,18 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: traefik
+spec:
+  values:
+    hostNetwork: false
+    dnsPolicy: ClusterFirst
+    deployment:
+      replicas: 1
+    service:
+      enabled: true
+      type: NodePort
+    ports:
+      web:
+        nodePort: 30080
+      websecure:
+        nodePort: 30443
