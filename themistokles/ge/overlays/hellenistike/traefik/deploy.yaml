@@ -19,11 +19,24 @@ spec:
   targetNamespace: traefik
   values:
     additionalArguments:
-      - --entryPoints.web.address=:8080
+      - --entryPoints.web.address=:3230
       - --entryPoints.websecure.address=:8443
       - --api.dashboard=true
     deployment:
       kind: Deployment
+      replicas: 1
+    # A single host-network listener cannot share its ports with a surge pod.
+    updateStrategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxSurge: 0
+        maxUnavailable: 1
+    nodeSelector:
+      odysseia-greek/ingress-role: primary
+    tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
     dnsPolicy: ClusterFirstWithHostNet
     hostNetwork: true
     podSecurityContext:
@@ -36,7 +49,7 @@ spec:
         port: 9000
       web:
         nodePort: 30080
-        port: 8080
+        port: 3230
       websecure:
         nodePort: 30443
         port: 8443

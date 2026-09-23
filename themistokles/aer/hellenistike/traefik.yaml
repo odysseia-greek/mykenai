@@ -26,6 +26,7 @@ spec:
   timeout: 10m
   dependsOn:
     - name: traefik-crds
+    - name: node-labels
   sourceRef:
     kind: GitRepository
     name: themistokles
