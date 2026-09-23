@@ -6,7 +6,7 @@ spec:
   entryPoints:
     - web
   routes:
-    - match: Host(`lysandros.hellenistike.odysseia-greek`) && PathPrefix(`/lysandros`)
+    - match: Host(`int.hellenistike.odysseia-greek`) && PathPrefix(`/lysandros`)
       kind: Rule
       services:
         - name: lysandros
