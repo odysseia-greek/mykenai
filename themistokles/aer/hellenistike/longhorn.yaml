@@ -13,6 +13,7 @@ spec:
     name: themistokles
   dependsOn:
     - name: cert-manager
+    - name: traefik-crds
   path: themistokles/ge/overlays/hellenistike/longhorn
   prune: true
   wait: true

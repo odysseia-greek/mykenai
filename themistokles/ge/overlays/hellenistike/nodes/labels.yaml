@@ -4,7 +4,7 @@ metadata:
   name: pella-hellenistike
   annotations:
     kustomize.toolkit.fluxcd.io/prune: disabled
-    kustomize.toolkit.fluxcd.io/ssa: disabled
+    kustomize.toolkit.fluxcd.io/ssa: Merge
   labels:
     cilium.io/envoy-capable: "false"
 ---
@@ -14,7 +14,7 @@ metadata:
   name: antioch-hellenistike
   annotations:
     kustomize.toolkit.fluxcd.io/prune: disabled
-    kustomize.toolkit.fluxcd.io/ssa: disabled
+    kustomize.toolkit.fluxcd.io/ssa: Merge
   labels:
     cilium.io/envoy-capable: "false"
 ---
@@ -24,7 +24,7 @@ metadata:
   name: alexandreia-hellenistike
   annotations:
     kustomize.toolkit.fluxcd.io/prune: disabled
-    kustomize.toolkit.fluxcd.io/ssa: disabled
+    kustomize.toolkit.fluxcd.io/ssa: Merge
   labels:
     cilium.io/envoy-capable: "false"
     odysseia-greek/build-node: "kaniko"

@@ -10,7 +10,7 @@ all:
               ansible_host: 192.168.1.131
               arch: rpi4
               longhorn_prepare_disk: true
-              longhorn_wipe_disk: true
+              longhorn_wipe_disk: false
               longhorn_disk: /dev/sda
         poleis-hellenistike-workers:
           hosts:
@@ -20,7 +20,7 @@ all:
               ansible_host: 192.168.1.132
               arch: rpi4
               longhorn_prepare_disk: true
-              longhorn_wipe_disk: true
+              longhorn_wipe_disk: false
               longhorn_disk: /dev/sda
             antioch:
               ansible_user: pi
@@ -28,5 +28,5 @@ all:
               ansible_host: 192.168.1.133
               arch: rpi4
               longhorn_prepare_disk: true
-              longhorn_wipe_disk: true
+              longhorn_wipe_disk: false
               longhorn_disk: /dev/sda

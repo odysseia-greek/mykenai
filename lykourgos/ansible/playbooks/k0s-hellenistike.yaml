@@ -5,6 +5,7 @@
 - name: Install k0s on Hellenistike
   ansible.builtin.import_playbook: k0s-cluster.yaml
   vars:
+    k0s_version: "v1.36.4+k0s.0"
     k0s_controller_group: poleis-hellenistike-controller
     k0s_worker_group: poleis-hellenistike-workers
     k0s_all_group: poleis

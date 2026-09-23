@@ -12,5 +12,18 @@ spec:
     kind: GitRepository
     name: themistokles
   path: themistokles/ge/base/cert-manager
+  patches:
+    - target:
+        kind: HelmRelease
+        name: cert-manager
+      patch: |
+        - op: replace
+          path: /spec/chart/spec/version
+          value: v1.21.2
+        - op: replace
+          path: /spec/values
+          value:
+            crds:
+              enabled: true
   prune: true
   wait: true

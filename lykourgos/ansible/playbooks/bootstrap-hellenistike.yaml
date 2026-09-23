@@ -146,21 +146,24 @@
         src: "{{ cmdline_path }}"
       register: cmdline_content
 
-    - name: Track missing cgroup kernel args
+    - name: Build Raspberry Pi cgroup kernel args
       ansible.builtin.set_fact:
-        missing_cgroup_args: >-
+        cgroup_cmdline: >-
           {{
-            ['cgroup_enable=cpuset', 'cgroup_enable=memory', 'cgroup_memory=1']
-            | difference((cmdline_content.content | b64decode).split())
+            (
+              (cmdline_content.content | b64decode).split()
+              | reject('match', '^cgroup_disable=')
+              | reject('in', ['cgroup_enable=cpuset', 'cgroup_enable=memory', 'cgroup_memory=1'])
+              | list
+              + ['cgroup_enable=cpuset', 'cgroup_enable=memory', 'cgroup_memory=1']
+            ) | join(' ')
           }}
 
     - name: Enable Raspberry Pi cgroup kernel args
       ansible.builtin.lineinfile:
         path: "{{ cmdline_path }}"
         regexp: '^(.*)$'
-        line: '\1 {{ missing_cgroup_args | join(" ") }}'
-        backrefs: yes
-      when: missing_cgroup_args | length > 0
+        line: "{{ cgroup_cmdline }}"
       register: cgroups_updated
 
     - name: Ensure Kubernetes kernel modules load on boot
@@ -195,6 +198,12 @@
     - name: Apply Kubernetes sysctls
       ansible.builtin.command: sysctl --system
       changed_when: false
+
+    - name: Prevent systemd from reactivating Raspberry Pi zram swap
+      ansible.builtin.systemd_service:
+        name: dev-zram0.swap
+        masked: true
+        daemon_reload: true
 
     - name: Disable swap immediately
       ansible.builtin.command: swapoff -a
@@ -378,17 +387,16 @@
         - longhorn_prepare_disk | bool
         - longhorn_wipe_disk | bool
 
-    - name: Refuse to format mounted or formatted Longhorn disks without wipe
+    - name: Refuse unexpected Longhorn disk layouts without explicit wipe
       ansible.builtin.fail:
-        msg: "Refusing to prepare {{ longhorn_disk }} on {{ inventory_hostname }} because it or its partitions are mounted or formatted. Enable longhorn_wipe_disk to repurpose it."
+        msg: "Refusing to prepare {{ longhorn_disk }} on {{ inventory_hostname }}: expected a blank whole disk or {{ longhorn_fstype }} mounted only at {{ longhorn_mount_path }}. Inspect the disk before explicitly enabling longhorn_wipe_disk to repurpose it."
       when:
         - longhorn_prepare_disk | bool
         - not longhorn_wipe_disk | bool
         - >-
-          longhorn_disk_info.fstype
-          or (longhorn_disk_info.mountpoints | default([]) | select() | list | length > 0)
-          or (longhorn_existing_partitions | selectattr('fstype') | list | length > 0)
-          or (longhorn_existing_partitions | selectattr('mountpoints', 'defined') | map(attribute='mountpoints') | flatten | select() | list | length > 0)
+          (longhorn_disk_info.fstype is not none and longhorn_disk_info.fstype not in ['', longhorn_fstype])
+          or (longhorn_disk_info.mountpoints | default([]) | select() | difference([longhorn_mount_path]) | length > 0)
+          or (longhorn_existing_partitions | length > 0)
 
     - name: Create filesystem on Longhorn disk
       community.general.filesystem:

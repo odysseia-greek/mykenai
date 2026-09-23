@@ -3,6 +3,9 @@ kind: HelmRelease
 metadata:
   name: longhorn
 spec:
+  chart:
+    spec:
+      version: v1.12.1
   values:
     persistence:
       defaultClass: false

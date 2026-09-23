@@ -13,6 +13,7 @@ spec:
     name: themistokles
   dependsOn:
     - name: node-labels
+    - name: traefik-crds
   path: themistokles/ge/overlays/hellenistike/cilium
   prune: true
   wait: true

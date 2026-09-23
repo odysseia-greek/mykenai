@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 
 # Colors for output
 RED='\033[0;31m'
@@ -13,8 +13,8 @@ CILIUM_VERSION="${CILIUM_VERSION:-1.20.0}"
 FLUX_NAMESPACE="${FLUX_NAMESPACE:-flux-system}"
 
 # Kubeconfig
-KUBECONFIG_FILE="${KUBECONFIG:-$HOME/.kube/config}"
-CONTEXT="${KUBE_CONTEXT:-k0s-athenai}"
+export KUBECONFIG="${KUBECONFIG:-$HOME/.kube/config}"
+CONTEXT="${KUBE_CONTEXT:-}"
 
 echo -e "${GREEN}========================================${NC}"
 echo -e "${GREEN}k0s Cluster Bootstrap Script${NC}"
@@ -22,7 +22,7 @@ echo -e "${GREEN}========================================${NC}"
 echo ""
 echo "Configuration:"
 echo "  Cilium version: ${CILIUM_VERSION}"
-echo "  Context: ${CONTEXT}"
+echo "  Context: ${CONTEXT:-current kubeconfig context}"
 echo ""
 
 # Check if kubectl is available
@@ -46,6 +46,21 @@ if ! command -v helm &> /dev/null; then
     exit 1
 fi
 
+# Check flux CLI
+if ! command -v flux &> /dev/null; then
+  echo -e "${RED}Error: flux CLI is not installed${NC}"
+  echo "Install with: brew install fluxcd/tap/flux"
+  exit 1
+fi
+
+# Resolve one context and use it for every client without changing kubeconfig.
+CONTEXT="${CONTEXT:-$(kubectl config current-context)}"
+kubectl() { command kubectl --context "$CONTEXT" "$@"; }
+helm() { command helm --kube-context "$CONTEXT" "$@"; }
+cilium() { command cilium --context "$CONTEXT" "$@"; }
+flux() { command flux --context "$CONTEXT" "$@"; }
+echo "Using Kubernetes context: ${CONTEXT}"
+
 # Install Cilium
 echo -e "${GREEN} Installing Cilium ${CILIUM_VERSION} in cilium namespace...${NC}"
 
@@ -53,6 +68,10 @@ echo -e "${GREEN} Installing Cilium ${CILIUM_VERSION} in cilium namespace...${NC
 # on worker nodes before the CNI (and therefore ClusterIP routing) is set up.
 K8S_API_HOST=$(kubectl get endpoints kubernetes -o jsonpath='{.subsets[0].addresses[0].ip}')
 K8S_API_PORT=$(kubectl get endpoints kubernetes -o jsonpath='{.subsets[0].ports[0].port}')
+if [[ -z "$K8S_API_HOST" || -z "$K8S_API_PORT" ]]; then
+  echo "ERROR: Kubernetes API endpoint is missing"
+  exit 1
+fi
 echo "Using k8s API server: ${K8S_API_HOST}:${K8S_API_PORT}"
 
 # Create cilium namespace
@@ -60,8 +79,9 @@ kubectl create namespace cilium --dry-run=client -o yaml | kubectl apply -f -
 
 if helm status cilium -n cilium >/dev/null 2>&1; then
   cilium upgrade \
-    --version ${CILIUM_VERSION} \
+    --version "${CILIUM_VERSION}" \
     --namespace cilium \
+    --helm-release-name cilium \
     --set ipam.mode=kubernetes \
     --set kubeProxyReplacement=false \
     --set enableHostFirewall=false \
@@ -71,8 +91,9 @@ if helm status cilium -n cilium >/dev/null 2>&1; then
     --wait
 else
   cilium install \
-    --version ${CILIUM_VERSION} \
+    --version "${CILIUM_VERSION}" \
     --namespace cilium \
+    --helm-release-name cilium \
     --set ipam.mode=kubernetes \
     --set kubeProxyReplacement=false \
     --set enableHostFirewall=false \
@@ -103,13 +124,6 @@ echo ""
 # ---------- Flux ----------
 echo -e "${GREEN}Installing Flux controllers in ${FLUX_NAMESPACE}...${NC}"
 
-# Check flux CLI
-if ! command -v flux &> /dev/null; then
-  echo -e "${RED}Error: flux CLI is not installed${NC}"
-  echo "Install with: brew install fluxcd/tap/flux"
-  exit 1
-fi
-
 # Namespace
 kubectl create namespace "${FLUX_NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
 
@@ -117,9 +131,9 @@ kubectl create namespace "${FLUX_NAMESPACE}" --dry-run=client -o yaml | kubectl 
 flux install --namespace "${FLUX_NAMESPACE}"
 
 # Wait for core controllers to be ready
-kubectl -n "${FLUX_NAMESPACE}" rollout status deploy/source-controller --timeout=180s || true
-kubectl -n "${FLUX_NAMESPACE}" rollout status deploy/kustomize-controller --timeout=180s || true
-kubectl -n "${FLUX_NAMESPACE}" rollout status deploy/notification-controller --timeout=180s || true
+for controller in source-controller kustomize-controller helm-controller notification-controller; do
+  kubectl -n "${FLUX_NAMESPACE}" rollout status "deploy/${controller}" --timeout=180s
+done
 
 
 # Summary
@@ -128,9 +142,9 @@ echo -e "${GREEN}Bootstrap Complete!${NC}"
 echo -e "${GREEN}========================================${NC}"
 echo ""
 echo "Installed components:"
-echo "  ✓ Cilium ${CILIUM_VERSION} (CNI + Network Policy + Hubble) - namespace: cilium"
+echo "  ✓ Cilium ${CILIUM_VERSION} (CNI + Network Policy) - namespace: cilium"
+echo "  ✓ Flux controllers - namespace: ${FLUX_NAMESPACE}"
 echo ""
 echo "Useful commands:"
 echo "  - Check Cilium status:   cilium status -n cilium"
-echo "  - Port-forward Hubble:   cilium hubble port-forward -n cilium"
-echo "  - Open Hubble UI:        cilium hubble ui -n cilium"
+echo "Hubble is configured later by the cluster Flux overlay."
