@@ -26,6 +26,8 @@ spec:
           certValidityDuration: 365
     envoy:
       enabled: false
+    # Disabling the DaemonSet alone still permits embedded Envoy in the agent.
+    l7Proxy: false
     resources:
       requests:
         cpu: 100m

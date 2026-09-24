@@ -86,6 +86,7 @@ if helm status cilium -n cilium >/dev/null 2>&1; then
     --set kubeProxyReplacement=false \
     --set enableHostFirewall=false \
     --set envoy.enabled=false \
+    --set l7Proxy=false \
     --set k8sServiceHost="${K8S_API_HOST}" \
     --set k8sServicePort="${K8S_API_PORT}" \
     --wait
@@ -98,6 +99,7 @@ else
     --set kubeProxyReplacement=false \
     --set enableHostFirewall=false \
     --set envoy.enabled=false \
+    --set l7Proxy=false \
     --set k8sServiceHost="${K8S_API_HOST}" \
     --set k8sServicePort="${K8S_API_PORT}" \
     --wait
