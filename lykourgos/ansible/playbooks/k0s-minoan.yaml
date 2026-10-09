@@ -137,8 +137,9 @@
         content: "{{ admin_config.stdout | regex_replace('https://[^\\s]+:6443', 'https://' ~ k0s_api_address ~ ':6443') }}"
         dest: "{{ playbook_dir }}/k0s-kubeconfig-minoan"
         mode: "0600"
+        owner: "{{ lookup('env', 'SUDO_USER') | default(lookup('env', 'USER'), true) }}"
       delegate_to: localhost
-      become: false
+      become: true
       no_log: true
 
     - name: Merge Minoan into the invoking user's kubeconfig

@@ -9,7 +9,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Versions
-CILIUM_VERSION="${CILIUM_VERSION:-1.20.0}"
+CILIUM_VERSION="${CILIUM_VERSION:-1.20.2}"
 FLUX_NAMESPACE="${FLUX_NAMESPACE:-flux-system}"
 
 # Kubeconfig
@@ -61,6 +61,15 @@ cilium() { command cilium --context "$CONTEXT" "$@"; }
 flux() { command flux --context "$CONTEXT" "$@"; }
 echo "Using Kubernetes context: ${CONTEXT}"
 
+# Optional environment-specific Helm values, shared by install and upgrade.
+CILIUM_EXTRA_ARGS=()
+if [[ -n "${CILIUM_VALUES_FILE:-}" ]]; then
+  [[ -r "$CILIUM_VALUES_FILE" ]] || { echo "Cannot read CILIUM_VALUES_FILE"; exit 1; }
+  CILIUM_EXTRA_ARGS+=(--values "$CILIUM_VALUES_FILE")
+else
+  CILIUM_EXTRA_ARGS+=(--set envoy.enabled=false --set l7Proxy=false)
+fi
+
 # Install Cilium
 echo -e "${GREEN} Installing Cilium ${CILIUM_VERSION} in cilium namespace...${NC}"
 
@@ -79,27 +88,25 @@ kubectl create namespace cilium --dry-run=client -o yaml | kubectl apply -f -
 
 if helm status cilium -n cilium >/dev/null 2>&1; then
   cilium upgrade \
+    "${CILIUM_EXTRA_ARGS[@]}" \
     --version "${CILIUM_VERSION}" \
     --namespace cilium \
     --helm-release-name cilium \
     --set ipam.mode=kubernetes \
     --set kubeProxyReplacement=false \
     --set enableHostFirewall=false \
-    --set envoy.enabled=false \
-    --set l7Proxy=false \
     --set k8sServiceHost="${K8S_API_HOST}" \
     --set k8sServicePort="${K8S_API_PORT}" \
     --wait
 else
   cilium install \
+    "${CILIUM_EXTRA_ARGS[@]}" \
     --version "${CILIUM_VERSION}" \
     --namespace cilium \
     --helm-release-name cilium \
     --set ipam.mode=kubernetes \
     --set kubeProxyReplacement=false \
     --set enableHostFirewall=false \
-    --set envoy.enabled=false \
-    --set l7Proxy=false \
     --set k8sServiceHost="${K8S_API_HOST}" \
     --set k8sServicePort="${K8S_API_PORT}" \
     --wait
@@ -119,6 +126,7 @@ kubectl get namespace cilium >/dev/null 2>&1 || {
 echo ""
 echo "Waiting for Cilium to be ready..."
 cilium status --wait --namespace cilium
+kubectl wait --for=condition=Ready nodes --all --timeout=300s
 
 echo -e "${GREEN}✓ Cilium installed successfully${NC}"
 echo ""
@@ -149,4 +157,4 @@ echo "  ✓ Flux controllers - namespace: ${FLUX_NAMESPACE}"
 echo ""
 echo "Useful commands:"
 echo "  - Check Cilium status:   cilium status -n cilium"
-echo "Hubble is configured later by the cluster Flux overlay."
+echo "Hubble follows the environment-specific Cilium values."

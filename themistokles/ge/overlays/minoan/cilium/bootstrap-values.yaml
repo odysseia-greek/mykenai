@@ -1,0 +1,24 @@
+# Minoan values shared by initial installation and Flux.
+cluster:
+  name: minoan
+operator:
+  replicas: 1
+ipam:
+  mode: kubernetes
+kubeProxyReplacement: false
+enableHostFirewall: false
+l7Proxy: true
+envoy:
+  enabled: true
+hubble:
+  enabled: true
+  relay:
+    enabled: true
+  ui:
+    enabled: true
+  tls:
+    enabled: true
+    auto:
+      enabled: true
+      method: helm
+      certValidityDuration: 365

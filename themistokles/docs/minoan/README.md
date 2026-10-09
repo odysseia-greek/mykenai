@@ -2,7 +2,7 @@
 
 A minimal single-node k0s experiment on the physical Linux host `erebor`.
 Shares the Cilium and Traefik bases with Romaioi, with one replica each,
-Hubble/Envoy disabled, and Traefik exposed on NodePorts 30080/30443.
+L7 proxy, Envoy and Hubble (relay/UI) enabled, and Traefik exposed on NodePorts 30080/30443.
 TopoLVM provisions local PVCs from a dedicated loop-backed VG. Rook-Ceph and OpenBao remain planned.
 
 ## Host setup
@@ -31,9 +31,34 @@ The generated, gitignored kubeconfig is merged into `~/.kube/config` as
 `minoan-odysseia` (admin user `minoan-odysseia-admin`). Existing entries and the
 active context are preserved, and changes create a backup. Use
 `kubectl config use-context minoan-odysseia` before the Helm/Flux commands below.
-To merge an already generated config, run `make -C lykourgos/ansible merge-minoan-config`.
+To merge an already generated config, run `make -C lykourgos/ansible merge-minoan-config ANSIBLE_FLAGS='-K'`.
 The node will be NotReady until Cilium is installed. The k0s version is pinned
 to `v1.36.4+k0s.1`; rerunning does not upgrade an installed binary.
+
+## One-command bootstrap
+
+After the Ansible host bootstrap, install the local CLIs (kubectl, Helm, Cilium,
+and Flux), then commit and push the Minoan manifests to the branch Flux will use.
+From the repository root:
+
+```sh
+make -C themistokles bootstrap-minoan BRANCH=main
+```
+
+This bootstraps Cilium 1.20.2 with Minoan values, installs Flux controllers, and
+connects Flux to `themistokles/aer/minoan`, including Traefik, cert-manager and
+TopoLVM. It targets `minoan-odysseia` explicitly without changing the active
+context. Override with `KUBE_CONTEXT=...` if needed. This target exports the selected local private GPG key into `flux-system/sops-gpg`
+before creating the Flux root Kustomization. Pass `SOPS_KEY_FP=your-fingerprint`.
+Generate the Eleusinian test secret with the same key using:
+
+```sh
+make -C themistokles encrypt-minoan-eleusinian SOPS_KEY_FP=your-fingerprint
+```
+
+Commit and push the regenerated ciphertext and manifests before bootstrap. The
+copied `telete.yaml` is still encrypted for its original recipient until regenerated.
+If the manifests are on an experimental branch, pass `BRANCH=your-branch`.
 
 ## Networking and Flux
 
@@ -44,12 +69,11 @@ These commands require Helm, kubectl and the Flux CLI locally.
 ```sh
 helm repo add cilium https://helm.cilium.io
 helm repo update cilium
-helm upgrade --install cilium cilium/cilium --version 1.20.0 \
+helm upgrade --install cilium cilium/cilium --version 1.20.2 \
   --namespace cilium --create-namespace \
   --set cluster.name=minoan --set operator.replicas=1 \
   --set ipam.mode=kubernetes --set kubeProxyReplacement=false \
-  --set enableHostFirewall=false --set envoy.enabled=false \
-  --set hubble.enabled=false --wait --timeout 10m
+  --values themistokles/ge/overlays/minoan/cilium/bootstrap-values.yaml --wait --timeout 10m
 kubectl wait --for=condition=Ready nodes --all --timeout=300s
 flux install
 flux check
@@ -67,7 +91,7 @@ flux create kustomization themistokles \
 flux get all
 ```
 
-No SOPS key is needed for this starter. Point `traefik.minoan.odysseia-greek`
+The Eleusinian Kustomization requires the matching SOPS GPG key. Point `traefik.minoan.odysseia-greek`
 at Erebor to reach the dashboard at `http://traefik.minoan.odysseia-greek:30080/dashboard/`.
 
 ## Next experiments

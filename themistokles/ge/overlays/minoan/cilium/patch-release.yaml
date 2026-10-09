@@ -3,13 +3,32 @@ kind: HelmRelease
 metadata:
   name: cilium
 spec:
+  chart:
+    spec:
+      version: 1.20.2
   releaseName: cilium
   values:
     cluster:
       name: minoan
     operator:
       replicas: 1
+    ipam:
+      mode: kubernetes
+    kubeProxyReplacement: false
+    enableHostFirewall: false
+    l7Proxy: true
     envoy:
-      enabled: false
+      enabled: true
+      affinity: null
     hubble:
-      enabled: false
+      enabled: true
+      relay:
+        enabled: true
+      ui:
+        enabled: true
+      tls:
+        enabled: true
+        auto:
+          enabled: true
+          method: helm
+          certValidityDuration: 365

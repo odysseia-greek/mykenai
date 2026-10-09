@@ -5,3 +5,4 @@ resources:
   - traefik.yaml
   - cert-manager.yaml
   - topolvm.yaml
+  - eleusinian.yaml

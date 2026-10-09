@@ -126,4 +126,4 @@ reset-minoan: ## Erase Minoan cluster and PVCs (requires explicit opt-in)
 
 .PHONY: merge-minoan-config
 merge-minoan-config: ## Merge Minoan credentials while preserving the current context
-	ansible-playbook $(ANSIBLE_FLAGS) -i localhost, playbooks/merge-minoan-kubeconfig.yaml -e "minoan_kubeconfig_path=$(KUBECONFIG_FILE)"
+	ansible-playbook $(ANSIBLE_FLAGS) -i localhost, playbooks/merge-minoan-kubeconfig.yaml $(if $(filter command line environment,$(origin KUBECONFIG_FILE)),-e "minoan_kubeconfig_path=$(KUBECONFIG_FILE)",)
