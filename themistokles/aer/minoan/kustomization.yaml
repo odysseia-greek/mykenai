@@ -6,3 +6,7 @@ resources:
   - cert-manager.yaml
   - topolvm.yaml
   - eleusinian.yaml
+  - labels.yaml
+  - elastic-operator.yaml
+  - agora.yaml
+  - lydia.yaml

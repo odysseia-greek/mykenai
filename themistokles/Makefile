@@ -85,19 +85,11 @@ bootstrap-hellas:
 encrypt-minoan-eleusinian:
 	@SOPS_KEY_FP="$(SOPS_KEY_FP)" bash hydor/overlays/minoan/eleusinian/create.sh
 
-# k0s and bounded host storage are provisioned separately by Lykourgos Ansible.
+# Assumes the k0s bootstrap has already installed Cilium and Flux controllers.
 .PHONY: bootstrap-minoan
 bootstrap-minoan:
-	@command -v kubectl >/dev/null && command -v helm >/dev/null && command -v cilium >/dev/null && command -v flux >/dev/null || { echo "Install kubectl, helm, cilium and flux first."; exit 1; }
-	@KUBE_CONTEXT="$(if $(KUBE_CONTEXT),$(KUBE_CONTEXT),minoan-odysseia)" \
-	  CILIUM_VERSION=1.20.2 \
-	  CILIUM_VALUES_FILE="$(CURDIR)/ge/overlays/minoan/cilium/bootstrap-values.yaml" \
-	  bash ../lykourgos/k0s/bootstrap.sh
 	@$(MAKE) bootstrap-flux ENV=$(MINOAN_ENV) USE_SOPS=true \
 	  KUBE_CONTEXT="$(if $(KUBE_CONTEXT),$(KUBE_CONTEXT),minoan-odysseia)"
-	@flux --context "$(if $(KUBE_CONTEXT),$(KUBE_CONTEXT),minoan-odysseia)" reconcile source git themistokles
-	@flux --context "$(if $(KUBE_CONTEXT),$(KUBE_CONTEXT),minoan-odysseia)" reconcile kustomization themistokles --with-source
-	@flux --context "$(if $(KUBE_CONTEXT),$(KUBE_CONTEXT),minoan-odysseia)" get all
 
 # Check Flux status
 .PHONY: flux-status
@@ -112,7 +104,7 @@ help:
 	@echo "  bootstrap-flux    - Bootstrap Flux manually (ENV=romaioi|hellenistike|hellas|minoan, default: romaioi)"
 	@echo "  bootstrap-hellenistike - Bootstrap Flux with the Hellenistike core stack"
 	@echo "  bootstrap-hellas  - Bootstrap Flux with the Hellas core stack"
-	@echo "  bootstrap-minoan - Bootstrap Cilium, Flux and the Minoan core stack (with SOPS GPG key)"
+	@echo "  bootstrap-minoan - Bootstrap Flux with the Minoan core stack and SOPS GPG key"
 	@echo "  flux-status       - Check Flux status"
 	@echo "  help              - Show this help message"
 	@echo ""

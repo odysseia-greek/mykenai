@@ -127,3 +127,7 @@ reset-minoan: ## Erase Minoan cluster and PVCs (requires explicit opt-in)
 .PHONY: merge-minoan-config
 merge-minoan-config: ## Merge Minoan credentials while preserving the current context
 	ansible-playbook $(ANSIBLE_FLAGS) -i localhost, playbooks/merge-minoan-kubeconfig.yaml $(if $(filter command line environment,$(origin KUBECONFIG_FILE)),-e "minoan_kubeconfig_path=$(KUBECONFIG_FILE)",)
+
+.PHONY: firewall-minoan
+firewall-minoan: ## Persist Pod-to-host UFW rules without reinstalling the cluster
+	ansible-playbook $(ANSIBLE_FLAGS) -i inventories/minoan/hosts.yaml playbooks/k0s-minoan.yaml --tags firewall

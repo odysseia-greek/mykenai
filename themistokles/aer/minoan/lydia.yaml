@@ -1,0 +1,19 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: lydia
+  namespace: flux-system
+spec:
+  interval: 4h
+  retryInterval: 2m
+  timeout: 10m
+  sourceRef:
+    kind: GitRepository
+    name: themistokles
+  dependsOn:
+    - name: traefik
+    - name: topolvm
+  path: themistokles/hydor/overlays/minoan/lydia
+  prune: true
+  wait: true

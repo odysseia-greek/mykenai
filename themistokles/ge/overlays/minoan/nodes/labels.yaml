@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Node
+metadata:
+  name: erebor
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+    kustomize.toolkit.fluxcd.io/ssa: merge
+  labels:
+    cilium.io/envoy-capable: 'true'
+    topolvm.cybozu.com/storage-node: 'true'
+    odysseia-greek/ingress-role: primary
+    odysseia-greek/elastic-role: all
+    odysseia-greek/elastic-memory-tier: standard

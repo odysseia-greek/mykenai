@@ -1,6 +1,6 @@
 # Minoan values shared by initial installation and Flux.
 cluster:
-  name: minoan
+  name: minoan-odysseia
 operator:
   replicas: 1
 ipam:

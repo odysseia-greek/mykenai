@@ -1,0 +1,39 @@
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kibana
+  labels:
+    app: kibana
+    version: 9.2.2
+spec:
+  version: 9.2.2
+  count: 1
+  elasticsearchRef:
+    name: aristoteles
+    namespace: agora
+  podTemplate:
+    spec:
+      containers:
+        - name: kibana
+          resources:
+            requests:
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-all-elasticsearch-access-kibana
+spec:
+  endpointSelector:
+    matchLabels:
+      elasticsearch.k8s.elastic.co/cluster-name: aristoteles
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            kibana.k8s.elastic.co/name: kibana
+      toPorts:
+        - ports:
+            - port: "9200"
+              protocol: TCP

@@ -48,6 +48,10 @@
           - lvm2
         state: present
 
+    - name: Permit Pod access through an existing UFW firewall
+      tags: [firewall]
+      ansible.builtin.import_tasks: tasks/minoan-firewall.yaml
+
     - name: Prepare bounded disposable PVC storage
       ansible.builtin.import_tasks: tasks/minoan-storage.yaml
 
@@ -95,7 +99,7 @@
               sans: {{ (k0s_api_sans + [k0s_api_address, 'localhost', '127.0.0.1']) | to_json }}
             network:
               provider: custom
-              podCIDR: 10.244.0.0/16
+              podCIDR: {{ minoan_pod_cidr }}
               serviceCIDR: 10.96.0.0/12
               kubeProxy:
                 mode: iptables

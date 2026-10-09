@@ -35,19 +35,20 @@ To merge an already generated config, run `make -C lykourgos/ansible merge-minoa
 The node will be NotReady until Cilium is installed. The k0s version is pinned
 to `v1.36.4+k0s.1`; rerunning does not upgrade an installed binary.
 
-## One-command bootstrap
+## Flux repository bootstrap
 
-After the Ansible host bootstrap, install the local CLIs (kubectl, Helm, Cilium,
-and Flux), then commit and push the Minoan manifests to the branch Flux will use.
+After the Ansible host setup and `lykourgos/k0s/bootstrap.sh` have installed
+Cilium and the Flux controllers, commit and push the Minoan manifests to the
+branch Flux will use.
 From the repository root:
 
 ```sh
 make -C themistokles bootstrap-minoan BRANCH=main
 ```
 
-This bootstraps Cilium 1.20.2 with Minoan values, installs Flux controllers, and
-connects Flux to `themistokles/aer/minoan`, including Traefik, cert-manager and
-TopoLVM. It targets `minoan-odysseia` explicitly without changing the active
+Like `bootstrap-hellas` and `bootstrap-hellenistike`, this creates the SOPS key
+Secret and connects the existing Flux installation to `themistokles/aer/minoan`,
+including Cilium, Traefik, cert-manager, TopoLVM and Eleusinian. It targets `minoan-odysseia` explicitly without changing the active
 context. Override with `KUBE_CONTEXT=...` if needed. This target exports the selected local private GPG key into `flux-system/sops-gpg`
 before creating the Flux root Kustomization. Pass `SOPS_KEY_FP=your-fingerprint`.
 Generate the Eleusinian test secret with the same key using:
@@ -71,7 +72,7 @@ helm repo add cilium https://helm.cilium.io
 helm repo update cilium
 helm upgrade --install cilium cilium/cilium --version 1.20.2 \
   --namespace cilium --create-namespace \
-  --set cluster.name=minoan --set operator.replicas=1 \
+  --set cluster.name=minoan-odysseia --set operator.replicas=1 \
   --set ipam.mode=kubernetes --set kubeProxyReplacement=false \
   --values themistokles/ge/overlays/minoan/cilium/bootstrap-values.yaml --wait --timeout 10m
 kubectl wait --for=condition=Ready nodes --all --timeout=300s
@@ -136,3 +137,39 @@ make -C lykourgos/ansible k0s-minoan ANSIBLE_FLAGS='-K'
 
 For a future Ceph experiment, provision a separate unused device and migrate data;
 the loop-backed TopoLVM VG is not automatically converted into Ceph storage.
+
+## Host firewall
+
+When UFW is already active, the host playbook allows only the configured Pod CIDR
+(`10.244.0.0/16`) to reach TCP 6443 (API) and 10250 (kubelet). It preserves UFW's
+other rules and policies. Without API access, CoreDNS stays unready and Flux
+controllers can crash while initializing. Apply just these persistent rules with:
+
+```sh
+make -C lykourgos/ansible firewall-minoan ANSIBLE_FLAGS='-K'
+```
+
+## Agora and Lydia
+
+Minoan reuses the Hellas stack with a single Elasticsearch 9.2.2 node (2 GiB
+memory, 500m CPU requested) and a 20 GiB `minoan-pvc-delete` data claim. Kibana
+runs one replica with a 1 GiB memory limit. Agora also includes Eupalinos and
+Theofrastos. This is local single-node storage with no redundant Elasticsearch
+node; index replica shards may remain unassigned until configured for zero
+replicas by the applications.
+
+The Elastic operator has one replica in `aristoteles-operator`. Erebor receives
+Envoy, storage, ingress and Elasticsearch labels through the non-pruned node-labels
+Kustomization. Lydia includes the test CronJob, result viewer and a 2 GiB PVC.
+
+Point these hostnames at Erebor:
+- `kibana.minoan.odysseia-greek` (HTTPS via NodePort 30443)
+- `hubble.minoan.odysseia-greek` (HTTP via NodePort 30080)
+- `int.minoan.odysseia-greek` (`/lysandros`, HTTP via NodePort 30080)
+
+Hubble relay needs Pod-to-host TCP 4244 in addition to the API and kubelet ports.
+Rerun the Ansible `firewall-minoan` target to persist this rule. Commit and push
+these new overlays, then reconcile the Minoan Flux source/root Kustomization.
+
+Cilium uses cluster name `minoan-odysseia` consistently in bootstrap and Flux
+values, matching the existing Hubble certificate names.

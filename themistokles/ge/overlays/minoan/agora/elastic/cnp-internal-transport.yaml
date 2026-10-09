@@ -1,0 +1,16 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-elasticsearch-internal-transport
+spec:
+  endpointSelector:
+    matchLabels:
+      elasticsearch.k8s.elastic.co/cluster-name: aristoteles
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            elasticsearch.k8s.elastic.co/cluster-name: aristoteles
+      toPorts:
+        - ports:
+            - port: "9300"
+              protocol: TCP

@@ -1,0 +1,10 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: agora
+
+resources:
+  - ../../../../base/elastic
+  - cnp-internal-transport.yaml
+  - cluster.yaml
+  - kibana.yaml
+  - ir.yaml

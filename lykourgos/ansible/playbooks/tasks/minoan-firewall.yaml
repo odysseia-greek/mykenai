@@ -1,0 +1,40 @@
+---
+- name: Detect UFW
+  ansible.builtin.stat:
+    path: /usr/bin/ufw
+  register: minoan_ufw_binary
+
+- name: Inspect UFW status
+  ansible.builtin.command: /usr/bin/ufw status
+  environment:
+    LC_ALL: C
+  register: minoan_ufw_status
+  changed_when: false
+  when: minoan_ufw_binary.stat.exists
+
+- name: Allow Pods to reach the API and kubelet without opening LAN access
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/ufw
+      - allow
+      - from
+      - '{{ minoan_pod_cidr }}'
+      - to
+      - any
+      - port
+      - '{{ item.port }}'
+      - proto
+      - tcp
+      - comment
+      - '{{ item.comment }}'
+  environment:
+    LC_ALL: C
+  loop:
+    - {port: '6443', comment: minoan-pods-api}
+    - {port: '10250', comment: minoan-pods-kubelet}
+    - {port: '4244', comment: minoan-pods-hubble}
+  register: minoan_ufw_rule
+  changed_when: "'Skipping' not in minoan_ufw_rule.stdout"
+  when:
+    - minoan_ufw_binary.stat.exists
+    - "'Status: active' in (minoan_ufw_status.stdout | default(''))"

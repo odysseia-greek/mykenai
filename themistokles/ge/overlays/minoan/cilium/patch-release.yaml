@@ -9,7 +9,7 @@ spec:
   releaseName: cilium
   values:
     cluster:
-      name: minoan
+      name: minoan-odysseia
     operator:
       replicas: 1
     ipam:

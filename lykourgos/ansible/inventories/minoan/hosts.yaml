@@ -15,3 +15,4 @@ all:
           - minoan.odysseia-greek
         # Reserved PVC capacity; keep at least 10 GiB free for the host.
         minoan_storage_gib: 50
+        minoan_pod_cidr: 10.244.0.0/16
