@@ -1,0 +1,100 @@
+---
+- name: Install storage utilities
+  ansible.builtin.package:
+    name: [lvm2, util-linux]
+    state: present
+
+- name: Validate requested storage size
+  ansible.builtin.assert:
+    that:
+      - minoan_storage_gib | int >= 10
+
+- name: Create dedicated Minoan storage directory
+  ansible.builtin.file:
+    path: /var/lib/minoan
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+
+- name: Inspect existing backing file
+  ansible.builtin.stat:
+    path: /var/lib/minoan/topolvm.img
+  register: minoan_image
+
+- name: Refuse implicit resizing or nonregular backing files
+  ansible.builtin.assert:
+    that:
+      - minoan_image.stat.isreg | default(false)
+      - not (minoan_image.stat.islnk | default(false))
+      - minoan_image.stat.size == (minoan_storage_gib | int * 1073741824)
+    fail_msg: Existing storage must be a regular file of the configured size; reset explicitly before changing size.
+  when: minoan_image.stat.exists
+
+- name: Check available host space
+  ansible.builtin.command: df --output=avail -B1 /var/lib/minoan
+  register: minoan_free
+  changed_when: false
+  when: not minoan_image.stat.exists
+
+- name: Preserve at least 10 GiB of host free space
+  ansible.builtin.assert:
+    that:
+      - minoan_free.stdout_lines[-1] | trim | int >= ((minoan_storage_gib | int + 10) * 1073741824)
+  when: not minoan_image.stat.exists
+
+- name: Preallocate bounded PVC backing file
+  ansible.builtin.command:
+    argv: [fallocate, '-l', '{{ minoan_storage_gib }}G', /var/lib/minoan/topolvm.img]
+    creates: /var/lib/minoan/topolvm.img
+
+- name: Install dedicated storage helper
+  ansible.builtin.copy:
+    src: minoan-storage
+    dest: /usr/local/sbin/minoan-storage
+    owner: root
+    group: root
+    mode: '0700'
+
+- name: Install persistent loop and VG service
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/minoan-storage.service
+    mode: '0644'
+    content: |
+      [Unit]
+      Description=Minoan disposable TopoLVM backing storage
+      RequiresMountsFor=/var/lib/minoan
+      Before=k0scontroller.service
+      [Service]
+      Type=oneshot
+      ExecStart=/usr/local/sbin/minoan-storage
+      RemainAfterExit=yes
+      [Install]
+      WantedBy=multi-user.target
+
+- name: Initialize and verify dedicated volume group
+  ansible.builtin.command: /usr/local/sbin/minoan-storage
+  register: minoan_storage_setup
+  changed_when: "'created' in minoan_storage_setup.stdout"
+
+- name: Enable storage restoration at boot
+  ansible.builtin.systemd:
+    name: minoan-storage
+    daemon_reload: true
+    enabled: true
+    state: started
+
+- name: Create k0s service override directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/k0scontroller.service.d
+    state: directory
+    mode: '0755'
+
+- name: Require storage before starting k0s
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/k0scontroller.service.d/storage.conf
+    mode: '0644'
+    content: |
+      [Unit]
+      Requires=minoan-storage.service
+      After=minoan-storage.service
