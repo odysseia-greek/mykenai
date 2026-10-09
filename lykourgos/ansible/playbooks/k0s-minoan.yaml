@@ -8,13 +8,48 @@
         that:
           - ansible_service_mgr == 'systemd'
           - ansible_system == 'Linux'
-          - ansible_swaptotal_mb == 0
-        fail_msg: "Use a systemd Linux host with swap disabled before installing k0s."
+        fail_msg: "Use a systemd Linux host before installing k0s."
+
+    - name: Inspect existing k0s configuration
+      ansible.builtin.stat:
+        path: /etc/k0s/k0s.yaml
+      register: minoan_existing_config
+
+    - name: Inspect existing controller service
+      ansible.builtin.stat:
+        path: /etc/systemd/system/k0scontroller.service
+      register: minoan_existing_service
+
+    - name: Require identifiable configuration for an existing service
+      ansible.builtin.assert:
+        that:
+          - not minoan_existing_service.stat.exists or minoan_existing_config.stat.exists
+        fail_msg: Existing k0s service has no identifiable configuration; inspect it manually.
+
+    - name: Read existing k0s configuration
+      ansible.builtin.slurp:
+        src: /etc/k0s/k0s.yaml
+      register: minoan_config_content
+      when: minoan_existing_config.stat.exists
+
+    - name: Refuse a configuration belonging to another cluster
+      ansible.builtin.assert:
+        that:
+          - (minoan_config_content.content | b64decode | from_yaml).metadata.name == cluster_name
+      when: minoan_existing_config.stat.exists
 
     - name: Install host packages (including lvm2 for future Ceph OSDs)
       ansible.builtin.package:
-        name: [curl, iptables, socat, conntrack, lvm2]
+        name:
+          - curl
+          - iptables
+          - socat
+          - "{{ 'conntrack-tools' if ansible_os_family == 'Archlinux' else 'conntrack' }}"
+          - lvm2
         state: present
+
+    - name: Prepare bounded disposable PVC storage
+      ansible.builtin.import_tasks: tasks/minoan-storage.yaml
 
     - name: Download k0s installer
       ansible.builtin.get_url:
@@ -49,6 +84,12 @@
           metadata:
             name: {{ cluster_name }}
           spec:
+            workerProfiles:
+              - name: default
+                values:
+                  failSwapOn: false
+                  memorySwap:
+                    swapBehavior: NoSwap
             api:
               address: {{ k0s_api_address | to_json }}
               sans: {{ (k0s_api_sans + [k0s_api_address, 'localhost', '127.0.0.1']) | to_json }}
@@ -84,12 +125,14 @@
       changed_when: false
 
     - name: Generate admin kubeconfig
+      tags: [kubeconfig]
       ansible.builtin.command: /usr/local/bin/k0s kubeconfig admin
       register: admin_config
       changed_when: false
       no_log: true
 
     - name: Write a separate local kubeconfig with a reachable API endpoint
+      tags: [kubeconfig]
       ansible.builtin.copy:
         content: "{{ admin_config.stdout | regex_replace('https://[^\\s]+:6443', 'https://' ~ k0s_api_address ~ ':6443') }}"
         dest: "{{ playbook_dir }}/k0s-kubeconfig-minoan"
@@ -97,6 +140,12 @@
       delegate_to: localhost
       become: false
       no_log: true
+
+    - name: Merge Minoan into the invoking user's kubeconfig
+      tags: [kubeconfig]
+      ansible.builtin.import_tasks: tasks/minoan-kubeconfig.yaml
+      delegate_to: localhost
+      become: false
 
     - name: Explain networking bootstrap
       ansible.builtin.debug:

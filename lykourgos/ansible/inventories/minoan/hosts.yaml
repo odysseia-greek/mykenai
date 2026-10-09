@@ -3,13 +3,15 @@ all:
     minoan:
       hosts:
         erebor:
-          ansible_host: erebor
-          # Uses your SSH config/current user; override with -u if needed.
+          ansible_connection: local
+          # Run directly on Erebor; sudo is still needed for host setup.
       vars:
         cluster_name: minoan
-        k0s_version: "v1.35.2+k0s.0"
+        k0s_version: "v1.36.4+k0s.1"
         # Defaults to Erebor's primary IPv4 address; override for another interface.
         k0s_api_address: "{{ ansible_default_ipv4.address }}"
         k0s_api_sans:
           - erebor
           - minoan.odysseia-greek
+        # Reserved PVC capacity; keep at least 10 GiB free for the host.
+        minoan_storage_gib: 50

@@ -117,5 +117,13 @@ k0s-lima-ha: ## Install k0s HA cluster on Lima VMs
 poc: bootstrap-single lvm-storage k0s-single
 
 .PHONY: k0s-minoan
-k0s-minoan: ## Install single-node k0s on Erebor
+k0s-minoan: ## Install single-node k0s locally on Erebor
 	ansible-playbook $(ANSIBLE_FLAGS) -i inventories/minoan/hosts.yaml playbooks/k0s-minoan.yaml
+
+.PHONY: reset-minoan
+reset-minoan: ## Erase Minoan cluster and PVCs (requires explicit opt-in)
+	ansible-playbook $(ANSIBLE_FLAGS) -i inventories/minoan/hosts.yaml playbooks/reset-minoan.yaml
+
+.PHONY: merge-minoan-config
+merge-minoan-config: ## Merge Minoan credentials while preserving the current context
+	ansible-playbook $(ANSIBLE_FLAGS) -i localhost, playbooks/merge-minoan-kubeconfig.yaml -e "minoan_kubeconfig_path=$(KUBECONFIG_FILE)"

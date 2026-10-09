@@ -1,0 +1,55 @@
+---
+- name: Reset only Minoan cluster state and its dedicated PVC storage
+  hosts: minoan
+  become: true
+  tasks:
+    - name: Require explicit destructive reset opt-in
+      ansible.builtin.assert:
+        that:
+          - minoan_reset_confirm | default(false) | bool
+        fail_msg: Set minoan_reset_confirm=true to erase this cluster and all its PVCs.
+
+    - name: Read cluster identity before reset
+      ansible.builtin.slurp:
+        src: /etc/k0s/k0s.yaml
+      register: minoan_reset_config
+
+    - name: Refuse resetting another cluster
+      ansible.builtin.assert:
+        that:
+          - (minoan_reset_config.content | b64decode | from_yaml).metadata.name == cluster_name
+
+    - name: Verify VG belongs exclusively to Minoan backing file
+      ansible.builtin.command: /usr/local/sbin/minoan-storage --verify
+      changed_when: false
+
+    - name: Stop k0s before removing storage
+      ansible.builtin.command: /usr/local/bin/k0s stop
+
+    - name: Reset k0s state and service
+      ansible.builtin.command: /usr/local/bin/k0s reset
+
+    - name: Disable storage restoration
+      ansible.builtin.systemd:
+        name: minoan-storage
+        state: stopped
+        enabled: false
+
+    - name: Remove exclusively verified Minoan VG and backing file
+      ansible.builtin.shell: |
+        set -euo pipefail
+        /usr/local/sbin/minoan-storage --verify
+        device=$(losetup --list -j /var/lib/minoan/topolvm.img --output NAME --noheadings)
+        vgremove -y minoan-pvc
+        pvremove "$device"
+        losetup -d "$device"
+        rm -- /var/lib/minoan/topolvm.img
+      args:
+        executable: /bin/bash
+
+    - name: Remove stale local admin credentials
+      ansible.builtin.file:
+        path: '{{ playbook_dir }}/k0s-kubeconfig-minoan'
+        state: absent
+      delegate_to: localhost
+      become: false
