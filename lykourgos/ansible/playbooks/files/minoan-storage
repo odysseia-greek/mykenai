@@ -1,0 +1,39 @@
+#!/bin/bash
+set -euo pipefail
+image=/var/lib/minoan/topolvm.img
+vg=minoan-pvc
+[[ -f "$image" && ! -L "$image" ]] || { echo "Backing file missing or unsafe" >&2; exit 1; }
+mapfile -t devices < <(losetup --list -j "$image" --output NAME --noheadings)
+if (( ${#devices[@]} > 1 )); then
+  echo "Multiple loop devices refer to backing file; refusing" >&2; exit 1
+fi
+if (( ${#devices[@]} == 0 )); then
+  [[ "${1:-}" != --verify ]] || { echo "Storage is not attached" >&2; exit 1; }
+  device=$(losetup --find --show "$image")
+  echo "created loop attachment"
+else
+  device=${devices[0]}
+fi
+if vgs "$vg" >/dev/null 2>&1; then
+  mapfile -t members < <(pvs --noheadings -o pv_name --select "vg_name=$vg" | xargs -n1)
+  [[ ${#members[@]} == 1 && "${members[0]}" == "$device" ]] || {
+    echo "VG contains unexpected devices; refusing" >&2; exit 1;
+  }
+else
+  [[ "${1:-}" != --verify ]] || { echo "Dedicated VG missing" >&2; exit 1; }
+  # Never force initialization or overwrite an existing signature.
+  signatures=$(wipefs --noheadings --output TYPE "$device")
+  if [[ -z "$signatures" ]]; then
+    pvcreate "$device"
+    echo "created physical volume"
+  else
+    [[ "$signatures" == LVM2_member ]] || { echo "Unexpected device signature" >&2; exit 1; }
+  fi
+  owner=$(pvs --noheadings -o vg_name "$device" | xargs)
+  [[ -z "$owner" ]] || { echo "PV belongs to another VG" >&2; exit 1; }
+  vgcreate "$vg" "$device"
+  echo "created volume group"
+fi
+if [[ "${1:-}" != --verify ]]; then
+  vgchange -ay "$vg"
+fi

@@ -1,0 +1,45 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: topolvm
+spec:
+  interval: 10m
+  targetNamespace: topolvm
+  chart:
+    spec:
+      chart: topolvm
+      version: "15.8.0"
+      sourceRef:
+        kind: HelmRepository
+        name: topolvm
+        namespace: topolvm
+  values:
+    controller:
+      replicaCount: 1
+      storageCapacityTracking:
+        enabled: true
+
+    cert-manager:
+      enabled: false
+
+    lvmd:
+      managed: true
+      deviceClasses:
+        - name: minoan-pvc
+          default: true
+          spare-gb: 1
+          volume-group: minoan-pvc
+
+    node:
+      kubeletWorkDirectory: /var/lib/k0s/kubelet
+
+    storageClasses:
+      - name: minoan-pvc-delete
+        storageClass:
+          isDefaultClass: true
+          reclaimPolicy: Delete
+          volumeBindingMode: WaitForFirstConsumer
+          allowVolumeExpansion: true
+          fsType: ext4
+          parameters:
+            "topolvm.cybozu.com/device-class": minoan-pvc
