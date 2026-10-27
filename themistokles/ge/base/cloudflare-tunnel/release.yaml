@@ -22,3 +22,5 @@ spec:
         namespace: cloudflare-tunnel
   values:
     replicaCount: 1
+    image:
+      tag: "2026.10.4"
